@@ -5,41 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
+    <title>Welcome to AnalystKit</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/fontawesome.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/vendors.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/theme-style.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/responsive.css') }}" />
+    <title>{{config('app.name')}}</title>
 
     <style>
-        /* these styles will animate bootstrap alerts. */
-        .alert{
-            z-index: 99;
-            top: 60px;
-            right:18px;
-            min-width:30%;
-            position: fixed;
-            animation: slide 0.5s forwards;
-        }
+        
+.tool-label{
+    height: 40px !important;
+    line-height: 45px !important;
+    padding-left: 20px !important;
+}
 
-        @keyframes slide {
-            100% { top: 30px; }
-        }
+.tool-checkbox{
+    width: 20px !important;
+    float: left !important;
+}
 
-        @media screen and (max-width: 668px) {
-            .alert{ /* center the alert on small screens */
-                left: 10px;
-                right: 10px; 
-            }
-        }
+input:focus{
+  outline: none  !important;
+  box-shadow: none  !important;
+}
     </style>
-
-    <title>{{config('app.name')}}</title>
 </head>
 <body>
-
+            <!-- begin pre-loader -->
+            <div class="loader">
+                <div class="h-100 d-flex justify-content-center">
+                    <div class="align-self-center">
+                        <img src="{{ asset('images/loader.svg') }}" alt="loader">
+                    </div>
+                </div>
+            </div>
+            <!-- end pre-loader -->
+            <!-- begin app-header -->
+            
     @include('inc.navbar')
-    <main class="container mt-4">
-        @yield('content')
-    </main>
+    @yield('content')
 
-    <script src="{{asset('js/app.js')}}"></script>
+     <!-- plugins -->
+     <script src="{{ asset('js/jquery.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('js/vendors.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('js/app.js') }}" type="text/javascript"></script>
+    <!-- Modal Efects -->
+    <script src="{{ asset('js/velocity.min.js') }}"></script>
+    <script src="{{ asset('js/velocity.ui.min.js') }}"></script>
+    <script src="{{ asset('js/custom.js') }}" type="text/javascript"></script>
     
     {{-- Success Alert --}}
     @if(session('status'))

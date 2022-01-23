@@ -18,9 +18,15 @@ class User extends Authenticatable
      * @var string[]
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'user_id',
+        'first_name',
+        'last_name',
+        'country',
+        'city',
+        'state',
+        'username',
+        'status',
+        'email'
     ];
 
     /**
@@ -33,12 +39,32 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+
+    public $timestamps = true;
+
+
+
     /**
-     * The attributes that should be cast.
-     *
-     * @var array
+     * Get the phone associated with the user.
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    public function tools()
+    {
+        return $this->hasMany(Tools::class,'user_id');
+    }
+
+    /**
+     * Get the phone associated with the user.
+     */
+    public function cards()
+    {
+        return $this->hasMany(Card::class,'user_id');
+    }
+
+    /**
+     * Get the phone associated with the user.
+     */
+    public function payment()
+    {
+        return $this->hasMany(Payment::class,'user_id');
+    }
 }

@@ -1,0 +1,789 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap');
+body{font-family: 'Raleway', sans-serif;background: #eceff4;color: #4e4c4c;position: relative;}
+h1,h2,h3,h4,h5,h6{font-family: 'Poppins', sans-serif;}
+a, p, label, legend{color:#4e4c4c}
+a, button{transition: all ease-in-out 0.8s 0s !important;}
+a:focus, a:hover {color: #0c7fcd;text-decoration: none;}
+p{padding-bottom: 20px;}
+
+.loader {
+    height: 100% !important;
+    position: fixed;
+    width: 100%;
+    background: #fff;
+    z-index: 99;
+}
+
+.HeaderWrapper{
+    padding: 30px 0;
+    background: #f2f0f0;
+    border-bottom: 2px solid #6da8d0;
+}
+.BodyMiddleWrapper{
+    padding: 70px 0;
+    background: #cde2f1;
+}
+.BuildForm{
+    width: 80%;
+    margin: 0 auto;
+}
+.SignUpForm h3,
+.BuildForm h3{
+    font-size: 45px;
+    color: #016598;
+    text-align: center;
+    margin-bottom: 40px;
+}
+.BuildFields{position: relative;}
+.BuildFields::before{
+    position: absolute;
+    left: 20px;
+    top: 10px;
+    content: '';
+    background-color: #fbc710;
+    border-radius: 50%;
+    border: 8px solid #016598;
+    width: 50px;
+    height: 50px;
+}
+.BuildFields input{
+    height: 70px;
+    line-height: 70px;
+    border-radius: 40px;
+    font-size: 25px;
+    color: #4e4c4c;
+    font-weight: 500;
+    padding-left: 90px;
+    padding-right: 20px;
+    margin-bottom: 25px;
+}
+.BuildFields input::placeholder{
+    opacity: 1;
+}
+.BtnBox{
+    background: #fff;
+    color: #016598;
+    border: 2px solid #016598;
+    height: 60px;
+    line-height: 60px;
+    border-radius: 40px;
+    padding: 10px 50px;
+    padding-top:0;
+    font-size: 30px;
+    font-weight: 500;
+    margin-top: 20px;
+    cursor: pointer;
+}
+.BtnBox:hover{
+    background: #016598;
+    color: #fff;
+    border: 2px solid #fff;
+}
+.BodyBottom{
+    padding: 40px 0;
+    background: #fff;
+}
+.BodyBottom p{
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 30px;
+    line-height: 28px;
+}
+.BtnWrapp a{
+    background: #016598;
+    color: #fff;
+    border-radius: 40px;
+    padding: 10px 50px;
+    font-size: 20px;
+    font-weight: 500;
+    border: 2px solid transparent;
+    margin-right: 10px;
+}
+.BtnWrapp a:hover{
+    background: #fff;
+    color: #016598;
+    border: 2px solid #016598;
+}
+/* Sign Up  css */
+.SignupHeader{
+    padding: 0px 0 50px;
+    text-align: center;
+}
+.SignUpForm select,
+.SignUpForm input{
+    height: 55px;
+    line-height: 55px;
+    border-radius: 30px;
+    font-size: 18px;
+    color: #4e4c4c;
+    font-weight: 500;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-bottom: 25px;
+    border: 2px solid #5b99ba;
+    width: 100%;
+    background-color: #fff;
+    box-shadow: 0 0 10px #dce5ea;
+}
+.SignUpForm label{
+    font-size: 20px;
+    color: #010102;
+    display: block;
+}
+.SignUpWrapper{
+    padding: 50px 0;
+    width:80%;
+    margin: 0 auto;
+}
+
+.BlueBg,
+.SignUpForm .BtnBox{
+    background: #016598;
+    color: #fff;
+    border: 2px solid #016598;   
+    height: 60px;
+    line-height: 60px;
+    border-radius: 40px;
+    padding: 10px 70px;
+    padding-top:0;
+    font-size: 26px;
+    font-weight: 500;
+    margin-top: 20px;
+    transition: all ease-in-out 0.8s 0s;
+    font-family: 'Poppins', sans-serif;
+}
+
+.BlueBg:hover,
+.SignUpForm  .BtnBox:hover{
+    background: #fff;
+    color: #016598;
+    border: 2px solid #016598;
+}
+select {padding: 0 20px 0 5px;font-size: 17px;color: #353535;font-weight: 600;line-height: 28px;display: block;border: 0;box-shadow: 0 0 0 #000;appearance: none;-moz-appearance: none;-webkit-appearance: none;background: url(../images/select_arrow.png) center right 15px no-repeat;background-size: 18px;}
+.ValueBox{
+    background-color: #fff;
+    padding: 30px 10%;
+    margin-bottom: 50px;
+    margin-top: 40px;
+}
+.ValueBox strong{
+    display: block;
+    color: #6d6e6e;
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+.ValueBox b{
+    display: block;
+    color: #016598;
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+.ValueBox a{
+    display: block;
+    background-color: #94d0ef;
+    color: #016598;
+    border-radius: 40px;
+    font-size: 18px;
+    padding: 10px 70px;
+    font-weight: 500;
+    margin-top: 30px;
+}
+.BtmTxt h3{
+    font-size: 22px;
+    columns: #016598;
+    text-align: left;
+    border-bottom: 1px solid #016598;
+    display: inline-block;
+    margin-bottom: 20px;
+    padding-bottom: 0;
+}
+.BtmTxt p{
+    font-size: 16px;
+}
+
+.CustomBox {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+.CustomBox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+.CustomBox .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 55px;
+    width: 45px;
+    background-color: #fff;
+    border: 1px solid #016598;
+    border-radius: 10px;
+  }
+.CustomBox input:checked ~ .checkmark {
+    background-color: #fff;
+  }
+.CustomBox .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
+.CustomBox input:checked ~ .checkmark:after {
+    display: block;
+  }
+  .CustomBox .checkmark:after {
+    left: 14px;
+    top: 7px;
+    width: 15px;
+    height: 30px;
+    border: solid white;
+    border-color: #016598;
+    border-width: 0 5px 5px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }
+.RightSymble .fe-check{
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    background-color:#016598;
+    color:#f0f0f0 !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 45px !important;
+    font-weight: bold;
+    margin: 20px auto 70px;
+  }
+.SignUpForm h5{
+    color: #858585;
+    font-size: 30px;
+    text-align: center;
+    margin: 60px 0;
+  }
+.ConfirmBtnBox .BtnBox {
+    padding: 12px;
+    border-radius: 50%;
+    font-size: 22px;
+    }
+.sidebar-toggle .fe-menu{
+    color: #fff;
+}
+.navbar-nav.nav-right .zmdi-power{
+    color: #fff;
+    font-size: 40px;
+}
+.app-navbar .sidebar-nav ul.metismenu li a{
+    font-size: 19px;
+    text-align: center;
+    color: #242021 !important;
+    font-family: 'Poppins', sans-serif;
+    flex-flow: wrap;
+    font-weight: 500;
+}
+.app-navbar .sidebar-nav ul.metismenu li a:focus, 
+.app-navbar .sidebar-nav ul.metismenu li a:hover,
+.app-navbar .sidebar-nav ul.metismenu li.active a {
+    background: #eceff4;
+}
+.app-navbar .sidebar-nav ul.metismenu li a span,
+.app-navbar .sidebar-nav ul.metismenu li a small{
+   display: block;
+   width: 100%;
+}
+.app-navbar .sidebar-nav ul.metismenu li a small{color:#242021;font-size: 15px;opacity: .65;}
+.page-title h1{
+    font-size: 28px;
+    color: #016598;
+    font-weight: 500;
+}
+.page-title h1 img{margin-right: 10px;}
+.top-bar .navbar .navbar-header .navbar-brand{padding-top: 25px;}
+.card{
+    border-radius: 10px;
+    padding: 30px;
+}
+.CotentWrapper{
+    width: 60%;
+    margin: 0 auto;
+}
+.FindValue{
+    width: 80%;
+    margin: 0 auto;
+}
+.FindValue span{
+    width: 80%;
+    margin: 0 auto;
+    display: block;
+    text-align: center;
+    background-color: #016598;
+    border-radius: 30px;
+    padding: 10px;
+    color: #fff;
+    font-size: 24px;
+}
+.StocksWrapper{
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    margin-top: 40px;
+    padding-bottom: 20px;
+}
+.StocksWrapper h3{
+    background-color: #e3e3e3;
+    font-size: 22px;
+    color: #016598;
+    border-radius: 5px;
+    text-align: center;
+    padding: 15px 10px;
+}
+.LinkBox{
+    width: 80%;
+    margin: 30px auto;
+}
+/* --------- custom radio button -------- */
+.CustomRadioButton {
+    display: block;
+    position: relative;
+    padding-left: 65px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    font-size: 19px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    color: #242021;
+    background-color: #fff;
+    height: 50px;
+    border-radius: 30px;
+    line-height: 50px;
+    border: 1px solid #016598;
+  }
+  .CustomRadioButton input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .CustomRadioButton .checkmark {
+    position: absolute;
+    top: 11px;
+    left: 20px;
+    height: 25px;
+    width: 25px;
+    background-color: #fff;
+    border-radius: 50%;
+    border: 5px solid #016598;
+}
+  .CustomRadioButton:hover input ~ .checkmark {
+    background-color: #fff;
+  }
+  .CustomRadioButton input:checked ~ .checkmark {
+    background-color: #016598;
+  }
+  .CustomRadioButton .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
+  .CustomRadioButton input:checked ~ .checkmark:after {
+    display: block;
+  }
+  .CustomRadioButton .checkmark::after {
+    top: 0px;
+    left: 0px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #016598;
+}
+#ShowBtn{display: none;}
+.BlueBg{font-size: 25px; padding-right: 90px;}
+.BlueBg .zmdi-long-arrow-right {
+    position: relative;
+    right: -20px;
+}
+.FindValueSecount{
+    width: 100%;
+    margin: 0 auto;
+    display: block;
+    text-align: center;
+    background-color: #016598;
+    border-radius: 10px;
+    padding: 10px;
+    color: #fff;
+    font-size: 24px;
+    position: relative;
+    top: 56px;
+    z-index: 9;
+    margin-top: -55px;
+    font-weight: 500;
+}
+.GrayBg{
+    background-color: #e3e3e3;
+    font-size: 22px;
+    color: #016598;
+    border-radius: 5px;
+    text-align: center;
+    padding: 15px 10px;
+    width: 60%;
+    margin: 40px auto 0;
+}
+
+
+.CustomBox2 {
+    display: inline-block;
+    position: relative;
+    padding-left: 50px;
+    margin-bottom: 25px;
+    cursor: pointer;
+    font-size: 21px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    color: #242021;
+  }
+.CustomBox2 input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+.CustomBox2 .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 35px;
+    width: 35px;
+    background-color: #f2f2f2;
+    border: 2px solid #016598;
+    border-radius: 10px;
+  }
+.CustomBox2 input:checked ~ .checkmark {
+    background-color: #f2f2f2;
+  }
+.CustomBox2 .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
+.CustomBox2 input:checked ~ .checkmark:after {
+    display: block;
+  }
+.CustomBox2 .checkmark:after {
+    left: 9px;
+    top: 1px;
+    width: 12px;
+    height: 22px;
+    border: solid white;
+    border-color: #016598;
+    border-width: 0 4px 4px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }
+  .BySetorWrapper{width: 100%;}
+  .BySetorWrapper h4{
+      color: #016598;
+      font-size: 28px;
+      margin-top: 50px;
+  }
+ .AssetClassForm label{text-transform: uppercase;}
+ .AssetClassForm .CustomRadioButton .checkmark{
+    border: 2px solid #016598;
+    top: 2px;
+    left: 30px;
+    background: #f2f2f2;
+ }
+ .AssetClassForm .CustomRadioButton{
+     height: auto;
+     border: none;
+     border-radius: 0;
+     line-height: 30px;
+ }
+ .Radiowrapp{margin-bottom: 30px;margin-left: 17px;}
+ .AssetClassForm .CustomRadioButton .checkmark::after {
+    top: 1px;
+    left: 1px;
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    background: #016598;
+    border: 4px solid #f2f2f2;
+}
+.OptimizeBox .CustomBox2 .checkmark {
+    background-color: #2e6296;
+    border: 4px solid #bcbdbe;
+}
+.OptimizeBox .CustomBox2 .checkmark::after{
+    border-color: #fff;
+}
+.OptimizeBox .CustomBox2 input:checked ~ .checkmark{
+    background-color: #2e972e;
+}
+.OptimizeBox .CustomBox2{
+    margin-bottom: 40px;
+}
+
+.OptimizeBox .CustomBox2 .checkmark:after {
+    left: 9px;
+    top: 1px;
+    width: 10px;
+    height: 20px;
+  }
+ .RiskReturn{
+    background-color: #efefef;
+    padding: 15px;
+    float: left;
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+ } 
+ .RiskReturn .CustomRadioButton {
+    width: 23%;
+    border-radius: 0;
+    height: 20px;
+    margin-right: 2%;
+    float: left;
+    left: 0;
+    position: relative;
+    padding-left: 0;
+}
+ .RiskReturn .CustomRadioButton .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    border-radius: 0;
+    border: 4px solid #898989;   
+}
+.RiskReturn .CustomRadioButton .checkmark::after {
+    height: 25px;
+    width: 120%;
+    border-radius: 0;
+    border: 4px solid transparent;
+    box-shadow: 0 0 10px #898989;
+    margin: 0;
+    top: -8px;
+    left: -10%;
+}
+.RiskReturn .CustomRadioButton.Yellow .checkmark::after,
+.RiskReturn .CustomRadioButton.Yellow .checkmark{
+    background-color: #d5ae33;
+}
+.RiskReturn .CustomRadioButton.Gree .checkmark::after,
+.RiskReturn .CustomRadioButton.Gree .checkmark{
+    background-color: #b5e61d;
+}
+.RiskReturn .CustomRadioButton.Blue .checkmark::after,
+.RiskReturn .CustomRadioButton.Blue .checkmark{
+    background-color: #668dc0;
+}
+.RiskReturn .CustomRadioButton.Purple .checkmark::after,
+.RiskReturn .CustomRadioButton.Purple .checkmark{
+    background-color: #a35ebf;
+}
+.RiskReturn small {
+    display: block;
+    margin-top: 10px;
+    font-weight: 500;
+}
+.RiskReturn h4 {
+    margin: 0 0 20px 0;
+    font-size: 22px;
+}
+
+.MarketList{
+    margin: 30px 0 0 0;
+    padding: 0;
+    list-style-type: none;
+}
+.MarketList li{
+    margin: 0 0 15px 0;
+    padding: 8px 15px;
+    list-style-type: none;
+    font-size: 20px;
+    color: #242021;
+    text-transform: uppercase;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    border: 1px solid #b6b6b6;
+    font-weight: 600;
+}
+.AmountBox {
+    position: relative;
+}
+.AmountBox label::before {
+    position: absolute;
+    left: 13px;
+    top: 45px;
+    content: '$';    
+    font-size: 20px;
+    color: #242021;
+
+}
+.AmountBox label{    
+    font-size: 20px;
+    color: #242021;
+    font-weight: 600;
+    display: block;
+    position: relative;
+}
+.AmountBox input{
+    margin: 0 0 20px 0;
+    padding: 6px 15px 6px 35px;
+    list-style-type: none;
+    font-size: 20px;
+    color: #242021;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    border: 1px solid #b6b6b6;
+    font-weight: 600;
+}
+.MarketList li:nth-child(odd){
+    color: #c45911;
+}
+.MarketList li span:nth-child(2),
+.MarketList li b:nth-child(2){
+   float: right;
+}
+a.BlueBg {
+    padding-top: 10px;
+}
+.MarketList {
+    margin: 30px 0 0 0;
+    padding: 0;
+    list-style-type: none;
+    display: flex;
+    flex-flow: wrap;
+}
+.DoubleCol li {
+    width: 30%;
+}
+.DoubleCol li:nth-child(2n+1) {
+    color: #c45911;
+    width: calc(100% - 33%);
+    margin-right: 3%;
+}
+.DoubleCol li.ColorGold {
+    color: #c45911;
+}
+.DoubleCol li.ColorBlack {
+    color: #242021;
+}
+.DoubleCol li.BrdNone {
+    border: none;
+    background: none;
+    width: 100%;
+}
+.CorrelationList{
+    border: 2px solid #203764;
+    margin-top: 40px;
+    width: 100%;
+}
+.CorrelationList tr th,
+.CorrelationList tr td:first-child{
+    background-color: #d6dce4;
+    color: #000;
+    font-weight: 500;
+    text-transform: uppercase;
+    text-align: right;
+    padding: 5px
+
+}
+.CorrelationList tr td:first-child{
+    color: #626262;
+}    
+.CorrelationList tr td{
+    padding: 5px;
+    text-align: right;
+    font-weight: 500;
+    font-size: 16px;
+}  
+.CorrelationList .ThColor{
+    background: #f4b084;
+}
+.CorrelationList .ThColor2{
+    background: #fce4d6;
+}
+
+.SMCapDetail{
+    background-color: #efefef;
+    padding:25px 15px;
+    float: left;
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+ } 
+ .CapDetailFirst li span{
+     display: inline-block;
+     width: 15px;
+     height: 15px;
+     border: 2px solid #016598;     
+ } 
+ .CapDetailSecound li span{
+     display: inline-block;
+     width: 80px;
+     height: 30px;   
+     margin-right: 10px;     
+ }
+
+ .PurpleCo{
+    background: #a349a4;
+ }
+ .YellowCo{
+    background: #ffd201;
+ }
+ .BlueCo{
+    background: #4f81c0;
+ }
+ .GreenCo{
+    background: #b5e61d;
+ }
+ .RedCo{
+    background: #f01919;
+ }
+ .BgCono{
+    background: none;
+ }
+ .SMCapDetail ul{
+     width: 100%;
+     list-style-type: none;
+     margin: 0;
+     padding: 0;
+ }  
+ .SMCapDetail ul li{
+    font-size: 18px;
+    color: #242021;
+    font-weight: 600;
+}   
+ .CapDetailFirst ul li{
+     margin-bottom: 20px;
+ }  
+ .CapDetailFirst ul li strong {
+    font-weight: 600;
+    width: 160px;
+    display: inline-block;
+} 
+.SMCapDetail h4{
+   margin: 0 0 30px 0;
+}
+.CapDetailSecound li {
+    display: flex;
+    margin-bottom: 5px;
+}
+
+ 
