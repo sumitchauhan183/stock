@@ -35,6 +35,7 @@ Route::get('admin/profile',[App\Http\Controllers\Admin\HomeController::class,'pr
 Route::get('user',function () {
     return redirect()->route('user.login');
 });
+Route::get('user/register',[App\Http\Controllers\User\Auth\LoginController::class,'showRegistrationForm'])->name('user.register');
 Route::get('user/login',[App\Http\Controllers\User\Auth\LoginController::class,'showLoginForm'])->name('user.login');
 Route::post('user/login',[App\Http\Controllers\User\Auth\LoginController::class,'login']);
 Route::get('user/dashboard',[App\Http\Controllers\User\HomeController::class,'dashboard'])->name('user.dashboard');

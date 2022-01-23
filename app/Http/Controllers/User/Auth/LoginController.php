@@ -51,6 +51,23 @@ class LoginController extends Controller
     }
 
     /**
+     * Show the login form.
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    public function showRegistrationForm()
+    {
+        
+        return view('user.register',[
+            'title' => 'User Registration',
+            'loginRoute' => 'user.login',
+            'forgotPasswordRoute' => 'user.password.request'
+        ]);
+    }
+
+    
+
+    /**
      * Login the admin.
      * 
      * @param \Illuminate\Http\Request $request

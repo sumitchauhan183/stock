@@ -1,69 +1,106 @@
-
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="apple-touch-icon" sizes="76x76" href="./assets/img/apple-icon.png">
-    <link rel="icon" type="image/png" href="./assets/img/favicon.png">
-    <!-- CSRF Token -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>Welcome to AnalystKit</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/fontawesome.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/vendors.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/theme-style.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/responsive.css') }}" />
+    <title>{{config('app.name')}}</title>
 
-    <!--     Fonts and icons     -->
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
-    <!-- Nucleo Icons -->
-    <link href="{{ asset('resources/css/nucleo-icons.css') }}" rel="stylesheet" />
-    <link href="{{ asset('resources/css/nucleo-svg.css') }}" rel="stylesheet" />
-    <!-- Font Awesome Icons -->
-    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
-    <!-- Material Icons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <!-- CSS Files -->
-    <link id="pagestyle" href="{{ asset('resources/css/material-dashboard.css') }}" rel="stylesheet" />
+    <style>
+        
+.tool-label{
+    height: 40px !important;
+    line-height: 45px !important;
+    padding-left: 20px !important;
+}
 
+.tool-checkbox{
+    width: 20px !important;
+    float: left !important;
+}
+
+.HeaderWrapper {
+    padding: 10px 0 !important;
+}
+
+.logo-desktop{
+    width:300px;
+}
+
+input:focus{
+  outline: none  !important;
+  box-shadow: none  !important;
+}
+    </style>
 </head>
+<body>
+            <!-- begin pre-loader -->
+            <div class="loader">
+                <div class="h-100 d-flex justify-content-center">
+                    <div class="align-self-center">
+                        <img src="{{ asset('images/loader.svg') }}" alt="loader">
+                    </div>
+                </div>
+            </div>
 
 @if(session('user'))
-    <body class="g-sidenav-show  bg-gray-200">
-    @include('inc.trainer.aside')
-    <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
-    @include('inc.trainer.navbar')  
-    <div class="container-fluid py-4">
-    @yield('content')
-        @include('inc.trainer.footer')
-    </div>
-  </main>
+    
 @else
-    <body class="bg-gray-200"> 
-    <main class="main-content  mt-0">
-    <div class="page-header align-items-start min-vh-100" style="background-image: url('https://images.unsplash.com/photo-1497294815431-9365093b7331?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1950&q=80');">
-    @yield('content')
-        @include('inc.trainer.footer')
-    </div>
-  </main>
+    
 @endif
       
+@yield('content')
 
-        
-     <!--   Core JS Files   -->
-  <script src="{{ asset('resources/js/core/popper.min.js') }}"></script>
-  <script src="{{ asset('resources/js/core/bootstrap.min.js') }}"></script>
-  <script src="{{ asset('resources/js/plugins/perfect-scrollbar.min.js') }}"></script>
-  <script src="{{ asset('resources/js/plugins/smooth-scrollbar.min.js') }}"></script>
-  <script>
-    var win = navigator.platform.indexOf('Win') > -1;
-    if (win && document.querySelector('#sidenav-scrollbar')) {
-      var options = {
-        damping: '0.5'
-      }
-      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
-    }
-  </script>
-  <!-- Github buttons -->
-  <script async defer src="https://buttons.github.io/buttons.js"></script>
-  <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
-  <script src="{{ asset('js/material-dashboard.min.js?v=3.0.0') }}"></script> 
+     <!-- plugins -->
+     <script src="{{ asset('js/jquery.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('js/vendors.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('js/app.js') }}" type="text/javascript"></script>
+    <!-- Modal Efects -->
+    <script src="{{ asset('js/velocity.min.js') }}"></script>
+    <script src="{{ asset('js/velocity.ui.min.js') }}"></script>
+    <script src="{{ asset('js/custom.js') }}" type="text/javascript"></script>
+    
+    {{-- Success Alert --}}
+    @if(session('status'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{session('status')}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
+    {{-- Error Alert --}}
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{session('error')}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+    <script src="{{ asset('js/custom/register.js') }}"></script>
+    <script>
+        //close the alert after 3 seconds.
+        $(document).ready(function(){
+   
+	    setTimeout(function() {
+	        $(".alert").alert('close');
+	    }, 3000);
+    	});
+    </script>
+    
 </body>
 </html>

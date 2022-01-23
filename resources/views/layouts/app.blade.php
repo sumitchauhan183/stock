@@ -31,6 +31,14 @@
     float: left !important;
 }
 
+.HeaderWrapper {
+    padding: 10px 0 !important;
+}
+
+.logo-desktop{
+    width:300px;
+}
+
 input:focus{
   outline: none  !important;
   box-shadow: none  !important;
@@ -80,10 +88,12 @@ input:focus{
             </button>
         </div>
     @endif
-
+    <script src="{{ asset('js/custom/home.js') }}"></script>
     <script>
         //close the alert after 3 seconds.
         $(document).ready(function(){
+
+        home.init();    
 	    setTimeout(function() {
 	        $(".alert").alert('close');
 	    }, 3000);

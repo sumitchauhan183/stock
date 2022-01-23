@@ -4,23 +4,23 @@
 
 <div class="BodyMiddleWrapper">
 		<div class="container">
-			<form class="BuildForm" action="sign-up.php" class="mt-3 mt-sm-5">
+			<form class="BuildForm" action="" class="mt-3 mt-sm-5">
 				<h3>Build Your Toolbox</h3>
 				<div class="row">
 					<div class="col-12">
 						<div class="form-group">
-							<input type="checkbox" name="tool" class="form-control tool-checkbox" value="Find Value Stocks" />
+							<input type="checkbox" name="tool-one" class="form-control tool-checkbox" id="tool-one"  />
                             <label class="tool-label">Find Value Stocks</label>
 						</div>
 					</div>
 					<div class="col-12">
 						<div class="form-group">
-							<input type="checkbox" name="tool" class="form-control tool-checkbox" value="Optimize Investment Mix" />
+							<input type="checkbox" name="tool-two" class="form-control tool-checkbox" id="tool-two" />
                             <label class="tool-label">Optimize Investment Mix</label>
 						</div>
 					</div>
 					<div class="col-12 mt-3 text-center">
-						<button type="send" class="BtnBox">Go</button>
+						<button type="button" id="register" class="BtnBox">Go</button>
 					</div>
 				</div>
 			</form>

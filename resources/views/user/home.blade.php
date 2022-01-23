@@ -1,4 +1,4 @@
-@extends('layouts.trainer.app')
+@extends('layouts.user.app')
 @section('content')
 <div class="container-fluid">
     <div class="row justify-content-center">
