@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Trainer;
+namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -9,17 +9,19 @@ use Illuminate\Support\Facades\Hash;
 
 class HomeController extends Controller
 {
+   
 
     public function __construct(Request $request)
     {
-        
-       
         if(session()->get('user')):
             if(session()->get('user')['type']!='user'):
-                return redirect()->route('notauthorised');
+                 redirect()->route('notauthorised');
+            endif;
+            if(!$this->checkToken()):
+                $this->logout();
             endif;
         else:    
-            return redirect()->route('user.login');
+            $this->logout();
         endif;
     }
 
@@ -32,12 +34,22 @@ class HomeController extends Controller
     
 
     public function dashboard(){
-        return view('user.home');
+        
+            return view('user.home');
+       
+        
+    }
+
+    private function checkToken(){
+        
+       return User::where('user_id',session()->get('user')['data']['user_id'])
+              ->where('login_token',session()->get('user')['token'])
+              ->count();
     }
 
     public function logout()
     {
         session()->flush();
-        return redirect()->route('user.login');
+        return redirect('user/login');
     }
 }

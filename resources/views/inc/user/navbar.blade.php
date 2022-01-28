@@ -1,15 +1,30 @@
 
-<nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" navbar-scroll="true">
-      <div class="container-fluid py-1 px-3">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Dashboard</li>
-          </ol>
-        </nav>
-        </div>
-      </div>
-</nav>   
+
+	<!-- begin sidebar-nav -->
+	<aside class="app-navbar">
+  <div class="sidebar-nav scrollbar scroll_light">
+	<ul class="metismenu " id="sidebarNav">
+		<li>
+			<a href="client-name.php" aria-expanded="false">
+				<span class="nav-title">Profile</span>
+			</a> 
+		</li>
+		<li>
+			<a href="javascript:void(0)" aria-expanded="false">
+				<span class="nav-title">Tools</span>
+			</a> 
+		</li>
+		<li>
+			<a href="javascript:void(0)" aria-expanded="false">
+				<span class="nav-title">Setting</span>
+			</a> 
+		</li>		
+	</ul>
+  </div>
+	</aside>
+	<!-- end sidebar-nav -->
+	
+	<!-- end app-navbar --> 
 
 
 

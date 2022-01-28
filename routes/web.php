@@ -35,11 +35,15 @@ Route::get('admin/profile',[App\Http\Controllers\Admin\HomeController::class,'pr
 Route::get('user',function () {
     return redirect()->route('user.login');
 });
-Route::get('user/register',[App\Http\Controllers\User\Auth\LoginController::class,'showRegistrationForm'])->name('user.register');
+Route::any('user/register',[App\Http\Controllers\User\Auth\LoginController::class,'showRegistrationForm'])->name('user.register');
+Route::any('user/payment',[App\Http\Controllers\User\Auth\LoginController::class,'showPaymentForm'])->name('user.payment');
+Route::any('user/payment/success',[App\Http\Controllers\User\Auth\LoginController::class,'paymentSuccess'])->name('user.payment.success');
+Route::any('user/payment/failure',[App\Http\Controllers\User\Auth\LoginController::class,'paymentFailure'])->name('user.payment.failure');
+Route::any('user/stripe',[App\Http\Controllers\User\Auth\LoginController::class,'handlePost'])->name('user.stripe');
 Route::get('user/login',[App\Http\Controllers\User\Auth\LoginController::class,'showLoginForm'])->name('user.login');
-Route::post('user/login',[App\Http\Controllers\User\Auth\LoginController::class,'login']);
 Route::get('user/dashboard',[App\Http\Controllers\User\HomeController::class,'dashboard'])->name('user.dashboard');
 Route::get('user/logout',[App\Http\Controllers\User\HomeController::class,'logout'])->name('user.logout');
+Route::get('user/verify/mail/{token}',[App\Http\Controllers\HomeController::class,'verifyEmail']);
 
 
 //Error messages page

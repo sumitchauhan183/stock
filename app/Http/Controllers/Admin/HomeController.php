@@ -42,32 +42,8 @@ class HomeController extends Controller
         ]);
     }
 
-    public function trainers(){
-        return view('admin.trainers',
-                    [
-                        'page'=>'trainers',
-                        'trainers' => Trainer::all()->toArray()
-                    ]
-        );
-    }
+    
 
-    public function employees(){
-        return view('admin.employees',
-        [
-            'page'=>'employees',
-            'employees' => Employee::all()->toArray()
-        ]
-      );
-    }
-
-    public function hrs(){
-        return view('admin.hrs',
-        [
-            'page'=>'hrs',
-            'hrs' => Hr::all()->toArray()
-        ]
-      );
-    }
 
     public function profile(){
         return view('admin.profile',

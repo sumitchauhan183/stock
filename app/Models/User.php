@@ -24,19 +24,13 @@ class User extends Authenticatable
         'country',
         'city',
         'state',
+        'zipcode',
         'username',
-        'status',
-        'email'
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array
-     */
-    protected $hidden = [
         'password',
-        'remember_token',
+        'status',
+        'email',
+        'email_verified',
+        'login_token'
     ];
 
 

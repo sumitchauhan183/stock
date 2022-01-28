@@ -23,7 +23,7 @@ class Tools extends Authenticatable
      */
 
     protected $fillable = [
-        'tool_id','user_id', 'tool_name', 'purchase_date','expiry_date',
+        'tool_id','user_id', 'tool', 'purchase_date','expiry_date',
     ];
 
     public $timestamps = true;

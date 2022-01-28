@@ -12,14 +12,14 @@
 					<div class="col-md-6">
 						<div class="form-group">
 							<label>Email</label>
-							<input type="text" class="form-control" />
+							<input type="text" id="email" class="form-control" />
 						</div>
 					</div>			
 					
 					<div class="col-md-6">
 						<div class="form-group">
 							<label>Password</label>
-							<input type="text" class="form-control" />
+							<input type="text" id="password" class="form-control" />
 						</div>
 					</div>	
           <div class="col-md-6">
@@ -30,7 +30,7 @@
 				</div>
 				<div class="row">
 					<div class="col-12 mt-3 text-center">
-						<button type="send" class="BtnBox">Login</button>
+						<button type="button" id="login" class="BtnBox">Login</button>
 					</div>
 				</div>
 			</form>

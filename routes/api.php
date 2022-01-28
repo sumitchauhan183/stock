@@ -15,4 +15,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::post('admin/data/addxl',[App\Http\Controllers\Admin\HomeController::class,'addDataRegxl']);
+Route::post('email/check',[App\Http\Controllers\API\UserController::class,'checkEmail']);
+Route::post('userid/check',[App\Http\Controllers\API\UserController::class,'checkUserId']);
+Route::post('user/register',[App\Http\Controllers\API\UserController::class,'registerUser']);
+Route::post('user/login',[App\Http\Controllers\API\UserController::class,'loginUser']);
+Route::post('user/send/verify/mail',[App\Http\Controllers\API\UserController::class,'verifyMailSend']);

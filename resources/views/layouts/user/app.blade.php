@@ -9,7 +9,7 @@
     <title>Welcome to AnalystKit</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="shortcut icon" href="{{ asset('images/favicon.ico')}}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('css/fontawesome.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('css/vendors.css') }}" />
@@ -17,7 +17,6 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('css/theme-style.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('css/responsive.css') }}" />
     <title>{{config('app.name')}}</title>
-
     <style>
         
 .tool-label{
@@ -39,6 +38,10 @@
     width:300px;
 }
 
+.hide{
+  display: none;
+}
+
 input:focus{
   outline: none  !important;
   box-shadow: none  !important;
@@ -54,12 +57,6 @@ input:focus{
                     </div>
                 </div>
             </div>
-
-@if(session('user'))
-    
-@else
-    
-@endif
       
 @yield('content')
 
@@ -70,37 +67,39 @@ input:focus{
     <!-- Modal Efects -->
     <script src="{{ asset('js/velocity.min.js') }}"></script>
     <script src="{{ asset('js/velocity.ui.min.js') }}"></script>
-    <script src="{{ asset('js/custom.js') }}" type="text/javascript"></script>
-    
-    {{-- Success Alert --}}
-    @if(session('status'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{session('status')}}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    @endif
-
-    {{-- Error Alert --}}
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{session('error')}}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    @endif
+    @if($url=='register')
     <script src="{{ asset('js/custom/register.js') }}"></script>
     <script>
         //close the alert after 3 seconds.
         $(document).ready(function(){
-   
-	    setTimeout(function() {
-	        $(".alert").alert('close');
-	    }, 3000);
-    	});
+          register.init(); 
+          
+          });
     </script>
+    @endif
+
+    @if($url=='login')
+    <script src="{{ asset('js/custom/login.js') }}"></script>
+    <script>
+        //close the alert after 3 seconds.
+        $(document).ready(function(){
+          login.init(); 
+          
+          });
+    </script>
+    @endif
+
+    @if($url=='payment')
+    <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+    <script src="{{ asset('js/custom/payment.js') }}"></script>
+    <script>
+        //close the alert after 3 seconds.
+        $(document).ready(function(){
+          payment.init(); 
+          
+          });
+    </script>
+    @endif
     
 </body>
 </html>

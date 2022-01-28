@@ -24,7 +24,7 @@ class Cards extends Authenticatable
      */
 
     protected $fillable = [
-        'card_id','user_id', 'card_number', 'expiry_date','card_type','owner_name','cvv','status'
+        'card_id','user_id', 'card_number', 'card_expiry','card_type','owner_name','status'
     ];
 
     public $timestamps = true;

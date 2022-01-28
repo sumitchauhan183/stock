@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-
 <div class="BodyMiddleWrapper">
 		<div class="container">
 			<form class="BuildForm" action="" class="mt-3 mt-sm-5">
