@@ -1,65 +1,50 @@
-@extends('layouts.app')
+@extends('layouts.user.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Reset Password') }}</div>
 
-                <div class="card-body">
-                    <form method="POST" action="{{ route('password.update') }}">
-                        @csrf
-
-                        <input type="hidden" name="token" value="{{ $token }}">
-
-                        <div class="form-group row">
-                            <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ $email ?? old('email') }}" required autocomplete="email" autofocus>
-
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
-
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="password-confirm" class="col-md-4 col-form-label text-md-right">{{ __('Confirm Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
-                            </div>
-                        </div>
-
-                        <div class="form-group row mb-0">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Reset Password') }}
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+<div class="SignUpWrapper">
+		<div class="container">
+            
+			<form class="SignUpForm" action="{{route('user.confirm_password')}}" class="mt-3 mt-sm-5">
+				<h3>Reset Your Password</h3>
+				<div class="row mt-4  justify-content-md-center">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label>OTP</label>
+							<input type="number" id="otp" class="form-control" />
+                            <input type="hidden" id="user_id"  class="form-control" value="{{$user_id}}" />
+						</div>
+					</div>	
+				</div>
+                <div class="row  justify-content-md-center">
+					<div class="col-md-6 ">
+						<div class="form-group">
+							<label>Password</label>
+							<input type="text" id="password" class="form-control" />
+						</div>
+					</div>	
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
+                <div class="row  justify-content-md-center">
+                    <div class="col-md-6">
+						<div class="form-group">
+							<label>Confirm Password</label>
+							<input type="text" id="confirm" class="form-control" />
+						</div>
+					</div>	
+                </div>
+                <div class="row  justify-content-md-center">
+                    <div class="col-md-6">
+						<div class="form-group">
+							<label>send otp again ? <a href="javascript:void(0)" id="resend">Resend Now</a></label>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-12 mt-3 text-center">
+						<button type="button" id="reset" class="BtnBox">Next</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
 @endsection

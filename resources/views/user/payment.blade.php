@@ -1,14 +1,7 @@
 @extends('layouts.user.app')
 @section('content')
 <div class="SignUpWrapper">
-                    @if (Session::has('success'))
-                     <div class="alert alert-success text-center">
-                        <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-                        <p>{{ Session::get('success') }}</p>
-                     </div>
-                     @endif
 		<div class="container">
-			<div class="SignupHeader"><img src="{{ asset('images/logo2.png')}}" class="img-fluid logo-desktop" alt="logo" /></div>
 			<form
                         role="form"
                         data-action="{{ route('user.stripe') }}"

@@ -46,6 +46,15 @@ input:focus{
   outline: none  !important;
   box-shadow: none  !important;
 }
+.left{
+    text-align: left !important;
+}
+.right{
+    text-align: right !important;
+}
+.center{
+    text-align: center !important;
+}
     </style>
 </head>
 <body>
@@ -57,7 +66,7 @@ input:focus{
                     </div>
                 </div>
             </div>
-      
+            @include('inc.navbar')
 @yield('content')
 
      <!-- plugins -->
@@ -96,6 +105,28 @@ input:focus{
         //close the alert after 3 seconds.
         $(document).ready(function(){
           payment.init(); 
+          
+          });
+    </script>
+    @endif
+
+    @if($url=='email')
+    <script src="{{ asset('js/custom/password_reset_email.js') }}"></script>
+    <script>
+        //close the alert after 3 seconds.
+        $(document).ready(function(){
+          reset.init(); 
+          
+          });
+    </script>
+    @endif
+
+    @if($url=='reset')
+    <script src="{{ asset('js/custom/password_reset.js') }}"></script>
+    <script>
+        //close the alert after 3 seconds.
+        $(document).ready(function(){
+          reset.init(); 
           
           });
     </script>

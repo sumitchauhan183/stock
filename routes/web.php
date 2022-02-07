@@ -31,16 +31,25 @@ Route::post('admin/users/add',[App\Http\Controllers\Admin\HomeController::class,
 Route::get('admin/profile',[App\Http\Controllers\Admin\HomeController::class,'profile'])->name('admin.profile');
 
 
-//Trainer Routes
-Route::get('user',function () {
-    return redirect()->route('user.login');
-});
+//USER ROUTES
+Route::get('user',function () {return redirect()->route('user.login');});
+
+// USER REGISTRATION / LOGIN
+Route::get('user/login',[App\Http\Controllers\User\Auth\LoginController::class,'showLoginForm'])->name('user.login');
 Route::any('user/register',[App\Http\Controllers\User\Auth\LoginController::class,'showRegistrationForm'])->name('user.register');
+
+// USER RESET PASSWORD
+Route::get('user/password/reset/email',[App\Http\Controllers\User\Auth\ResetPasswordController::class,'email'])->name('user.reset_password_email');
+Route::post('user/password/reset',[App\Http\Controllers\User\Auth\ResetPasswordController::class,'reset'])->name('user.reset_password');
+Route::get('user/password/confirm',[App\Http\Controllers\User\Auth\ResetPasswordController::class,'confirm'])->name('user.confirm_password');
+
+// PAYMENT
 Route::any('user/payment',[App\Http\Controllers\User\Auth\LoginController::class,'showPaymentForm'])->name('user.payment');
 Route::any('user/payment/success',[App\Http\Controllers\User\Auth\LoginController::class,'paymentSuccess'])->name('user.payment.success');
 Route::any('user/payment/failure',[App\Http\Controllers\User\Auth\LoginController::class,'paymentFailure'])->name('user.payment.failure');
 Route::any('user/stripe',[App\Http\Controllers\User\Auth\LoginController::class,'handlePost'])->name('user.stripe');
-Route::get('user/login',[App\Http\Controllers\User\Auth\LoginController::class,'showLoginForm'])->name('user.login');
+
+// USER DASHBOARD
 Route::get('user/dashboard',[App\Http\Controllers\User\HomeController::class,'dashboard'])->name('user.dashboard');
 Route::get('user/logout',[App\Http\Controllers\User\HomeController::class,'logout'])->name('user.logout');
 Route::get('user/verify/mail/{token}',[App\Http\Controllers\HomeController::class,'verifyEmail']);

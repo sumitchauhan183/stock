@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Tools;
 use Illuminate\Support\Facades\Hash;
 use App\Classes\Email;
+use Exception;
 
 class UserController extends Controller
 {
@@ -53,6 +54,71 @@ class UserController extends Controller
             ]);
         endif;
     }
+
+    public function checkOTP(Request $request)
+    {
+        $input = $request->all();
+        if(isset($input['otp'])):
+            $check = User::where('otp',$input['otp'])
+                           ->where('user_id',$input['user_id'])
+                           ->count();
+            if($check>0):
+                return json_encode([
+                    'error'=>false,
+                    'message'=>'OTP verified'
+                ]);
+            else:
+                return json_encode([
+                    'error'=>true
+                ]);
+            endif;
+        else:
+            return json_encode([
+                'error'=>true,
+                'message'=>'OTP id is required'
+            ]);
+        endif;
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $input = $request->all();
+        if(isset($input['user_id'])):
+            if(isset($input['password'])):
+                if($input['confirm'] == $input['password']):
+                    $check = User::where('user_id',$input['user_id'])
+                                   ->update(['password'=>Hash::make($input['password'])]);
+                    if($check):
+                        return json_encode([
+                            'error'=>false
+                        ]);
+                    else:
+                        return json_encode([
+                            'error'=>true,
+                            'message'=>'Password not updated database error'
+                        ]);
+                    endif;
+                else:
+                    return json_encode([
+                        'error'=>true,
+                        'message'=>'confirm Password is not matched'
+                    ]);
+                endif;
+            else:
+                return json_encode([
+                    'error'=>true,
+                    'message'=>'Password is required'
+                ]);
+            endif;
+        else:
+            return json_encode([
+                'error'=>true,
+                'message'=>'User id is required'
+            ]);
+        endif;
+    }
+
+    
 
     public function checkUserid(Request $request)
     {
@@ -201,6 +267,66 @@ class UserController extends Controller
             env('APP_URL').'user/verify/mail/'.base64_encode($user_id)
         );
 
+    }
+
+    public function sendOtpMail($email){
+        $user    = User::where('email',$email)->get()->first()->toArray();
+        try{
+            Email::sendOtpMail(
+                $user['first_name'].' '.$user['last_name'],
+                $user['email'],
+                "Analystkit: Password Reset OTP",
+                $user['first_name'].' '.$user['last_name'],
+                "Please do not share your otp: ".$this->userUpdateOtp($user['user_id'])." with any one. This is a confidential info."
+            );
+            
+            return json_encode([
+                'error'=>false,
+                'message'=>'OTP sent successfully on your registerd email',
+                'user_id'=> $user['user_id']
+            ]);
+        }
+        catch(Exception $e){
+            return json_encode([
+                'error'=>true,
+                'message'=>$e->getMessage()
+            ]);
+        }
+    }
+
+    public function resendOtpMail($user_id){
+        $user    = User::where('user_id',$user_id)->get()->first()->toArray();
+        try{
+            Email::sendOtpMail(
+                $user['first_name'].' '.$user['last_name'],
+                $user['email'],
+                "Analystkit: Password Reset OTP",
+                $user['first_name'].' '.$user['last_name'],
+                "Please do not share your otp: ".$this->userUpdateOtp($user['user_id'])." with any one. This is a confidential info."
+            );
+            
+            return json_encode([
+                'error'=>false,
+                'message'=>'OTP sent successfully on your registerd email',
+                'user_id'=> $user['user_id']
+            ]);
+        }
+        catch(Exception $e){
+            return json_encode([
+                'error'=>true,
+                'message'=>$e->getMessage()
+            ]);
+        }
+    }
+
+    private function userUpdateOtp($id){
+        $otp     = random_int(100000, 999999);
+        User::where('user_id',$id)->update([
+            'otp'=>$otp,
+            'otp_added_at'=>now()
+        ]);
+
+        return $otp;
     }
 
     private function generateToken($user_id)

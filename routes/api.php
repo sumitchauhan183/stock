@@ -16,7 +16,12 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::post('email/check',[App\Http\Controllers\API\UserController::class,'checkEmail']);
+Route::post('otp/check',[App\Http\Controllers\API\UserController::class,'checkOTP']);
 Route::post('userid/check',[App\Http\Controllers\API\UserController::class,'checkUserId']);
 Route::post('user/register',[App\Http\Controllers\API\UserController::class,'registerUser']);
 Route::post('user/login',[App\Http\Controllers\API\UserController::class,'loginUser']);
-Route::post('user/send/verify/mail',[App\Http\Controllers\API\UserController::class,'verifyMailSend']);
+Route::post('user/send/verify/mail/{user_id}',[App\Http\Controllers\API\UserController::class,'sendVerifyMail']);
+Route::post('user/send/otp/mail/{email}',[App\Http\Controllers\API\UserController::class,'sendOtpMail']);
+Route::post('user/resend/otp/{user_id}',[App\Http\Controllers\API\UserController::class,'resendOtpMail']);
+Route::post('user/reset/password',[App\Http\Controllers\API\UserController::class,'resetPassword']);
+

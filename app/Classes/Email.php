@@ -24,5 +24,14 @@ Class Email{
         $message->from("sumit@appscioto.com", "Welcome To AnalystKit");
         });
     }
+
+    public Static function sendOtpMail($tname,$temail,$subject,$name,$body){
+        $data = array("name"=>$name, "body" => $body);
+        Mail::send("user.mails.send_otp", $data, function($message) use ($tname, $temail,$subject) {
+        $message->to($temail, $tname)
+        ->subject($subject);
+        $message->from("sumit@appscioto.com", "Welcome To AnalystKit");
+        });
+    }
     
 }

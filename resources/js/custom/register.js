@@ -87,6 +87,14 @@ userid.change(function(){
 });
 password.change(function(){
     data.password = $(this).val();
+    if(data.password.length<8 && data.password.length>17){
+        alert('password must have minimum 8 and maxiumum 16 characters.')
+        data.password = '';
+        password.val('');
+    }else{
+        data.password = $(this).val();
+    }
+    
 });
 confirm.change(function(){
     data.confirm = $(this).val();
@@ -129,6 +137,11 @@ submit.click(function () {
     if(data.userid==''){
         alert('Please enter userid');
         return;
+    }
+    if(data.password.length<8 && data.password.length>17){
+        alert('password must have minimum 8 and maxiumum 16 characters.')
+        data.password = '';
+        password.val('');
     }
     if(data.password==''){
         alert('Please enter password');
