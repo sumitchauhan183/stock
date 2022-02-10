@@ -54,6 +54,14 @@ Route::get('user/dashboard',[App\Http\Controllers\User\HomeController::class,'da
 Route::get('user/logout',[App\Http\Controllers\User\HomeController::class,'logout'])->name('user.logout');
 Route::get('user/verify/mail/{token}',[App\Http\Controllers\HomeController::class,'verifyEmail']);
 
+// USER PROFILE
+Route::get('user/profile',[App\Http\Controllers\User\ProfileController::class,'index'])->name('user.profile');
+
+// USER SETTINGS
+Route::get('user/settings',[App\Http\Controllers\User\SettingsController::class,'index'])->name('user.settings');
+
+// USER TOOLS
+Route::get('user/tools',[App\Http\Controllers\User\ToolsController::class,'index'])->name('user.tools');
 
 //Error messages page
 Route::get('no-access',[App\Http\Controllers\HomeController::class,'noaccess'])->name('notauthorised');

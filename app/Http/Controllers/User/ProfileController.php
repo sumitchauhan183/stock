@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-class HomeController extends Controller
+class ProfileController extends Controller
 {
    
 
@@ -25,16 +25,13 @@ class HomeController extends Controller
         endif;
     }
 
-    
-    /**
-     * Show Admin Dashboard.
-     * 
-     * @return \Illuminate\Http\Response
-     */
-    
+    public function index(){
+       return view('user.profile.view',[]);
+    }
 
-    public function dashboard(){
-            return view('user.home');
+    private function logout()
+    {
+        echo "<script>window.location.href = '".env('APP_URL')."user/login';</script>";
     }
 
     private function checkToken(){
@@ -42,11 +39,5 @@ class HomeController extends Controller
        return User::where('user_id',session()->get('user')['data']['user_id'])
               ->where('login_token',session()->get('user')['token'])
               ->count();
-    }
-
-    public function logout()
-    {
-        session()->flush();
-        return redirect('user/login');
     }
 }

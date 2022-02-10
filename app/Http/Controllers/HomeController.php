@@ -29,7 +29,8 @@ class HomeController extends Controller
             return redirect()->route('user.dashboard');
         else:
             return view('home',[
-                'title' => 'Home'
+                'title' => 'Home',
+                'url' => ''
             ]);
         endif;
         
