@@ -46,11 +46,18 @@
     <script src="{{ asset('js/velocity.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('js/velocity.ui.min.js') }}" type="text/javascript"></script>
     
-    <script src="{{ asset('js/custom.js')}}" type="text/javascript"></script>
        <!-- plugins -->
     <!-- Modal Efects -->
 
-
+    @if($url=='profile')
+    <script src="{{ asset('js/custom/profile.js') }}"></script>
+    <script>
+        //close the alert after 3 seconds.
+        $(document).ready(function(){
+              profile.init(); 
+          });
+    </script>
+    @endif
 </div>
 </div>
 </body>

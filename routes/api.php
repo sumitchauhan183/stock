@@ -25,3 +25,7 @@ Route::post('user/send/otp/mail/{email}',[App\Http\Controllers\API\UserControlle
 Route::post('user/resend/otp/{user_id}',[App\Http\Controllers\API\UserController::class,'resendOtpMail']);
 Route::post('user/reset/password',[App\Http\Controllers\API\UserController::class,'resetPassword']);
 
+
+Route::post('user/profile/update',[App\Http\Controllers\API\UserController::class,'updateProfile']);
+
+

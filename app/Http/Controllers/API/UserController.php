@@ -191,6 +191,31 @@ class UserController extends Controller
         ]);
     }
 
+    public function updateProfile(Request $request)
+    {
+        $input = $request->all();
+        $userid = User::where('user_id',$input['userid'])->count();
+        if(!$userid):
+            return json_encode([
+                'error'=>true,
+                'message'=>'Userid mismatched'
+            ]);
+        endif;
+        $user = [
+             'first_name' =>$input['first_name'],
+             'last_name'  =>$input['last_name'],
+             'country'=>$input['country'],
+             'city'=>$input['city'],
+             'state'=>$input['state'],
+             'zipcode'=>$input['zipcode']
+        ];
+        User::where('user_id',$userid)->update($user);
+        return json_encode([
+            'error'=>false,
+            'message'=>'Profile updated Successful'
+        ]);
+    }
+
     public function loginUser(Request $request)
     {
         $input = $request->all();

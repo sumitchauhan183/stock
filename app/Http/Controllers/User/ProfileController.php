@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
-   
+   private $userId;
 
     public function __construct(Request $request)
     {
@@ -23,10 +23,21 @@ class ProfileController extends Controller
         else:    
             $this->logout();
         endif;
+
+        $this->userId = session()->get('user')['data']['user_id'];
     }
 
     public function index(){
-       return view('user.profile.view',[]);
+       $user = User::where('user_id',$this->userId)->get()->first()->toArray();
+       session()->put('user',[
+            "type"=>'user',
+            "data"=>$user,
+            "token" => $user['login_token']
+        ]);
+       return view('user.profile.view',[
+           'user'=>$user,
+           'url'=>'profile'
+       ]);
     }
 
     private function logout()
