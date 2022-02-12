@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Tools;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Redirect;
 class ToolsController extends Controller
 {
    
+    private $userId;
 
     public function __construct(Request $request)
     {
@@ -23,10 +25,17 @@ class ToolsController extends Controller
         else:    
             $this->logout();
         endif;
+
+        $this->userId = session()->get('user')['data']['user_id'];
     }
 
     public function index(){
-        return view('user.tools.view',[]);
+        $tools = Tools::where('user_id',$this->userId)->get()->first()->toArray();
+        return view('user.tools.view',[
+            'title' => 'Tools',
+            'url'   => 'tools',
+            'tools' => $tools
+        ]);
     }
     private function logout()
     {

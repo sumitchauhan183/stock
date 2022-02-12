@@ -59,6 +59,8 @@ Route::get('user/profile',[App\Http\Controllers\User\ProfileController::class,'i
 
 // USER SETTINGS
 Route::get('user/settings',[App\Http\Controllers\User\SettingsController::class,'index'])->name('user.settings');
+Route::get('user/password/change',[App\Http\Controllers\User\SettingsController::class,'changePassword'])->name('user.change_password');
+Route::post('user/verification/mail/send',[App\Http\Controllers\User\SettingsController::class,'sendVerificationMail'])->name('user.send_verification_mail');
 
 // USER TOOLS
 Route::get('user/tools',[App\Http\Controllers\User\ToolsController::class,'index'])->name('user.tools');

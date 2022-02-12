@@ -58,6 +58,26 @@
           });
     </script>
     @endif
+
+    @if($url=='settings')
+    <script src="{{ asset('js/custom/settings.js') }}"></script>
+    <script>
+        //close the alert after 3 seconds.
+        $(document).ready(function(){
+              settings.init(); 
+          });
+    </script>
+    @endif
+
+    @if($url=='change_password')
+    <script src="{{ asset('js/custom/change_password.js') }}"></script>
+    <script>
+        //close the alert after 3 seconds.
+        $(document).ready(function(){
+              changePassword.init(); 
+          });
+    </script>
+    @endif
 </div>
 </div>
 </body>

@@ -118,6 +118,45 @@ class UserController extends Controller
         endif;
     }
 
+    public function changePassword(Request $request)
+    {
+        $input = $request->all();
+        if(isset($input['user_id'])):
+            if(isset($input['password'])):
+                if($input['confirm'] == $input['password']):
+                    $check = User::where('user_id',$input['user_id'])
+                                   ->update(['password'=>Hash::make($input['password'])]);
+                    if($check):
+                        return json_encode([
+                            'error'=>false,
+                            'message'=>'Password change successfully'
+                        ]);
+                    else:
+                        return json_encode([
+                            'error'=>true,
+                            'message'=>'Password not updated database error'
+                        ]);
+                    endif;
+                else:
+                    return json_encode([
+                        'error'=>true,
+                        'message'=>'confirm Password is not matched'
+                    ]);
+                endif;
+            else:
+                return json_encode([
+                    'error'=>true,
+                    'message'=>'Password is required'
+                ]);
+            endif;
+        else:
+            return json_encode([
+                'error'=>true,
+                'message'=>'User id is required'
+            ]);
+        endif;
+    }
+
     
 
     public function checkUserid(Request $request)
@@ -283,7 +322,7 @@ class UserController extends Controller
     public function sendVerifyMail($user_id){
         $user    = User::where('user_id',$user_id)->get()->first()->toArray();
 
-        Email::sendVerificationMail(
+        return Email::sendVerificationMail(
             $user['first_name'].' '.$user['last_name'],
             $user['email'],
             "Analystkit: Verify your mail",

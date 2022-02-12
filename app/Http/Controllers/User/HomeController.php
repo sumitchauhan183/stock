@@ -34,7 +34,10 @@ class HomeController extends Controller
     
 
     public function dashboard(){
-            return view('user.home');
+            return view('user.home',[
+                'title' => 'Dashboard',
+                'url'   => 'dashboard'
+            ]);
     }
 
     private function checkToken(){
