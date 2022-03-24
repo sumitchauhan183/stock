@@ -270,8 +270,7 @@ class UserController extends Controller
         if(Hash::check($input['password'], $check['password'])):
             $user_id = $check['user_id'];
             $tool = Tools::where('user_id',$user_id)
-                          ->where('expiry_date',NULL)
-                          ->get()
+                          ->get()->first()
                           ->toArray();
             $token = $this->generateToken($user_id);
             User::where('user_id',$user_id)->update(['login_token'=>$token]);
@@ -280,10 +279,11 @@ class UserController extends Controller
             session()->put('user',[
                 "type"=>'user',
                 "data"=>$user,
+                "tools"=>$tool,
                 "token" => $token
             ]);
             
-            if(count($tool)):
+            if(!$tool['expiry_date']):
                 return json_encode([
                     'error'=>false,
                     'message'=>'Login Successful',

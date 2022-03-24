@@ -14,7 +14,7 @@ class Admin extends Authenticatable
      *
      * @var string
      */
-    protected $table = 'admins';
+    protected $table = 'admin';
 
 
     /**
@@ -23,15 +23,9 @@ class Admin extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'admin_id','name', 'email', 'password',
+        'admin_id','name', 'email', 'password','type','status','login_token','last_login','password'
     ];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
+    
+    public $timestamps = true;
 }

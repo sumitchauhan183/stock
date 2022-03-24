@@ -14,7 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// ADMIN API ROUTES
+Route::POST('admin/login',[App\Http\Controllers\Api\AdminController::class,'login']);
+Route::POST('admin/mail/check',[App\Http\Controllers\Api\AdminController::class,'checkEmail']);
 
+// USER API Routes
 Route::post('email/check',[App\Http\Controllers\API\UserController::class,'checkEmail']);
 Route::post('otp/check',[App\Http\Controllers\API\UserController::class,'checkOTP']);
 Route::post('userid/check',[App\Http\Controllers\API\UserController::class,'checkUserId']);
@@ -25,8 +29,12 @@ Route::post('user/send/otp/mail/{email}',[App\Http\Controllers\API\UserControlle
 Route::post('user/resend/otp/{user_id}',[App\Http\Controllers\API\UserController::class,'resendOtpMail']);
 Route::post('user/reset/password',[App\Http\Controllers\API\UserController::class,'resetPassword']);
 Route::post('user/change/password',[App\Http\Controllers\API\UserController::class,'changePassword']);
-
-
 Route::post('user/profile/update',[App\Http\Controllers\API\UserController::class,'updateProfile']);
+
+
+// INTRINIO API
+Route::any('find-value-stock/sector/{sector}',[App\Http\Controllers\API\Intrinio\FVSController::class,'companies']);
+Route::any('find-value-stock/sector/company/{id}',[App\Http\Controllers\API\Intrinio\FVSController::class,'companyDetail']);
+
 
 

@@ -66,7 +66,7 @@ let register = function(){
                password.val('');
             }else{
               if(d.payment){
-                window.location.href = "/stock/index.php/user/dashboard";
+                window.location.href = "/stock/index.php/user/stocks/find-value-stock";
               }else{
                 var url = 'payment';
                 var form = $('<form action="' + url + '" method="post">' +

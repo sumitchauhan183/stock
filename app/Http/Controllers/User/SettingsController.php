@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 class SettingsController extends Controller
 {
     private $userId;
-
+    private $tools;
     public function __construct(Request $request)
     {
         if(session()->get('user')):
@@ -21,6 +21,7 @@ class SettingsController extends Controller
             if(!$this->checkToken()):
                 $this->logout();
             endif;
+            $this->tools = session()->get('user')['tools'];
         else:    
             $this->logout();
         endif;
@@ -34,7 +35,8 @@ class SettingsController extends Controller
        return view('user.settings.view',[
            'title'=> 'Settings',
            'user'=>$user,
-           'url'=>'settings'
+           'url'=>'settings',
+           'tools'=>$this->tools
        ]);
     }
 
@@ -44,7 +46,8 @@ class SettingsController extends Controller
         return view('user.settings.change_password',[
             'title' => 'change password',
             'user'  =>  $user,
-            'url'   => 'change_password'
+            'url'   => 'change_password',
+            'tools'=>$this->tools
         ]);
      }
 

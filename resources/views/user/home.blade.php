@@ -23,22 +23,22 @@
 										<h3>Categories</h3>
 										<div class="LinkBox">
 											<label class="CustomRadioButton"> All Stocks
-												<input type="radio" name="stocks">
+												<input type="radio" name="stocks" value="all" checked>
+												<span class="checkmark"></span>
+											</label> 
+											<label id="ShowButton" class="CustomRadioButton" > By Asset Class
+												<input type="radio" name="stocks" value="assets">
 												<span class="checkmark"></span>
 											</label>
-											<label id="ShowButton" class="CustomRadioButton"> By Asset Class
-												<input type="radio" name="stocks">
-												<span class="checkmark"></span>
-											</label>
-											<label id="ShowButton1" class="CustomRadioButton"> Asset Class
-												<input type="radio" name="stocks">
+											<label id="ShowButton1" class="CustomRadioButton" > By Sector
+												<input type="radio" name="stocks" value="sector">
 												<span class="checkmark"></span>
 											</label>
 										</div>
 									</div>									
-									<div id="ShowBtn" class="row">
+									<div class="row">
 										<div class="col-12 mt-3 text-center">
-											<button type="send" class="BlueBg">Search <i class="zmdi zmdi-long-arrow-right zmd-fw"></i></button>
+											<button type="button" class="BlueBg" id="search">Search <i class="zmdi zmdi-long-arrow-right zmd-fw"></i></button>
 										</div>
 									</div>
 								</form>	

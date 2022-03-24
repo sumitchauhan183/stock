@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
-   private $userId;
-
+    private $userId;
+    private $tools;
     public function __construct(Request $request)
     {
         if(session()->get('user')):
@@ -20,6 +20,7 @@ class ProfileController extends Controller
             if(!$this->checkToken()):
                 $this->logout();
             endif;
+            $this->tools = session()->get('user')['tools'];
         else:    
             $this->logout();
         endif;
@@ -32,11 +33,13 @@ class ProfileController extends Controller
        session()->put('user',[
             "type"=>'user',
             "data"=>$user,
-            "token" => $user['login_token']
+            "token" => $user['login_token'],
+            "tools" => $this->tools
         ]);
        return view('user.profile.view',[
            'user'=>$user,
-           'url'=>'profile'
+           'url'=>'profile',
+           'tools' => $this->tools
        ]);
     }
 

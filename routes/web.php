@@ -53,6 +53,14 @@ Route::any('user/stripe',[App\Http\Controllers\User\Auth\LoginController::class,
 Route::get('user/dashboard',[App\Http\Controllers\User\HomeController::class,'dashboard'])->name('user.dashboard');
 Route::get('user/logout',[App\Http\Controllers\User\HomeController::class,'logout'])->name('user.logout');
 Route::get('user/verify/mail/{token}',[App\Http\Controllers\HomeController::class,'verifyEmail']);
+Route::get('user/stocks/all',[App\Http\Controllers\User\StockController::class,'all']);
+Route::get('user/stocks/assets',[App\Http\Controllers\User\StockController::class,'assets']);
+Route::get('user/stocks/sector',[App\Http\Controllers\User\StockController::class,'sector']);
+
+// FIND VALUE STOCK
+Route::get('user/stocks/find-value-stock',[App\Http\Controllers\User\StockController::class,'findValueStock'])->name('user.tools.find_value_stock');
+Route::get('user/stocks/optimize-investment-mix',[App\Http\Controllers\User\StockController::class,'optimizeInvestmentMix'])->name('user.tools.optimize_investment_mix');
+
 
 // USER PROFILE
 Route::get('user/profile',[App\Http\Controllers\User\ProfileController::class,'index'])->name('user.profile');

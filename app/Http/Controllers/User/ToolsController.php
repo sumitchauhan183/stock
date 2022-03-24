@@ -12,7 +12,7 @@ class ToolsController extends Controller
 {
    
     private $userId;
-
+    private $tools;
     public function __construct(Request $request)
     {
         if(session()->get('user')):
@@ -22,6 +22,7 @@ class ToolsController extends Controller
             if(!$this->checkToken()):
                 $this->logout();
             endif;
+            $this->tools = session()->get('user')['tools'];
         else:    
             $this->logout();
         endif;
@@ -30,11 +31,10 @@ class ToolsController extends Controller
     }
 
     public function index(){
-        $tools = Tools::where('user_id',$this->userId)->get()->first()->toArray();
         return view('user.tools.view',[
             'title' => 'Tools',
             'url'   => 'tools',
-            'tools' => $tools
+            'tools' => $this->tools
         ]);
     }
     private function logout()

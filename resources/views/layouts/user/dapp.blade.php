@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -75,6 +76,25 @@
         //close the alert after 3 seconds.
         $(document).ready(function(){
               changePassword.init(); 
+          });
+    </script>
+    @endif
+
+    @if($url=='find-value-stock')
+    <script src="{{ asset('js/custom/find-value-stock.js') }}"></script>
+    <script>
+        //close the alert after 3 seconds.
+        $(document).ready(function(){
+              findValueStock.init(); 
+          });
+    </script>
+    @endif
+    @if($url=='optimize-investment-mix')
+    <script src="{{ asset('js/custom/optimize-investment-mix.js') }}"></script>
+    <script>
+        //close the alert after 3 seconds.
+        $(document).ready(function(){
+              optimizeInvestmentMix.init(); 
           });
     </script>
     @endif

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 class HomeController extends Controller
 {
    
-
+    private $tools;
     public function __construct(Request $request)
     {
         if(session()->get('user')):
@@ -20,6 +20,7 @@ class HomeController extends Controller
             if(!$this->checkToken()):
                 $this->logout();
             endif;
+          $this->tools = session()->get('user')['tools'];
         else:    
             $this->logout();
         endif;
@@ -36,7 +37,8 @@ class HomeController extends Controller
     public function dashboard(){
             return view('user.home',[
                 'title' => 'Dashboard',
-                'url'   => 'dashboard'
+                'url'   => 'dashboard',
+                'tools' => $this->tools
             ]);
     }
 

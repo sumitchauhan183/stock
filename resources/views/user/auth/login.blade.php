@@ -19,7 +19,7 @@
 					<div class="col-md-6">
 						<div class="form-group">
 							<label>Password</label>
-							<input type="text" id="password" class="form-control" />
+							<input type="password" id="password" class="form-control" />
 						</div>
 					</div>	
 				</div>		
