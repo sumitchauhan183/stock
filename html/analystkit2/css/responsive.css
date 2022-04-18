@@ -1,0 +1,69 @@
+@media only screen and (max-width: 1260px) {
+	.RiskReturnWrapper .col-lg-4{max-width: 50%;flex: 50%;}
+}
+@media only screen and (max-width: 991px) {
+	.BuildForm,
+	.SignUpWrapper {
+		width: 100%;
+	}
+	.SignUpWrapper{padding-top: 30px;}
+	.SignupHeader{padding-bottom: 30px;}	
+	.RiskReturnWrapper .col-lg-4{max-width: 100%;flex: 100%;}	
+	.CorrelationList{width: 100%;overflow: auto; padding-bottom: 15px;position: relative;}
+	/* .CorrelationList tr td:first-child{
+		position: fixed;
+		width: 80px;
+		top: 0;
+	}    */
+}
+
+@media only screen and (max-width: 767px) {	
+	.BtnWrapp a {
+		margin-bottom: 15px;
+		display: inline-block;
+	}
+	.ValueBox a{padding: 10px 20px; text-align: center;}
+	.BtnWrapp a{padding: 10px 20px;}
+	.SignUpForm h3, .BuildForm h3{font-size: 30px;}
+	.SignUpForm .BtnBox{margin-top: 60px;font-size: 20px;}
+    div.dataTables_wrapper div.dataTables_paginate ul.pagination{justify-content: center;margin-top: 10px;}
+    .table-responsive .no-footer .col-sm-12.col-md-5,
+    .table-responsive .no-footer .col-sm-12.col-md-6{padding-right: 0;}
+    .table-responsive .no-footer .col-sm-12.col-md-7,
+    .table-responsive .no-footer .col-sm-12.col-md-6{padding-left: 0;}
+    .Left0{left: 0;}
+    .mobile-toggle.Close .ti-align-right,
+    .mobile-toggle .ti-close,
+    .navbar-toggler[aria-expanded="false"] .ti-close,
+    .navbar-toggler[aria-expanded="true"] .ti-align-left{display: none;}
+    .mobile-toggle.Close .ti-close,
+    .navbar-toggler[aria-expanded="true"] .ti-close{display: block;}
+    .modal-dialog {margin-left: auto;margin-right: auto;}  
+	.GrayBg{width:100%}
+
+}
+@media only screen and (max-width: 575px) {	
+	.card-body {
+		padding: 1.25rem 0;
+	}
+	
+}
+@media only screen and (max-width: 480px) {	
+	.HeaderWrapper {
+		padding: 20px 0;
+	}
+	.HeaderWrapper img {
+		width: 60%;
+	}
+	.HeaderWrapper .container,
+	.TirthLogo .container,
+	.BodyBottom .container,
+	.SignUpWrapper .container,
+	.BodyMiddleWrapper .container{max-width: 100%;}
+	.SignUpForm h3, .BuildForm h3{font-size: 30px;}
+}
+@media only screen and (max-width: 360px) {	
+	
+}
+
+

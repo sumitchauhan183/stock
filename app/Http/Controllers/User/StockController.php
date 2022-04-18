@@ -33,11 +33,12 @@ class StockController extends Controller
     public function all(){
        $user = User::where('user_id',$this->userId)->get()->first()->toArray();
        $companies = Intrinio::companies();
-       dd(companies);
+       
        return view('user.stocks.all',[
            'user'=>$user,
            'url'=>'allStocks',
-           'tools'=>$this->tools
+           'companies'=>$companies,
+            'tools'=> $this->tools
        ]);
     }
 
@@ -68,6 +69,25 @@ class StockController extends Controller
         ]);
      }
 
+     public function assetsResult(Request $request ){
+        $input = $request->all();
+        $asset = $input['asset'];
+        $user = User::where('user_id',$this->userId)->get()->first()->toArray();
+        $companies = Intrinio::companies_asset();
+        foreach($asset as $s):
+            $company = Intrinio::companies($s);
+            if($company):
+                $companies = array_merge($companies,$company);
+            endif;
+        endforeach;
+        return view('user.stocks.asset_companies',[
+            'user'=>$user,
+            'url'=>'assets-result',
+            'companies'=>$companies,
+            'tools'=> $this->tools
+        ]);
+     } 
+
      public function sector(){
         $user = User::where('user_id',$this->userId)->get()->first()->toArray();
         return view('user.stocks.sector',[
@@ -76,6 +96,59 @@ class StockController extends Controller
             'tools'=> $this->tools
         ]);
      }
+
+     public function companyDetail($ticker){
+        
+        $user = User::where('user_id',$this->userId)->get()->first()->toArray();
+        $c = Intrinio::companies_search($ticker);
+            $c->revenue            = Intrinio::data_tag($c->ticker,'totalrevenue');
+            $c->pretaxincome       = Intrinio::data_tag($c->ticker,'totalpretaxincome');
+            $c->netincome          = Intrinio::data_tag($c->ticker,'netincome');
+            $c->netincometocommon       = Intrinio::data_tag($c->ticker,'netincometocommon');
+            $c->eps                     = Intrinio::data_tag($c->ticker,'dilutedeps');
+            $c->cash                    = Intrinio::data_tag($c->ticker,'cashandequivalents');
+            $c->assets       = Intrinio::data_tag($c->ticker,'totalassets');
+            $c->liabilities       = Intrinio::data_tag($c->ticker,'totalliabilities');
+
+
+
+            /*$c->ebit       = Intrinio::ebit($c->ticker);
+            $c->ebitmargin = Intrinio::ebit_margin($c->ticker);
+            //$c->revenue    = Intrinio::revenue($c->ticker);
+            $c->earningsBeforeTaxInterestDepriciationAmortization     = Intrinio::ebitda($c->ticker);
+            $c->accumulatedDepriciation           = Intrinio::accumulated_depriciation($c->ticker);
+            $c->totalDepreciationAmortization     = Intrinio::total_depreciation_amortization($c->ticker);*/
+        dd($c);
+        return view('user.stocks.sector',[
+            'user'=>$user,
+            'url'=>'sectorstocks',
+            'tools'=> $this->tools
+        ]);
+     }
+     public function sectorResult(Request $request){
+        
+        $input = $request->all();
+        $sector = $input['sector'];
+        $user  = User::where('user_id',$this->userId)->get()->first()->toArray();
+        $companies = Intrinio::companies();
+        foreach($sector as $s):
+            $company = Intrinio::companies($s);
+            if($company):
+                $companies = array_merge($companies,$company);
+            endif;
+        endforeach;
+        /*$newcom = [];
+        foreach($companies as $c):
+            
+            array_push($newcom,$c);
+        endforeach;*/
+        return view('user.stocks.sector_companies',[
+            'user'=>$user,
+            'url'=>'sector-result',
+            'companies'=>$companies,
+            'tools'=> $this->tools
+        ]);
+     } 
 
     private function logout()
     {

@@ -16,6 +16,8 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('css/theme-style.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('css/responsive.css') }}" />
+    
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/information.css') }}" />
     <title>{{config('app.name')}}</title>
   
 </head>
@@ -86,6 +88,15 @@
         //close the alert after 3 seconds.
         $(document).ready(function(){
               findValueStock.init(); 
+          });
+    </script>
+    @endif
+    @if($url=='sectorstocks')
+    <script src="{{ asset('js/custom/sectorstock.js') }}"></script>
+    <script>
+        //close the alert after 3 seconds.
+        $(document).ready(function(){
+              sectorstocks.init(); 
           });
     </script>
     @endif

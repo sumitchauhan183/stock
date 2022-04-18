@@ -12,6 +12,31 @@
 				</div>
 			</div>	
             
+            <div class="row">
+				<div class="col-xxl-12 mb-30">
+					<div class="card card-statistics h-100 mb-0">							
+						
+						<div class="ListWrapper">	
+                            
+                            <div class="row ListHead">
+								<a href="javascript:void(0)">
+									<div class="TicketBox">Ticker</div>
+									<div class="NameBox">Name</div>
+								</a>
+							</div>	
+                            @foreach ( $companies as $c)
+                            <div class="row ListBox">
+								<a href="{{env('APP_URL').'user/stocks/companies/'.$c->ticker}}">
+									<div class="ListLeftBox">{{$c->ticker}}</div>
+									<div class="ListRightBox">{{$c->name}}</div>
+								</a>
+							</div>
+                            @endforeach		
+							
+						</div>
+					</div>
+				</div>
+			</div>	
             
 
 		</div>

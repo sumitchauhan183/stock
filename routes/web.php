@@ -55,7 +55,10 @@ Route::get('user/logout',[App\Http\Controllers\User\HomeController::class,'logou
 Route::get('user/verify/mail/{token}',[App\Http\Controllers\HomeController::class,'verifyEmail']);
 Route::get('user/stocks/all',[App\Http\Controllers\User\StockController::class,'all']);
 Route::get('user/stocks/assets',[App\Http\Controllers\User\StockController::class,'assets']);
+Route::post('user/stocks/assets/result',[App\Http\Controllers\User\StockController::class,'assetsResult'])->name('user.stock.assets.result');
 Route::get('user/stocks/sector',[App\Http\Controllers\User\StockController::class,'sector']);
+Route::post('user/stocks/sector/result',[App\Http\Controllers\User\StockController::class,'sectorResult'])->name('user.stock.sector.result');
+Route::get('user/stocks/companies/{ticker}',[App\Http\Controllers\User\StockController::class,'companyDetail']);
 
 // FIND VALUE STOCK
 Route::get('user/stocks/find-value-stock',[App\Http\Controllers\User\StockController::class,'findValueStock'])->name('user.tools.find_value_stock');
