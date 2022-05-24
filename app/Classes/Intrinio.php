@@ -17,7 +17,7 @@ class Intrinio
     {
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
-        $uri = $endpoint."companies?industry_group=$sector&api_key=$key";
+        $uri = str_replace(" ","%20",$endpoint."companies?sector=$sector&api_key=$key");
         $request = Utils::curlRequest($uri);
         return $request->companies;
     }
@@ -31,7 +31,7 @@ class Intrinio
     {
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
-        $uri = $endpoint."companies?industry_category=$asset&api_key=$key";
+        $uri = str_replace(" ","%20",$endpoint."companies?industry_category=$asset&api_key=$key");
         $request = Utils::curlRequest($uri);
         return $request->companies;
     }
@@ -59,7 +59,7 @@ class Intrinio
     {
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
-        $uri = $endpoint."companies?active=true&api_key=$key";
+        $uri = $endpoint."companies?api_key=$key";
         $request = Utils::curlRequest($uri);
         return $request->companies;
     }
@@ -179,9 +179,13 @@ class Intrinio
      */
     public static function data_tag($id,$tag)
     {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -5 year"));
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
         $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
+       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+       // dd($uri);
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
             return [];
@@ -189,8 +193,521 @@ class Intrinio
             return $request->historical_data;
         endif;
     }
+
+     /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function current_sales($id)
+    {
+       
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        $uri = $endpoint."companies/$id/historical_data/revenueqoqgrowth?frequency=quarterly&api_key=$key";
+       
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            return $request->historical_data[0]->value;
+        endif;
+    }
+
+     /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function ebit_margin_five_year($id)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -5 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
+       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+
+       $uri = $endpoint."companies/$id/historical_data/ebitmargin?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+       
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            $ebm = 0;
+            $data = $request->historical_data;
+            foreach($data as $d):
+                $ebm += $d->value;
+            endforeach;
+
+            return $ebm/5;
+        endif;
+    }
+
+     /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function capex_five_year($id)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -5 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
+       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+
+       $uri = $endpoint."companies/$id/historical_data/capex?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+       
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            $cpex = 0;
+            $data = $request->historical_data;
+            foreach($data as $d):
+                $cpex += $d->value;
+            endforeach;
+
+            return $cpex/5;
+        endif;
+    }
+
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function income_growth_five_year($id)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -5 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
+       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+
+       $uri = $endpoint."companies/$id/historical_data/netincomegrowth?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+       
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            $incg = 0;
+            $data = $request->historical_data;
+            foreach($data as $d):
+                $incg += $d->value;
+            endforeach;
+
+            return $incg/5;
+        endif;
+    }
+
+
+     /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function dilshros_five_year($id)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -5 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+
+        $uri = $endpoint."companies/$id/historical_data/weightedavedilutedsharesos?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+       
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            $dsos = 0;
+            $data = $request->historical_data;
+            foreach($data as $d):
+                $dsos += $d->value;
+            endforeach;
+
+            return $dsos/5;
+        endif;
+    }
+
+    
+     /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function avgdebt_five_year($id)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -5 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
+       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+
+       $uri = $endpoint."companies/$id/historical_data/debt?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+       
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            $dsos = 0;
+            $data = $request->historical_data;
+            foreach($data as $d):
+                $dsos += $d->value;
+            endforeach;
+
+            return $dsos/5;
+        endif;
+    }
+
+     /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function avgdebt_two_year($id)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -2 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
+       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+
+       $uri = $endpoint."companies/$id/historical_data/debt?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+       
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            $dsos = 0;
+            $data = $request->historical_data;
+            foreach($data as $d):
+                $dsos += $d->value;
+            endforeach;
+
+            return $dsos/2;
+        endif;
+    }
+
+     /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function risk_free_rate($id)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -2 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        
+       $uri = $endpoint.'indices/economic/$DGS10/historical_data/level?api_key='.$key;
+       
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            return $request->historical_data[0]->value;
+        endif;
+    }
+
+     /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function avg_two_year_taxrate($id)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -2 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        
+        $uri = $endpoint."companies/$id/historical_data/efftaxrate?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+       
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            $taxrate = 0;
+            foreach($request->historical_data as $t):
+                $taxrate += $t->value;
+            endforeach;
+            $taxrate = $taxrate/2;
+            return $taxrate;
+        endif;
+    }
+
+     /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function total_assets($id)
+    {
+        
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        
+        $uri = $endpoint."companies/$id/historical_data/totalassets?api_key=$key";
+       
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            if($request->historical_data[0]->value):
+                return $request->historical_data[0]->value;
+            else:
+                return 0;
+            endif;
+        endif;
+    }
+
+     /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function current_assets($id)
+    {
+        
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        
+        $uri = $endpoint."companies/$id/historical_data/totalcurrentassets?api_key=$key";
+       
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            if($request->historical_data[0]->value):
+                return $request->historical_data[0]->value;
+            else:
+                return 0;
+            endif;
+        endif;
+    }
+     /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function long_term_liabilities($id)
+    {
+        
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        
+        $uri = $endpoint."companies/$id/historical_data/otherlongtermliabilities?api_key=$key";
+       
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            if($request->historical_data[0]->value):
+                return $request->historical_data[0]->value;
+            else:
+                return 0;
+            endif;
+        endif;
+    }
+
+     /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function current_liabilities($id)
+    {
+        
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        
+        $uri = $endpoint."companies/$id/historical_data/totalcurrentliabilities?api_key=$key";
+       
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            if($request->historical_data[0]->value):
+                return $request->historical_data[0]->value;
+            else:
+                return 0;
+            endif;
+        endif;
+    }
+
+     /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function one_year_beta_investment($id)
+    {
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        
+       $uri = $endpoint."companies/$id/historical_data/one_year_beta?api_key=$key";
+       
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            return $request->historical_data[0]->value;
+        endif;
+    }
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function ten_year_beta_investment($id)
+    {
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        
+       $uri = $endpoint."companies/$id/historical_data/ten_year_beta?api_key=$key";
+       
+        $request = Utils::curlRequest($uri);
+        
+        if(isset($request->error)):
+            return [];
+        else:
+            return $request->historical_data[0]->value;
+        endif;
+    }
+
+    
+     /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function intexpe_five_year($id)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -5 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
+       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+
+       $uri = $endpoint."companies/$id/historical_data/totalinterestexpense?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+       
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            $dsos = 0;
+            $data = $request->historical_data;
+            foreach($data as $d):
+                $dsos += $d->value;
+            endforeach;
+
+            return $dsos/5;
+        endif;
+    }
+     /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function nopat_five_year($id)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -5 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
+       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+
+       $uri = $endpoint."companies/$id/historical_data/nopat?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+       
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            $npt = 0;
+            $data = $request->historical_data;
+            foreach($data as $d):
+                $npt += $d->value;
+            endforeach;
+
+            return $npt/5;
+        endif;
+    }
     
     
+     /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function efactivetaxrate_five_year($id)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -5 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
+       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+
+       $uri = $endpoint."companies/$id/historical_data/efftaxrate?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+       
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            $etr = 0;
+            $data = $request->historical_data;
+            foreach($data as $d):
+                $etr += $d->value;
+            endforeach;
+
+            return $etr/5;
+        endif;
+    }
+
+    
+    
+     /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function depriciation_five_year($id)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -5 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
+       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+
+       $uri = $endpoint."companies/$id/historical_data/depreciationexpense?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+       
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            $acdep = 0;
+            $data = $request->historical_data;
+            foreach($data as $d):
+                $acdep += $d->value;
+            endforeach;
+
+            return $acdep/5;
+        endif;
+    }
 
     /**
      * Show the application dashboard.
@@ -202,5 +719,116 @@ class Intrinio
         $uri = $this->endpoint."companies/$id?api_key=$this->key";
         $request = Utils::curlRequest($uri);
         dd($request);
+    }
+
+     /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function avgFiveYearEbitMargin($id)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -5 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+
+        $uri = $endpoint."companies/$id/historical_data/ebitmargin?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+       
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            $dsos = 0;
+            $data = $request->historical_data;
+            foreach($data as $d):
+                $dsos += $d->value;
+            endforeach;
+            return $dsos/5;
+        endif;
+    }
+    
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function currentOperatingRevenue($id)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -5 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+
+        $uri = $endpoint."companies/$id/historical_data/operatingrevenue?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+       
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            $data = $request->historical_data;
+            return $data[0]->value;
+        endif;
+    }
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function avgFiveYearOperatingRevenue($id)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -5 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+
+        $uri = $endpoint."companies/$id/historical_data/operatingrevenue?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+       
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            $dsos = 0;
+            $data = $request->historical_data;
+            foreach($data as $d):
+                $dsos += $d->value;
+            endforeach;
+            return $dsos/5;
+        endif;
+    }
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function avgFiveYearTaxRate($id)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -5 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+
+        $uri = $endpoint."companies/$id/historical_data/efftaxrate?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+       
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            $dsos = 0;
+            $data = $request->historical_data;
+            foreach($data as $d):
+                $dsos += $d->value;
+            endforeach;
+            return $dsos/5;
+        endif;
     }
 }

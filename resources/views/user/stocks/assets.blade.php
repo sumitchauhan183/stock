@@ -23,7 +23,7 @@
 									<div class="row">
 									    <div class="col-lg-4 col-md-6">
 											<label class="CustomBox2"> All US Companies
-												<input type="checkbox" value="all" name="asset[]">
+												<input type="checkbox" value="All" name="asset[]">
 												<span class="checkmark"></span>
 											</label>
 										</div>

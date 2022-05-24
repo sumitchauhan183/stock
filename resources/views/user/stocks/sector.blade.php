@@ -23,55 +23,55 @@
 									<div class="row">
 									    <div class="col-lg-4 col-md-6">
 											<label class="CustomBox2"> Financial
-												<input type="checkbox" value="financial" name="sector[]">
+												<input type="checkbox" value="Financial" name="sector[]">
 												<span class="checkmark"></span>
 											</label>
 										</div>
 										<div class="col-lg-4 col-md-6">
 											<label class="CustomBox2"> Services
-												<input type="checkbox" value="services" name="sector[]">
+												<input type="checkbox" value="Services" name="sector[]">
 												<span class="checkmark"></span>
 											</label>
 										</div> 
 										<div class="col-lg-4 col-md-6">
 											<label class="CustomBox2"> Technology
-												<input type="checkbox" value="technology" name="sector[]">
+												<input type="checkbox" value="Technology" name="sector[]">
 												<span class="checkmark"></span>
 											</label>
 										</div>
 										<div class="col-lg-4 col-md-6">
 											<label class="CustomBox2"> Healthcare
-												<input type="checkbox" value="healthcare" name="sector[]">
+												<input type="checkbox" value="Healthcare" name="sector[]">
 												<span class="checkmark"></span>
 											</label>
 										</div>
 										<div class="col-lg-4 col-md-6">
 											<label class="CustomBox2"> Basic Materials
-												<input type="checkbox" value="basic-materials" name="sector[]">
+												<input type="checkbox" value="Basic Materials" name="sector[]">
 												<span class="checkmark"></span>
 											</label>
 										</div>
 										<div class="col-lg-4 col-md-6">
 											<label class="CustomBox2"> Consumer Goods
-											<input type="checkbox" value="consumer-goods" name="sector[]">
+											<input type="checkbox" value="Consumer Goods" name="sector[]">
 												<span class="checkmark"></span>
 											</label>
 										</div>
 										<div class="col-lg-4 col-md-6">
 											<label class="CustomBox2"> Industrial Goods
-												<input type="checkbox" value="industrial-goods" name="sector[]">
+												<input type="checkbox" value="Industrial Goods" name="sector[]">
 												<span class="checkmark"></span>
 											</label>
 										</div>
 										<div class="col-lg-4 col-md-6">
 											<label class="CustomBox2"> Utilities
-												<input type="checkbox" value="utilities" name="sector[]">
+												<input type="checkbox" value="Utilities" name="sector[]">
 												<span class="checkmark"></span>
 											</label>
 										</div>
 										<div class="col-lg-4 col-md-6">
 											<label class="CustomBox2"> Conglomerates
-												<input type="checkbox" value="conglomerates" name="sector[]">
+												<input type="checkbox" value="Conglomerates" name="sector[]">
 												<span class="checkmark"></span>
 											</label>
 										</div>

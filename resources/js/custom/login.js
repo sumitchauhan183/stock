@@ -1,4 +1,4 @@
-let register = function(){
+let login = function(){
    
     let data = {  
                   email:'',
