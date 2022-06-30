@@ -102,95 +102,235 @@ class StockController extends Controller
         ]);
      }
 
+
      public function companyDetail($ticker){
         
         $user                           = User::where('user_id',$this->userId)->get()->first()->toArray();
         $c                              = Intrinio::companies_search($ticker);
            
         // STEP 1 - calculate Ebit Margin
-        $c->ebitmargin                  = Intrinio::ebit_margin_five_year($c->ticker);
+        $c->revenue      = Intrinio::revenueArray($c->ticker);
+        $c->netppe               =  Intrinio::netppeArray($c->ticker);
+        $c->CAPEX                =  Intrinio::CAPEXArray($c->ticker);
+        $c->revenueChange        =  $this->changeInRevenue($c);
+        $c->revenueTTM           =  $this->revenueTTM($c);
+        $c->ppeToRevenueTTM      =  $this->ppetorevenuettm($c->netppe,$c->revenueTTM);
+        $c->CAPEXpos             =  $this->capexpositive($c->CAPEX);
+        $c->maintainanceCAPEXnoCon    =  $this->maintainanceCapexnocon($c);
+        $c->maintainanceCAPEX         =  $this->maintainanceCapex($c);
+        $c->avgmaintainanceCAPEX      =  $this->avgmaintainanceCapex($c->maintainanceCAPEX);
 
-        // STEP 2 - calculate Ebit Margin
-        $c->currentOperatingRevenue     = Intrinio::currentOperatingRevenue($c->ticker);
-        $c->nopat                       = Intrinio::nopat_five_year($c->ticker);
         
-        $c->normalizedEbit              = $c->currentOperatingRevenue*($c->ebitmargin/100);
-        $c->normalizedEbitAfterTax      = $c->normalizedEbit * $c->nopat;
-        
-        // STEP 3 - calculate Ebit Margin
-        $efectiveTaxRate                = Intrinio::efactivetaxrate_five_year($c->ticker);
-        //dd($efectiveTaxRate);
-        $averageDepriciation            = Intrinio::depriciation_five_year($c->ticker);
-        //dd($averageDepriciation);
-        $c->adjustedDepriciation        = (0.5 * $efectiveTaxRate/100) * $averageDepriciation;
-        $c->normalizedProfit            = $c->adjustedDepriciation * $c->normalizedEbit;
-
-        // Step 4 
-        $c->avgcapex                    = Intrinio::capex_five_year($c->ticker);
-        $c->netincomegrowth             = Intrinio::income_growth_five_year($c->ticker);
-        $c->avgMaintainanceCapex        = $c->avgcapex * (1-($c->netincomegrowth/100));
-
-        // Step 5
-        $c->adjustedEarnings            = $c->normalizedProfit - $c->avgMaintainanceCapex;
-        $c->dilutedSharesOutstanding    = Intrinio::dilshros_five_year($c->ticker);
-        $c->avgdebt                     = Intrinio::avgdebt_five_year($c->ticker);
-        $c->interestExpenseLastYear     = Intrinio::data_tag($c->ticker,'totalinterestexpense')[0]->value;
-        $c->price                       = Intrinio::data_tag($c->ticker,'open_price')[0]->value;
-        $c->E                           = $c->dilutedSharesOutstanding*$c->price;
-        $c->debt                        = Intrinio::data_tag($c->ticker,'debt')[0]->value;
-        $c->avgLastTwoYearDebt          = Intrinio::avgdebt_two_year($c->ticker);
-        $c->costOfDebt                  = $c->interestExpenseLastYear/$c->avgLastTwoYearDebt;
-        $c->riskFreeRate                = Intrinio::risk_free_rate($c->ticker);
-        $c->oneYearBetaInvestment       = Intrinio::one_year_beta_investment($c->ticker);
-        $c->marketReturn                = Intrinio::ten_year_beta_investment($c->ticker);
-        $c->costOfEquity                = ($c->riskFreeRate/100) + $c->oneYearBetaInvestment*($c->marketReturn - ($c->riskFreeRate/100));
-        $c->taxRate                     = Intrinio::avg_two_year_taxrate($c->ticker);
-        $c->wacc                        = $c->E/($c->E+$c->debt)*$c->costOfEquity+$c->debt/($c->E+$c->debt)*$c->costOfDebt*(1-($c->taxRate/100));
-        
-        $c->totalAssets                 = Intrinio::total_assets($c->ticker);
-        $c->currentAssets               = Intrinio::current_assets($c->ticker);
-        $c->longTermLiabilities         = Intrinio::long_term_liabilities($c->ticker);
-        $c->currentLiabilities          = Intrinio::current_liabilities($c->ticker);
-        $c->netAssets                   = ($c->totalAssets+$c->currentAssets)-($c->longTermLiabilities+$c->currentLiabilities);
-        $c->grossEarningsPowerValue     = $c->adjustedEarnings / $c->wacc;
-        $c->earningPowerValue           = $c->grossEarningsPowerValue+$c->netAssets-$c->debt;
-        $c->earningPowerValuePerShare   = $c->earningPowerValue/$c->dilutedSharesOutstanding;
-
-        dd($c);
-        return view('user.stocks.sector',[
-            'user'=>$user,
-            'url'=>'sectorstocks',
-            'tools'=> $this->tools
-        ]);
-     }
-
-     public function companyDetailnew($ticker){
-        
-        $user                           = User::where('user_id',$this->userId)->get()->first()->toArray();
-        $c                              = Intrinio::companies_search($ticker);
-           
-        // STEP 1 - calculate Ebit Margin
+        $c->avgSGA                    = Intrinio::avgFiveYearSGA($c->ticker)/1000000;
+        $c->avgDDA                    = (Intrinio::avgFiveYearDDA($c->ticker)/1000000)*4;
+        $c->avgOperatingmargin        = Intrinio::avgFiveYearOperatingMargin($c->ticker);
+        $c->avgtaxRate         = Intrinio::avgFiveYearTaxRate($c->ticker);
         $c->avgEbitMargin      = Intrinio::avgFiveYearEbitMargin($c->ticker);
-        $c->avgOperatingRevenue     = Intrinio::avgFiveYearOperatingRevenue($c->ticker);
-        $c->currentOperatingRevenue = Intrinio::currentOperatingRevenue($c->ticker);
-        $c->first  = $c->currentOperatingRevenue*$c->avgEbitMargin/100;
-        $c->second = $c->avgOperatingRevenue*$c->avgEbitMargin/100;
+        $c->avgRevenue         = Intrinio::avgSustainableRevenue($c->ticker)/1000000;
+        $c->avgNetPPE          = ($this->avg($c->netppe)/1000000)*4;
+        $c->normalizedEbit     = ($c->avgRevenue*$c->avgOperatingmargin)+$c->avgSGA;
+        $c->normalizedEbitAfterTax     = $c->normalizedEbit * (1-$c->avgtaxRate);
+        $c->excessDepriciation         = $c->avgDDA * 0.5 * $c->avgtaxRate;
+        $c->normalizedEarnings         = $c->normalizedEbitAfterTax + $c->excessDepriciation;
+        $c->capitalLeaseObligation     = Intrinio::capitalLeaseObligation($c->ticker)/1000000;
+        $c->dilutedSharesOutstanding    = Intrinio::data_tag($c->ticker,'weightedavedilutedsharesos')[0]->value/1000000;
+        $c->longTermDebt               = Intrinio::data_tag($c->ticker,'longtermdebt')[0]->value/1000000;
+        $c->shortTermDebt              = Intrinio::data_tag($c->ticker,'shorttermdebt')[0]->value/1000000;
+        $c->intBearDebt                = $c->longTermDebt + $c->shortTermDebt + $c->capitalLeaseObligation;
+        $c->cashandequi                = Intrinio::data_tag($c->ticker,'cashandequivalents')[0]->value/1000000;
+        $c->wacc                       = 0.9;
+        $c->EPV                        =  ( ( $c->normalizedEarnings-$c->avgmaintainanceCAPEX) / $c->wacc + $c->cashandequi - $c->intBearDebt ) / $c->dilutedSharesOutstanding;
+        //((($c->normalizedEarnings - $c->avgmaintainanceCAPEX) / ($c->wacc)) + $c->cashandequi - $c->intBearDebt)/ $c->dilutedSharesOutstanding;
+        //$c->earningPowerValuePerShare   = $c->earningPowerValue/$c->dilutedSharesOutstanding;
 
-        
-        /*$c->normalizedEbit     = ($c->avgTotalRevenue * ($c->avgOperatingMargin/100)) + 742;
-        $c->nopat              = 1-(Intrinio::avgFiveYearTaxRate($c->ticker)/100);
-        $c->normalizedEbitAfterTax   = $c->normalizedEbit * $c->nopat;
-        $c->excessDepriciation = 485*0.5*($c->nopat)/100;
-        $c->normalizedEarnings = $c->normalizedEbitAfterTax+$c->excessDepriciation;
-        */
+        $data = array(
+            "avg maintainance CAPEX" => $c->avgmaintainanceCAPEX,
+            "Normalised Ebit" => $c->normalizedEbit,
+            "operating revenue" => $c->avgRevenue,
+            "operating margin" => $c->avgOperatingmargin,
+            "SGA"  => $c->avgSGA,
+            "AVG TAX" => $c->avgtaxRate,
+            "A TX NRM EBIT" => $c->normalizedEbitAfterTax,
+            "AVG DDA" => $c->avgDDA,
+            "NORM EARN" => $c->normalizedEarnings,
+            "Excess Depriciation" => $c->excessDepriciation,
+            "EPV" => $c->EPV,
+            "WACC" => 0.9,
+            "LTD" => $c->longTermDebt,
+            "STD" =>  $c->shortTermDebt,
+            "INT BR DEBT" => $c->intBearDebt,
+            "CASH EQUIV" => $c->cashandequi,
+            "CLO" => $c->capitalLeaseObligation,
+            "SHRS OUTST" => $c->dilutedSharesOutstanding
 
-        dd($c);
+
+        );
+        echo "<pre>";print_r($data);die();
         return view('user.stocks.sector',[
             'user'=>$user,
             'url'=>'sectorstocks',
             'tools'=> $this->tools
         ]);
      }
+     private function avg($data){
+        $x=0;
+        $dos = 0;
+        foreach($data as $d):
+            $x++;
+            $dos += $d->value;
+        endforeach;
+
+        return $dos/$x;
+     }
+
+     private function changeInRevenue($c){
+        $x = count($c->revenue);
+        $data = [];
+        $d = $c->revenue;
+        foreach($d as $r):
+            $x--;
+            if($x>0):
+                $cal = $d[$x-1]->value - $d[$x]->value;
+               array_push($data,$cal);
+            endif;
+        endforeach;
+        return $data;
+     }
+
+     private function revenueTTM($c){
+        $x = count($c->revenue);
+        $top1 = count($c->revenue)-1;
+        $top2 = count($c->revenue)-2;
+        $data = [];
+        $d = $c->revenue;
+        foreach($d as $r):
+            $x--;
+            if($x==$top1):
+                $cal = $d[$x]->value + $d[$x-1]->value;
+               array_push($data,$cal);
+            elseif($x==$top2):
+                $cal = $d[$x]->value + $d[$x-1]->value + $d[$x-2]->value;
+               array_push($data,$cal);
+            elseif($x>1):
+                $cal = $d[$x+2]->value + $d[$x+1]->value + $d[$x]->value + $d[$x-1]->value;
+               array_push($data,$cal);
+            elseif($x<1):
+                $cal = $d[$x+3]->value + $d[$x+2]->value + $d[$x+1]->value + $d[$x]->value;
+                array_push($data,$cal);  
+            endif;
+        endforeach;
+        return $data;
+     }
+
+     private function ppetorevenuettm($ppe,$revttm){
+        $x = count($ppe);
+        $data = [];
+        $d = $revttm;
+        foreach($d as $r):
+            $x--;
+            if($x>=0):
+                if($r==0):
+                    $cal = 0;
+                else:
+                    $cal = $ppe[$x]->value/$r;
+                endif;
+               array_push($data,$cal);
+            endif;   
+        endforeach;
+        return $data;
+     }
+
+     private function capexpositive($capex){
+        $x = count($capex);
+        $data = [];
+        $d = $capex;
+        foreach($d as $r):
+            $x--;
+            $cal = 0;
+                if($r->value >= 0):
+                    $cal = $r->value;
+                endif;
+                //$data[$x] = $cal;
+               array_push($data,$cal);
+        endforeach;
+        $arr = [];
+        for($i=count($data)-1;$i>=0;$i--):
+            array_push($arr,$data[$i]);
+        endfor;
+        return $arr;
+     }
+
+     private function maintainanceCapexnocon($c){
+        $w = count($c->revenueChange);
+        $x = count($c->ppeToRevenueTTM);
+        $y = count($c->CAPEXpos);
+
+        $revChx = count($c->revenueChange)-1;
+        $revttx = count($c->ppeToRevenueTTM)-1;
+        $caposx = count($c->CAPEXpos)-1;
+
+
+        $data = [];
+        $d = $c->ppeToRevenueTTM;
+        foreach($d as $r):
+               $w--;
+               $x--;
+               $y--;
+                $cal = $c->CAPEXpos[$caposx-$y]-$c->ppeToRevenueTTM[$revttx-$x]*$c->revenueChange[$revChx-$w];
+               // echo $c->CAPEXpos[$caposx-$y]."-".$c->ppeToRevenueTTM[$revttx-$x]."x".$c->revenueChange[$revChx-$w]."//".$cal."<br>";
+               array_push($data,$cal);
+        endforeach;
+        return $data;
+     }
+
+     private function maintainanceCapex($c){
+        // dd($c);
+        //$w = count($c->revenueChange);
+        //$x = count($c->revenueTTM);
+        //$y = count($c->CAPEXpos);
+        //$z = count($c->maintainanceCAPEXnoCon);
+        $x = 0;
+        $revChx = count($c->revenueChange)-1;
+        $revttx = count($c->revenueTTM)-1;
+        $caposx = count($c->CAPEXpos)-1;
+        $capcalx = count($c->maintainanceCAPEXnoCon)-1;
+        
+        $data = [];
+        $d = $c->revenueChange;
+        foreach($d as $r):
+            
+                if($c->revenueChange[$x] <= 0):
+                  $cal = $c->CAPEXpos[$x];
+                else:
+                   if($c->revenueTTM[$x]==0):
+                    $cal = $c->CAPEXpos[$x];
+                    else:
+                    if($c->maintainanceCAPEXnoCon[$x]<=0):
+                        $cal = $c->CAPEXpos[$x];
+                    else:  
+                        $cal = $c->maintainanceCAPEXnoCon[$x];  
+                    endif;
+                   endif;
+                endif;
+                array_push($data,$cal);
+                $x++;
+        endforeach;
+        return $data;
+     }
+
+     private function avgmaintainanceCapex($c){
+        $x = 0;
+        $data = 0;
+        foreach($c as $r):
+            if($r>0){
+                $x++;
+                $data = $data+$r;
+            }
+        endforeach;
+        //echo ($data/$x)*4;die();
+        return (($data/$x)*4)/1000000;
+     }
+
      public function sectorResult(Request $request){
        
         $input = $request->all();
