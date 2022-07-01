@@ -138,8 +138,8 @@ class StockController extends Controller
         $c->shortTermDebt              = Intrinio::data_tag($c->ticker,'shorttermdebt')[0]->value/1000000;
         $c->intBearDebt                = $c->longTermDebt + $c->shortTermDebt + $c->capitalLeaseObligation;
         $c->cashandequi                = Intrinio::data_tag($c->ticker,'cashandequivalents')[0]->value/1000000;
-        $c->wacc                       = 0.9;
-        $c->EPV                        =  ( ( $c->normalizedEarnings-$c->avgmaintainanceCAPEX) / $c->wacc + $c->cashandequi - $c->intBearDebt ) / $c->dilutedSharesOutstanding;
+        $c->wacc                       = 0.09;
+        $c->EPV                        =  (( ($c->normalizedEarnings-$c->avgmaintainanceCAPEX) / $c->wacc) + $c->cashandequi - $c->intBearDebt ) / $c->dilutedSharesOutstanding;
         //((($c->normalizedEarnings - $c->avgmaintainanceCAPEX) / ($c->wacc)) + $c->cashandequi - $c->intBearDebt)/ $c->dilutedSharesOutstanding;
         //$c->earningPowerValuePerShare   = $c->earningPowerValue/$c->dilutedSharesOutstanding;
 
