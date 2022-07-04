@@ -23,7 +23,7 @@ class StockController extends Controller
                 $this->logout();
             endif;
             $this->tools = session()->get('user')['tools'];
-        else:    
+        else:
             $this->logout();
         endif;
 
@@ -33,7 +33,7 @@ class StockController extends Controller
     public function all(){
        $user = User::where('user_id',$this->userId)->get()->first()->toArray();
        $companies = Intrinio::companies_all();
-       
+
        return view('user.stocks.all',[
            'user'=>$user,
            'url'=>'allStocks',
@@ -58,7 +58,7 @@ class StockController extends Controller
             'url'=>'optimize-investment-mix',
             'tools'=> $this->tools
         ]);
-     } 
+     }
 
     public function assets(){
         $user = User::where('user_id',$this->userId)->get()->first()->toArray();
@@ -75,7 +75,7 @@ class StockController extends Controller
         $asset = $input['asset'];
         $user = User::where('user_id',$this->userId)->get()->first()->toArray();
         $companies = array();
-        
+
         foreach($asset as $s):
             $company = Intrinio::companies_asset($s);
             if($company):
@@ -91,7 +91,7 @@ class StockController extends Controller
     else:
         return redirect('user/stocks/assets');
     endif;
-     } 
+     }
 
      public function sector(){
         $user = User::where('user_id',$this->userId)->get()->first()->toArray();
@@ -104,12 +104,12 @@ class StockController extends Controller
 
 
      public function companyDetail($ticker){
-        
+
         $user                           = User::where('user_id',$this->userId)->get()->first()->toArray();
         $c                              = Intrinio::companies_search($ticker);
-           
+
         // STEP 1 - calculate Ebit Margin
-        $c->revenue      = Intrinio::revenueArray($c->ticker);
+       /* $c->revenue      = Intrinio::revenueArray($c->ticker);
         $c->netppe               =  Intrinio::netppeArray($c->ticker);
         $c->CAPEX                =  Intrinio::CAPEXArray($c->ticker);
         $c->revenueChange        =  $this->changeInRevenue($c);
@@ -119,8 +119,6 @@ class StockController extends Controller
         $c->maintainanceCAPEXnoCon    =  $this->maintainanceCapexnocon($c);
         $c->maintainanceCAPEX         =  $this->maintainanceCapex($c);
         $c->avgmaintainanceCAPEX      =  $this->avgmaintainanceCapex($c->maintainanceCAPEX);
-
-        
         $c->avgSGA                    = Intrinio::avgFiveYearSGA($c->ticker)/1000000;
         $c->avgDDA                    = (Intrinio::avgFiveYearDDA($c->ticker)/1000000)*4;
         $c->avgOperatingmargin        = Intrinio::avgFiveYearOperatingMargin($c->ticker);
@@ -140,9 +138,6 @@ class StockController extends Controller
         $c->cashandequi                = Intrinio::data_tag($c->ticker,'cashandequivalents')[0]->value/1000000;
         $c->wacc                       = 0.09;
         $c->EPV                        =  (( ($c->normalizedEarnings-$c->avgmaintainanceCAPEX) / $c->wacc) + $c->cashandequi - $c->intBearDebt ) / $c->dilutedSharesOutstanding;
-        //((($c->normalizedEarnings - $c->avgmaintainanceCAPEX) / ($c->wacc)) + $c->cashandequi - $c->intBearDebt)/ $c->dilutedSharesOutstanding;
-        //$c->earningPowerValuePerShare   = $c->earningPowerValue/$c->dilutedSharesOutstanding;
-
         $data = array(
             "avg maintainance CAPEX" => $c->avgmaintainanceCAPEX,
             "Normalised Ebit" => $c->normalizedEbit,
@@ -165,7 +160,23 @@ class StockController extends Controller
 
 
         );
-        echo "<pre>";print_r($data);die();
+
+       $c->dilutedSharesOutstanding   = Intrinio::avgFiveYearSharesOutstanding($c->ticker)/1000000;
+       $c->totalEquity                = Intrinio::avgFiveYearTotalEquity($c->ticker)/1000000;
+       $c->totalPreferedEquity        = Intrinio::avgFiveYearTotalPreferedEquity($c->ticker)/1000000;
+       $c->intengibleAssets           = Intrinio::avgFiveYearIntengibleAssets($c->ticker)/1000000;
+       $c->TB                         = ($c->totalEquity - $c->totalPreferedEquity - $c->intengibleAssets) / $c->dilutedSharesOutstanding;
+
+       */
+         $c->dilutedSharesOutstanding   = Intrinio::avgFiveYearSharesOutstanding($c->ticker)/1000000;
+         $c->totalEquity                = Intrinio::avgFiveYearTotalEquity($c->ticker)/1000000;
+         $c->totalPreferedEquity        = Intrinio::avgFiveYearTotalPreferedEquity($c->ticker)/1000000;
+         $c->intengibleAssets           = Intrinio::avgFiveYearIntengibleAssets($c->ticker)/1000000;
+         $c->TB                         = ($c->totalEquity - $c->totalPreferedEquity - $c->intengibleAssets) / $c->dilutedSharesOutstanding;
+
+
+
+         echo "<pre>";print_r($c);die();
         return view('user.stocks.sector',[
             'user'=>$user,
             'url'=>'sectorstocks',
@@ -216,7 +227,7 @@ class StockController extends Controller
                array_push($data,$cal);
             elseif($x<1):
                 $cal = $d[$x+3]->value + $d[$x+2]->value + $d[$x+1]->value + $d[$x]->value;
-                array_push($data,$cal);  
+                array_push($data,$cal);
             endif;
         endforeach;
         return $data;
@@ -235,7 +246,7 @@ class StockController extends Controller
                     $cal = $ppe[$x]->value/$r;
                 endif;
                array_push($data,$cal);
-            endif;   
+            endif;
         endforeach;
         return $data;
      }
@@ -294,11 +305,11 @@ class StockController extends Controller
         $revttx = count($c->revenueTTM)-1;
         $caposx = count($c->CAPEXpos)-1;
         $capcalx = count($c->maintainanceCAPEXnoCon)-1;
-        
+
         $data = [];
         $d = $c->revenueChange;
         foreach($d as $r):
-            
+
                 if($c->revenueChange[$x] <= 0):
                   $cal = $c->CAPEXpos[$x];
                 else:
@@ -307,8 +318,8 @@ class StockController extends Controller
                     else:
                     if($c->maintainanceCAPEXnoCon[$x]<=0):
                         $cal = $c->CAPEXpos[$x];
-                    else:  
-                        $cal = $c->maintainanceCAPEXnoCon[$x];  
+                    else:
+                        $cal = $c->maintainanceCAPEXnoCon[$x];
                     endif;
                    endif;
                 endif;
@@ -332,7 +343,7 @@ class StockController extends Controller
      }
 
      public function sectorResult(Request $request){
-       
+
         $input = $request->all();
         if(isset($input['sector'])):
             $sector = $input['sector'];
@@ -346,7 +357,7 @@ class StockController extends Controller
         endforeach;
         /*$newcom = [];
         foreach($companies as $c):
-            
+
             array_push($newcom,$c);
         endforeach;*/
         return view('user.stocks.sector_companies',[
@@ -358,8 +369,8 @@ class StockController extends Controller
         else:
             return redirect('user/stocks/sector');
         endif;
-        
-     } 
+
+     }
 
     private function logout()
     {
@@ -367,7 +378,7 @@ class StockController extends Controller
     }
 
     private function checkToken(){
-        
+
        return User::where('user_id',session()->get('user')['data']['user_id'])
               ->where('login_token',session()->get('user')['token'])
               ->count();
