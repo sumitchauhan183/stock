@@ -157,23 +157,21 @@ class StockController extends Controller
             "CASH EQUIV" => $c->cashandequi,
             "CLO" => $c->capitalLeaseObligation,
             "SHRS OUTST" => $c->dilutedSharesOutstanding
-
-
         );
-
-       $c->dilutedSharesOutstanding   = Intrinio::avgFiveYearSharesOutstanding($c->ticker)/1000000;
-       $c->totalEquity                = Intrinio::avgFiveYearTotalEquity($c->ticker)/1000000;
-       $c->totalPreferedEquity        = Intrinio::avgFiveYearTotalPreferedEquity($c->ticker)/1000000;
-       $c->intengibleAssets           = Intrinio::avgFiveYearIntengibleAssets($c->ticker)/1000000;
-       $c->TB                         = ($c->totalEquity - $c->totalPreferedEquity - $c->intengibleAssets) / $c->dilutedSharesOutstanding;
-
-       */
+*/
          $c->dilutedSharesOutstanding   = Intrinio::avgFiveYearSharesOutstanding($c->ticker)/1000000;
          $c->totalEquity                = Intrinio::avgFiveYearTotalEquity($c->ticker)/1000000;
          $c->totalPreferedEquity        = Intrinio::avgFiveYearTotalPreferedEquity($c->ticker)/1000000;
          $c->intengibleAssets           = Intrinio::avgFiveYearIntengibleAssets($c->ticker)/1000000;
-         $c->TB                         = ($c->totalEquity - $c->totalPreferedEquity - $c->intengibleAssets) / $c->dilutedSharesOutstanding;
+         $c->goodWill                   = Intrinio::avgFiveYearGoodWill($c->ticker)/1000000;
+         $c->TB                         = ($c->totalEquity - $c->totalPreferedEquity - ($c->intengibleAssets + $c->goodWill)) / $c->dilutedSharesOutstanding;
 
+         $c->cashflowOperation   = Intrinio::data_tag_yearly($c->ticker,'netcashfromoperatingactivities')[0]->value/1000000;
+         $c->capexCashFlow       = Intrinio::data_tag_yearly($c->ticker,'capex')[0]->value/1000000*(-1);
+         $c->dilutedSharesCashflow       = Intrinio::data_tag_yearly($c->ticker,'weightedavedilutedsharesos')[0]->value/1000000;
+         $c->freeCashFlowPerShare  = ($c->cashflowOperation + $c->capexCashFlow) / $c->dilutedSharesCashflow;
+         $c->EPS = Intrinio::data_tag($c->ticker,'adjdilutedeps')[0]->value;
+         $c->GN = sqrt($c->TB * $c->EPS);
 
 
          echo "<pre>";print_r($c);die();

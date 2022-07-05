@@ -180,12 +180,29 @@ class Intrinio
     public static function data_tag($id,$tag)
     {
         $end   = date('Y-m-d');
-        $start = date('Y-m-d', strtotime("$end -5 year"));
+        $start = date('Y-m-d', strtotime("$end -6 year"));
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
         $uri = $endpoint."companies/$id/historical_data/$tag?frequency=quarterly&start_date=$start&end_date=$end&api_key=$key";
        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
        // dd($uri);
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            return $request->historical_data;
+        endif;
+    }
+
+    public static function data_tag_yearly($id,$tag)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -6 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        // dd($uri);
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
             return [];
@@ -1123,6 +1140,37 @@ class Intrinio
         //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
 
         $uri = $endpoint."companies/$id/historical_data/intangibleassets?type=QTR&api_key=$key";
+        //$uri = $endpoint."companies/$id/historical_data/intangibleassets?frequency=yearly&api_key=$key";
+        //$uri = $endpoint."companies/$id/historical_data/intangibleassets?frequency=quarterly&api_key=$key";
+
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            $dsos = 0;
+            $x=0;
+            $data = $request->historical_data;
+            foreach($data as $d):
+                if($d->value==null):
+                    $d->value = 0;
+                endif;
+                $x++;
+                $dsos += $d->value;
+            endforeach;
+            return $dsos/$x;
+        endif;
+    }
+
+    public static function avgFiveYearGoodWill($id)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -5 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+
+        $uri = $endpoint."companies/$id/historical_data/goodwill?type=QTR&api_key=$key";
         //$uri = $endpoint."companies/$id/historical_data/intangibleassets?frequency=yearly&api_key=$key";
         //$uri = $endpoint."companies/$id/historical_data/intangibleassets?frequency=quarterly&api_key=$key";
 
