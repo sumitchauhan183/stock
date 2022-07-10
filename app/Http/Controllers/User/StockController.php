@@ -8,6 +8,7 @@ use App\Classes\Intrinio;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use PhpOffice\PhpSpreadsheet\Calculation\Statistical;
 
 class StockController extends Controller
 {
@@ -158,12 +159,12 @@ class StockController extends Controller
             "CLO" => $c->capitalLeaseObligation,
             "SHRS OUTST" => $c->dilutedSharesOutstanding
         );
-*/
-         $c->dilutedSharesOutstanding   = Intrinio::avgFiveYearSharesOutstanding($c->ticker)/1000000;
-         $c->totalEquity                = Intrinio::avgFiveYearTotalEquity($c->ticker)/1000000;
-         $c->totalPreferedEquity        = Intrinio::avgFiveYearTotalPreferedEquity($c->ticker)/1000000;
-         $c->intengibleAssets           = Intrinio::avgFiveYearIntengibleAssets($c->ticker)/1000000;
-         $c->goodWill                   = Intrinio::avgFiveYearGoodWill($c->ticker)/1000000;
+
+         $c->dilutedSharesOutstanding   = Intrinio::data_tag_qtr($c->ticker,'weightedavedilutedsharesos')[0]->value/1000000;
+         $c->totalEquity                = Intrinio::data_tag_qtr($c->ticker,'totalequity')[0]->value/1000000;
+         $c->totalPreferedEquity        = Intrinio::data_tag_qtr($c->ticker,'totalpreferredequity')[0]->value/1000000;
+         $c->intengibleAssets           = Intrinio::data_tag_qtr($c->ticker,'intangibleassets')[0]->value/1000000;
+         $c->goodWill                   = Intrinio::data_tag_qtr($c->ticker,'goodwill')[0]->value/1000000;
          $c->TB                         = ($c->totalEquity - $c->totalPreferedEquity - ($c->intengibleAssets + $c->goodWill)) / $c->dilutedSharesOutstanding;
 
          $c->cashflowOperation   = Intrinio::data_tag_yearly($c->ticker,'netcashfromoperatingactivities')[0]->value/1000000;
@@ -171,7 +172,18 @@ class StockController extends Controller
          $c->dilutedSharesCashflow       = Intrinio::data_tag_yearly($c->ticker,'weightedavedilutedsharesos')[0]->value/1000000;
          $c->freeCashFlowPerShare  = ($c->cashflowOperation + $c->capexCashFlow) / $c->dilutedSharesCashflow;
          $c->EPS = Intrinio::data_tag($c->ticker,'adjdilutedeps')[0]->value;
-         $c->GN = sqrt($c->TB * $c->EPS);
+         $c->GN = sqrt($c->TB * $c->EPS * 22.5);
+
+       */
+
+
+         $c->dilsharesyearlyarr = Intrinio::data_tag_yearly($c->ticker,'weightedavedilutedsharesos');
+         $c->operatingRevyearlyarr = Intrinio::data_tag_yearly($c->ticker,'operatingrevenue');
+         $c->revenuepershare = $this->revenuepershare($c);
+         $c->LINEST  = $this->getLinest($c->revenuepershare);
+         $c->growthRate = pow(10,$c->LINEST[0])-1;
+
+
 
 
          echo "<pre>";print_r($c);die();
@@ -181,6 +193,38 @@ class StockController extends Controller
             'tools'=> $this->tools
         ]);
      }
+
+     private  function getLinest($d){
+         $stats = new Statistical();
+         $stat = $stats->LINEST($d['x'],$d['y']);
+         return $stat;
+     }
+     private function revenuepershare($c){
+        $revArr = $c->operatingRevyearlyarr;
+        $shareArr = $c->dilsharesyearlyarr;
+        $arr = [
+            'x' => [],
+            'y' => [],
+            'detail' => []
+        ];
+        $y = 0;
+        for($i=count($revArr)-1;$i>=0;$i--):
+
+            $x = (object)[];
+            $x->count     = $y;
+            $x->date      = $revArr[$i]->date;
+            $x->revpshare = $revArr[$i]->value/$shareArr[$i]->value;
+            $x->log10     = log10($x->revpshare);
+            //echo $revArr[$i]->value."/".$shareArr[$i]->value."=".$x.'<br>';
+        array_push($arr['detail'],$x);
+        array_push($arr['x'],$x->log10);
+        array_push($arr['y'],$x->count);
+        $y++;
+        endfor;
+        return $arr;
+
+     }
+
      private function avg($data){
         $x=0;
         $dos = 0;

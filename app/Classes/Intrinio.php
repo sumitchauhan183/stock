@@ -194,6 +194,28 @@ class Intrinio
         endif;
     }
 
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function data_tag_qtr($id,$tag)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -6 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        $uri = $endpoint."companies/$id/historical_data/$tag?type=QTR&start_date=$start&end_date=$end&api_key=$key";
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+         //dd($uri);
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            return $request->historical_data;
+        endif;
+    }
+
     public static function data_tag_yearly($id,$tag)
     {
         $end   = date('Y-m-d');
@@ -1171,8 +1193,8 @@ class Intrinio
         //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
 
         $uri = $endpoint."companies/$id/historical_data/goodwill?type=QTR&api_key=$key";
-        //$uri = $endpoint."companies/$id/historical_data/intangibleassets?frequency=yearly&api_key=$key";
-        //$uri = $endpoint."companies/$id/historical_data/intangibleassets?frequency=quarterly&api_key=$key";
+        //$uri = $endpoint."companies/$id/historical_data/goodwill?frequency=yearly&api_key=$key";
+        //$uri = $endpoint."companies/$id/historical_data/goodwill?frequency=quarterly&api_key=$key";
 
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
