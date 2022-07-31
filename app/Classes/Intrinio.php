@@ -222,14 +222,55 @@ class Intrinio
         $start = date('Y-m-d', strtotime("$end -6 year"));
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
-        $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=2016-05-31&end_date=2022-05-31&api_key=$key";
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+         //dd($uri);
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            return $request->historical_data;
+        endif;
+    }
+
+    public static function stockpricedata($id)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -6 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        $uri = $endpoint."securities/$id/prices?frequency=yearly&start_date=2016-05-31&end_date=2022-05-31&api_key=$key";
         // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
         // dd($uri);
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
             return [];
         else:
-            return $request->historical_data;
+            return $request->stock_prices;
+        endif;
+    }
+
+    public static function data_tag_avg_yearly($id,$tag)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -6 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=2016-05-31&end_date=2022-05-31&api_key=$key";
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        // dd($uri);
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            $count = 0;
+            $ebm = 0;
+            $data = $request->historical_data;
+            foreach($data as $d):
+                $count++;
+                $ebm += $d->value;
+            endforeach;
+            return $ebm/$count;
         endif;
     }
 
@@ -423,6 +464,28 @@ class Intrinio
                 $dsos += $d->value;
             endforeach;
             return $dsos/$x;
+        endif;
+    }
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function getTreasuryRate()
+    {
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
+        //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+
+        $uri = $endpoint.'indices/economic/$DGS10/data_point/level/number?&api_key='.$key;
+        //dd($uri);
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            return $request;
         endif;
     }
 

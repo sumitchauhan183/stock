@@ -178,13 +178,50 @@ class StockController extends Controller
 
 
          $c->dilsharesyearlyarr = Intrinio::data_tag_yearly($c->ticker,'weightedavedilutedsharesos');
-         $c->operatingRevyearlyarr = Intrinio::data_tag_yearly($c->ticker,'operatingrevenue');
-         $c->revenuepershare = $this->revenuepershare($c);
-         $c->LINEST  = $this->getLinest($c->revenuepershare);
-         $c->growthRate = pow(10,$c->LINEST[0])-1;
+         $c->ebityearlyarr = Intrinio::data_tag_yearly($c->ticker,'ebit');
+         $c->ebitpershare = $this->ebitpershare($c);
+         $c->LINEST  = $this->getLinest($c->ebitpershare);
+         $c->CAGR = $this->getCagr($c->ebitpershare['z'])*100;
+         $c->growthRate = (pow(10,$c->LINEST[0])-1)*100;
+         $c->avgCAGR = floor(($c->growthRate+$c->CAGR)/2);
+         if($c->avgCAGR<4):
+             $c->g1 = 4;
+         else:
+             $c->g1 = $c->avgCAGR;
+         endif;
 
-
-
+         if($c->avgCAGR>20):
+             $c->g1 = 20;
+         endif;
+         $c->fcfpershare = ((Intrinio::data_tag_yearly($c->ticker,'netcashfromoperatingactivities')[0]->value/1000000) - (Intrinio::data_tag_yearly($c->ticker,'capex')[0]->value/1000000))/(Intrinio::data_tag_yearly($c->ticker,'weightedavedilutedsharesos')[0]->value/1000000);
+         $c->g2 = 3.6;
+         $c->d = Intrinio::getTreasuryRate()+6;
+         $c->y1 = 10;
+         $c->y2 = 10;
+         $c->X = (1+($c->g1/100))/(1+($c->d/100));
+         $c->Y = (1+($c->g2/100))/(1+($c->d/100));
+         $c->Xsum      = $this->getXsum($c->X);
+         $c->Ysum      = $this->getXsum($c->Y);
+         $c->Xpow10    = pow($c->X,10);
+         $c->intValCal = $c->fcfpershare*(($c->Xsum)+$c->Xpow10*($c->Ysum));
+         $c->growthMultiple = 8.3459 * pow(1.07, $c->g1-4);
+         $c->avgFreeCashFlows = (Intrinio::data_tag_avg_yearly($c->ticker,'netcashfromoperatingactivities')-Intrinio::data_tag_avg_yearly($c->ticker,'capex'))/1000000;
+         $c->totalEquity = Intrinio::data_tag_qtr($c->ticker,'totalequity')[0]->value/1000000;
+         /*if($c->totalEquity < 0):
+             $c->FutCF = (($c->growthMultiple)*$c->avgFreeCashFlows)+($c->totalEquity/0.75);
+         else:*/
+             $c->FutCF = ($c->growthMultiple*$c->avgFreeCashFlows)+(0.75*$c->totalEquity);
+         //endif;
+             $c->dilShareOut = Intrinio::data_tag_avg_yearly($c->ticker,'weightedavedilutedsharesos')/1000000;
+             $c->FutCF = $c->FutCF/$c->dilShareOut;
+         $c->closePrice = Intrinio::stockpricedata($c->ticker)[0]->close;
+         $c->marginOfSafety = ($c->intValCal-$c->closePrice)/$c->intValCal;
+         $c->NRI = Intrinio::data_tag_yearly($c->ticker,'extraordinaryincome')[0]->value;
+         if(!$c->NRI):
+             $c->NRI = 0;
+         endif;
+         $c->EPS = Intrinio::data_tag_yearly($c->ticker,'adjdilutedeps')[0]->value;
+         $c->PLV = 1*$c->avgCAGR*($c->EPS-$c->NRI)."(1x".$c->avgCAGR."x(".$c->EPS."-".$c->NRI.")";
 
          echo "<pre>";print_r($c);die();
         return view('user.stocks.sector',[
@@ -194,37 +231,89 @@ class StockController extends Controller
         ]);
      }
 
+     private function getXsum($d){
+        $sum = $d;
+        for($i=2;$i<=10;$i++){
+            $sum = $sum+pow($d,$i);
+        }
+        return $sum;
+     }
+
+    private  function getCagr($d){
+        /*
+             CAGR is a calculation in which you take only the 2022 EBIT and the 2017 EBIT
+             ( It stands for compound annual growth rate).
+                the calculation is
+                2022 EBIT / 2017 EBIT
+            Then
+            1. raise that to the exponent of the number of EBIT years you see.
+                For example if there is 2017, 2018, 2019, 2020, 2021, 2022 then (2022/2017)^6
+            2. Then, take the result and subtract 1 from it.
+
+            Where there are only 5 years then raise to the 5th power.
+
+            =(2021 EBIT / 2017 EBIT) ^(1/5)-1
+         */
+        //echo "<pre>";print_r($d);die();
+        $count = count($d);
+        $tot = $d[$count-1]/$d[0];
+
+        $exp = pow($tot,1/($count));
+        $cagr = $exp-1;
+        return $cagr;
+    }
+
      private  function getLinest($d){
          $stats = new Statistical();
          $stat = $stats->LINEST($d['x'],$d['y']);
          return $stat;
      }
-     private function revenuepershare($c){
-        $revArr = $c->operatingRevyearlyarr;
+     private function ebitpershare($c){
+        $ebitArr = $c->ebityearlyarr;
+
         $shareArr = $c->dilsharesyearlyarr;
+        $avg = $this->getAvg($c->dilsharesyearlyarr);
         $arr = [
             'x' => [],
             'y' => [],
+            'z' => [],
             'detail' => []
         ];
         $y = 0;
-        for($i=count($revArr)-1;$i>=0;$i--):
+        $coun = count($ebitArr);
+        if($coun > count($shareArr)):
+            $coun = count($shareArr);
+        endif;
+        for($i=$coun-1;$i>=0;$i--):
 
             $x = (object)[];
             $x->count     = $y;
-            $x->date      = $revArr[$i]->date;
-            $x->revpshare = $revArr[$i]->value/$shareArr[$i]->value;
-            $x->log10     = log10($x->revpshare);
+            $x->date      = $ebitArr[$i]->date;
+            if($shareArr[$i]->value==0):
+                $shareArr[$i]->value = $avg;
+            endif;
+            $x->ebitpershare = abs($ebitArr[$i]->value/$shareArr[$i]->value);
+            $x->log10 = log10($x->ebitpershare);
+
             //echo $revArr[$i]->value."/".$shareArr[$i]->value."=".$x.'<br>';
-        array_push($arr['detail'],$x);
-        array_push($arr['x'],$x->log10);
-        array_push($arr['y'],$x->count);
+            array_push($arr['detail'],$x);
+            array_push($arr['x'],$x->log10);
+            array_push($arr['y'],$x->count);
+            array_push($arr['z'],$x->ebitpershare);
         $y++;
         endfor;
         return $arr;
 
      }
-
+ private function getAvg($d){
+        $count = 0;
+        $val = 0;
+        foreach($d as $a):
+            $val = $val+$a->value;
+            $count++;
+        endforeach;
+        return $val/$count;
+}
      private function avg($data){
         $x=0;
         $dos = 0;
