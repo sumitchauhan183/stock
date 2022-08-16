@@ -207,12 +207,96 @@ class Intrinio
         $endpoint = env("INTRINIO_ENDPOINT");
         $uri = $endpoint."companies/$id/historical_data/$tag?type=QTR&start_date=$start&end_date=$end&api_key=$key";
         // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
-         //dd($uri);
+        // dd($uri);
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
             return [];
         else:
             return $request->historical_data;
+        endif;
+    }
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function data_tag_qtr_year_wise_avg($id,$tag,$start,$end,$latest)
+    {
+        //$end   = date('Y-m-d');
+        //$start = date('Y-m-d', strtotime("$end -6 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        $uri = $endpoint."companies/$id/historical_data/$tag?frequency=quarterly&start_date=$start&end_date=$end&api_key=$key";
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        //dd($uri);
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+             return [];
+        else:
+            if($latest!=""):
+                $latest = date('m-d',strtotime($latest));
+                $data = $request->historical_data;
+                foreach ($data as $d):
+                    if(strpos($d->date,$latest)):
+                        return $d->value/1000000;
+                    endif;
+                endforeach;
+            else:
+                $data = $request->historical_data;
+                return $data[0]->value/1000000;
+            endif;
+        endif;
+    }
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public static function data_tag_qtr_year_wise_avg_latest_date($id,$tag,$start,$end)
+    {
+        //$end   = date('Y-m-d');
+        //$start = date('Y-m-d', strtotime("$end -6 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        $uri = $endpoint."companies/$id/historical_data/$tag?frequency=quarterly&start_date=$start&end_date=$end&api_key=$key";
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        //dd($uri);
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            $data = $request->historical_data;
+            return $data[0]->date;
+        endif;
+    }
+
+    public static function data_tag_qtr_year_wise_avg_per($id,$tag,$start,$end,$latest)
+    {
+        //$end   = date('Y-m-d');
+        //$start = date('Y-m-d', strtotime("$end -6 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        $uri = $endpoint."companies/$id/historical_data/$tag?frequency=quarterly&start_date=$start&end_date=$end&api_key=$key";
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        //dd($uri);
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            if($latest!=""):
+                $latest = date('m-d',strtotime($latest));
+                $data = $request->historical_data;
+                foreach ($data as $d):
+                    if(strpos($d->date,$latest)):
+                        return $d->value;
+                    endif;
+                endforeach;
+            else:
+                $data = $request->historical_data;
+                return $data[0]->value;
+            endif;
         endif;
     }
 

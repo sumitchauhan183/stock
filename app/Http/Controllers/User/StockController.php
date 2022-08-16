@@ -107,7 +107,8 @@ class StockController extends Controller
      public function companyDetail($ticker){
 
         $user                           = User::where('user_id',$this->userId)->get()->first()->toArray();
-        $c                              = Intrinio::companies_search($ticker);
+        $c = (object)[];
+        $c->ticker                       = $ticker;
 
         // STEP 1 - calculate Ebit Margin
        /* $c->revenue      = Intrinio::revenueArray($c->ticker);
@@ -174,7 +175,7 @@ class StockController extends Controller
          $c->EPS = Intrinio::data_tag($c->ticker,'adjdilutedeps')[0]->value;
          $c->GN = sqrt($c->TB * $c->EPS * 22.5);
 
-       */
+
 
 
          $c->dilsharesyearlyarr = Intrinio::data_tag_yearly($c->ticker,'weightedavedilutedsharesos');
@@ -207,13 +208,9 @@ class StockController extends Controller
          $c->growthMultiple = 8.3459 * pow(1.07, $c->g1-4);
          $c->avgFreeCashFlows = (Intrinio::data_tag_avg_yearly($c->ticker,'netcashfromoperatingactivities')-Intrinio::data_tag_avg_yearly($c->ticker,'capex'))/1000000;
          $c->totalEquity = Intrinio::data_tag_qtr($c->ticker,'totalequity')[0]->value/1000000;
-         /*if($c->totalEquity < 0):
-             $c->FutCF = (($c->growthMultiple)*$c->avgFreeCashFlows)+($c->totalEquity/0.75);
-         else:*/
-             $c->FutCF = ($c->growthMultiple*$c->avgFreeCashFlows)+(0.75*$c->totalEquity);
-         //endif;
-             $c->dilShareOut = Intrinio::data_tag_avg_yearly($c->ticker,'weightedavedilutedsharesos')/1000000;
-             $c->FutCF = $c->FutCF/$c->dilShareOut;
+         $c->FutCF = ($c->growthMultiple*$c->avgFreeCashFlows)+(0.75*$c->totalEquity);
+         $c->dilShareOut = Intrinio::data_tag_avg_yearly($c->ticker,'weightedavedilutedsharesos')/1000000;
+         $c->FutCF = $c->FutCF/$c->dilShareOut;
          $c->closePrice = Intrinio::stockpricedata($c->ticker)[0]->close;
          $c->marginOfSafety = ($c->intValCal-$c->closePrice)/$c->intValCal;
          $c->NRI = Intrinio::data_tag_yearly($c->ticker,'extraordinaryincome')[0]->value;
@@ -223,6 +220,18 @@ class StockController extends Controller
          $c->EPS = Intrinio::data_tag_yearly($c->ticker,'adjdilutedeps')[0]->value;
          $c->PLV = 1*$c->avgCAGR*($c->EPS-$c->NRI)."(1x".$c->avgCAGR."x(".$c->EPS."-".$c->NRI.")";
 
+
+       */
+         $c->ebitRating  = $this->getRatingsEbit($c->ticker);
+         $c->OperatingIncomeRating = $this->getRatingsOI($c->ticker);
+         $c->OPCPERCURDEBTRating = $this->getRatingsRatio($c->ticker);
+         $c->quickRatioRating = $this->getRatingsquick($c->ticker);
+         $c->DtoERating = $this->getRatingsDtoE($c->ticker);
+         $c->freecashflowRating = $this->getRatingsfreecashflow($c->ticker);
+
+         $c->afterWeightRating = $this->getAfterWeightRating($c);
+dd($c);
+
          echo "<pre>";print_r($c);die();
         return view('user.stocks.sector',[
             'user'=>$user,
@@ -230,6 +239,356 @@ class StockController extends Controller
             'tools'=> $this->tools
         ]);
      }
+    private function getAfterWeightRating($c){
+        $arr['weight'] = 0;
+        $arr['oiweight'] = 0.05*$c->OperatingIncomeRating['rating'];
+        $arr['weight'] = $arr['weight']+$arr['oiweight'];
+
+        $arr['ebitweight'] = 0.23*$c->ebitRating['rating'];
+        $arr['weight'] = $arr['weight']+$arr['ebitweight'];
+
+        $arr['OPCPERCweight'] = 0.23*$c->OPCPERCURDEBTRating['rating'];
+        $arr['weight'] = $arr['weight']+$arr['OPCPERCweight'];
+
+        $arr['quickWeight'] = 0.18*$c->quickRatioRating['rating'];
+        $arr['weight'] = $arr['weight']+$arr['quickWeight'];
+
+        $arr['freecfweight'] = 0.14*$c->freecashflowRating['rating'];
+        $arr['weight'] = $arr['weight']+$arr['freecfweight'];
+
+        $arr['dtoeweight'] = 0.18*$c->DtoERating['rating'];
+        $arr['weight'] = $arr['weight']+$arr['dtoeweight'];
+
+
+        return $arr;
+    }
+    private function getRatingsfreecashflow($id){
+        $cyear = date('Y');
+        $cmonth = date('m');
+        $lday = date('t');
+
+        $cyear1 = $cyear-1;
+        $cyear2 = $cyear-2;
+        $cyear3 = $cyear-3;
+        $cyear4 = $cyear-4;
+
+        $latest = Intrinio::data_tag_qtr_year_wise_avg_latest_date($id,'freecashflow',"$cyear-01-01","$cyear-$cmonth-$lday");
+
+        $avg = array(
+            // "2017" => Intrinio::data_tag_qtr_year_wise_avg($id,'ebit','2017-01-01','2017-04-30'),
+            "$cyear4" => Intrinio::data_tag_qtr_year_wise_avg($id,'freecashflow',"$cyear4-01-01","$cyear4-$cmonth-$lday",$latest),
+            "$cyear3" => Intrinio::data_tag_qtr_year_wise_avg($id,'freecashflow',"$cyear3-01-01","$cyear3-$cmonth-$lday",$latest),
+            "$cyear2" => Intrinio::data_tag_qtr_year_wise_avg($id,'freecashflow',"$cyear2-01-01","$cyear2-$cmonth-$lday",$latest),
+            "$cyear1" => Intrinio::data_tag_qtr_year_wise_avg($id,'freecashflow',"$cyear1-01-01","$cyear1-$cmonth-$lday",$latest),
+            "$cyear" => Intrinio::data_tag_qtr_year_wise_avg($id,'freecashflow',"$cyear-01-01","$cyear-$cmonth-$lday",'')
+        );
+
+        $rating = 0;
+        $tpositive = 0;
+
+        foreach ($avg as $a):
+            if($a>0):
+                $tpositive++;
+            endif;
+        endforeach;
+        $avg['totalPositive'] = $tpositive;
+        // check for star rating 5
+        if($avg[$cyear1] > 0 && $avg[$cyear] > $avg[$cyear1]):
+            if($tpositive >= 3):
+                        $rating = 5;
+            endif;
+        endif;
+
+        // check for star rating 4
+        if($rating==0):
+            if($avg[$cyear] > 0 && $avg[$cyear] > $avg[$cyear1]):
+                if($tpositive >= 3):
+                    $rating = 4;
+                endif;
+            endif;
+        endif;
+
+        // check for star rating 3
+        if($rating==0):
+            if($avg[$cyear] > 0 || $avg[$cyear1] > 0):
+                if($tpositive >= 3):
+                    $rating = 3;
+                endif;
+            endif;
+        endif;
+
+        // check for star rating 2
+        if($rating==0):
+            if($avg[$cyear] > 0 || $avg[$cyear1] > 0):
+                if($tpositive >= 2):
+                    $rating = 2;
+                endif;
+            endif;
+        endif;
+
+        // check for star rating 1
+        if($rating==0):
+            if($avg[$cyear1] > 0):
+                if($avg[$cyear] > 0):
+                        $rating = 1;
+                else:
+                    if($avg[$cyear] > $avg[$cyear1]):
+                        $rating = 1;
+                    endif;
+                endif;
+            else:
+                if($avg[$cyear1] > $avg[$cyear2]):
+                    $rating = 1;
+                endif;
+            endif;
+        endif;
+        $avg["rating"] = $rating;
+        return $avg;
+    }
+    private function getRatingsDtoE($id){
+        $cyear = date('Y');
+        $cmonth = date('m');
+        $lday = date('t');
+
+        $latest = Intrinio::data_tag_qtr_year_wise_avg_latest_date($id,'debttoequity',"$cyear-01-01","$cyear-$cmonth-$lday");
+
+        $avg = array(
+                 "$cyear" => Intrinio::data_tag_qtr_year_wise_avg_per($id,'debttoequity',"$cyear-01-01","$cyear-$cmonth-$lday",$latest)
+        );
+
+        $avg['rating'] = 0;
+        // check for star rating 5
+        if($avg[$cyear]<=0.8):
+                    $avg['rating'] = 5;
+        elseif($avg[$cyear]>0.8 && $avg[$cyear]<=1.1):
+            $avg['rating'] = 4;
+        elseif($avg[$cyear]>1.1 && $avg[$cyear]<=1.3):
+            $avg['rating'] = 3;
+        elseif($avg[$cyear]>1.3 && $avg[$cyear]<=1.6):
+            $avg['rating'] = 2;
+        elseif($avg[$cyear]>1.6 && $avg[$cyear]<=2.2):
+            $avg['rating'] = 1;
+        endif;
+        return $avg;
+    }
+    private function getRatingsquick($id){
+        $cyear = date('Y');
+        $cmonth = date('m');
+        $lday = date('t');
+        $latest = Intrinio::data_tag_qtr_year_wise_avg_latest_date($id,'quickratio',"$cyear-01-01","$cyear-$cmonth-$lday");
+
+        $avg = array(
+                "$cyear" => Intrinio::data_tag_qtr_year_wise_avg_per($id,'quickratio',"$cyear-01-01","$cyear-$cmonth-$lday",$latest)
+        );
+
+        $avg['rating'] = 0;
+        // check for star rating 5
+        if($avg[$cyear]>1):
+            $avg['rating'] = 5;
+        elseif($avg[$cyear]<1 && $avg[$cyear]>=0.8):
+            $avg['rating'] = 4;
+        elseif($avg[$cyear]<0.8 && $avg[$cyear]>=0.7):
+            $avg['rating'] = 3;
+        elseif($avg[$cyear]<0.7 && $avg[$cyear]>=0.6):
+            $avg['rating'] = 2;
+        elseif($avg[$cyear]<0.6):
+            $avg['rating'] = 1;
+        endif;
+        return $avg;
+    }
+    private function getRatingsOI($id){
+        $cyear = date('Y');
+        $cmonth = date('m');
+        $lday = date('t');
+        //echo $lday;die();
+        $cyear1 = $cyear-1;
+        $cyear2 = $cyear-2;
+        $cyear3 = $cyear-3;
+        $cyear4 = $cyear-4;
+
+        $latest = Intrinio::data_tag_qtr_year_wise_avg_latest_date($id,'totaloperatingincome',"$cyear-01-01","$cyear-$cmonth-$lday");
+        //echo "$cyear // $cyear1 // $cyear2 // $cyear3 // $cyear4";die();
+        $avg = array(
+            // "2017" => Intrinio::data_tag_qtr_year_wise_avg($id,'ebit','2017-01-01','2017-04-30'),
+            "$cyear4" => Intrinio::data_tag_qtr_year_wise_avg($id,'totaloperatingincome',"$cyear4-01-01","$cyear4-$cmonth-$lday",$latest),
+            "$cyear3" => Intrinio::data_tag_qtr_year_wise_avg($id,'totaloperatingincome',"$cyear3-01-01","$cyear3-$cmonth-$lday",$latest),
+            "$cyear2" => Intrinio::data_tag_qtr_year_wise_avg($id,'totaloperatingincome',"$cyear2-01-01","$cyear2-$cmonth-$lday",$latest),
+            "$cyear1" => Intrinio::data_tag_qtr_year_wise_avg($id,'totaloperatingincome',"$cyear1-01-01","$cyear1-$cmonth-$lday",$latest),
+            "$cyear" => Intrinio::data_tag_qtr_year_wise_avg($id,'totaloperatingincome',"$cyear-01-01","$cyear-$cmonth-$lday",'')
+        );
+
+        $rating = 0;
+        // check for star rating 5
+        if($avg[$cyear3] > 0):
+            if($avg[$cyear2]>$avg[$cyear3]):
+                if($avg[$cyear1]>$avg[$cyear2]):
+                    if($avg[$cyear]>$avg[$cyear1]):
+                        $rating = 5;
+                    endif;
+                endif;
+            endif;
+        endif;
+
+        // check for star rating 4
+        if($rating==0):
+            if($avg[$cyear3] > 0 && $avg[$cyear2] > 0):
+                if($avg[$cyear1]>$avg[$cyear2] && $avg[$cyear] >$avg[$cyear2]):
+                    $rating = 4;
+                endif;
+            endif;
+        endif;
+
+        // check for star rating 3
+        if($rating==0):
+            if($avg[$cyear3] > 0 && $avg[$cyear2] > 0 && $avg[$cyear1] > 0):
+                if($avg[$cyear]>$avg[$cyear2]):
+                    $rating = 3;
+                endif;
+            endif;
+        endif;
+
+        // check for star rating 2
+        if($rating==0):
+            if($avg[$cyear]>$avg[$cyear2] && $avg[$cyear] > 0):
+                $rating = 2;
+            endif;
+        endif;
+
+        // check for star rating 1
+        if($rating==0):
+            if($avg[$cyear]>$avg[$cyear1]):
+                $rating = 1;
+            endif;
+        endif;
+        $avg["rating"] = $rating;
+        return $avg;
+    }
+    private function getRatingsEbit($id){
+        $cyear = date('Y');
+        $cmonth = date('m');
+        $lday = date('t');
+
+        $cyear1 = $cyear-1;
+        $cyear2 = $cyear-2;
+        $cyear3 = $cyear-3;
+        $cyear4 = $cyear-4;
+
+        $latest = Intrinio::data_tag_qtr_year_wise_avg_latest_date($id,'ebit',"$cyear-01-01","$cyear-$cmonth-$lday");
+        //echo "$cyear // $cyear1 // $cyear2 // $cyear3 // $cyear4";die();
+        $avg = array(
+           // "2017" => Intrinio::data_tag_qtr_year_wise_avg($id,'ebit','2017-01-01','2017-04-30'),
+            "$cyear4" => Intrinio::data_tag_qtr_year_wise_avg($id,'ebit',"$cyear4-01-01","$cyear4-$cmonth-$lday",$latest),
+            "$cyear3" => Intrinio::data_tag_qtr_year_wise_avg($id,'ebit',"$cyear3-01-01","$cyear3-$cmonth-$lday",$latest),
+            "$cyear2" => Intrinio::data_tag_qtr_year_wise_avg($id,'ebit',"$cyear2-01-01","$cyear2-$cmonth-$lday",$latest),
+            "$cyear1" => Intrinio::data_tag_qtr_year_wise_avg($id,'ebit',"$cyear1-01-01","$cyear1-$cmonth-$lday",$latest),
+            "$cyear" => Intrinio::data_tag_qtr_year_wise_avg($id,'ebit',"$cyear-01-01","$cyear-$cmonth-$lday",'')
+        );
+
+        $rating = 0;
+        // check for star rating 5
+            if($avg[$cyear3] > 0):
+                if($avg[$cyear2]>$avg[$cyear3]):
+                    if($avg[$cyear1]>$avg[$cyear2]):
+                        if($avg[$cyear]>$avg[$cyear1]):
+                            $rating = 5;
+                        endif;
+                    endif;
+                endif;
+            endif;
+
+         // check for star rating 4
+         if($rating==0):
+             if($avg[$cyear3] > 0 && $avg[$cyear2] > 0):
+                     if($avg[$cyear1]>$avg[$cyear2] && $avg[$cyear] >$avg[$cyear2]):
+                                 $rating = 4;
+                     endif;
+             endif;
+         endif;
+
+         // check for star rating 3
+         if($rating==0):
+             if($avg[$cyear3] > 0 && $avg[$cyear2] > 0 && $avg[$cyear1] > 0):
+                 if($avg[$cyear]>$avg[$cyear2]):
+                             $rating = 3;
+                 endif;
+             endif;
+         endif;
+
+         // check for star rating 2
+         if($rating==0):
+             if($avg[$cyear]>$avg[$cyear2] && $avg[$cyear] > 0):
+                         $rating = 2;
+             endif;
+         endif;
+
+         // check for star rating 1
+         if($rating==0):
+             if($avg[$cyear]>$avg[$cyear1]):
+                     $rating = 1;
+             endif;
+         endif;
+          $avg["rating"] = $rating;
+          return $avg;
+     }
+    private function getRatingsRatio($id){
+
+        $cyear = date('Y');
+        $cmonth = date('m');
+        $lday = date('t');
+
+        $cyear1 = $cyear-1;
+        $cyear2 = $cyear-2;
+        $avg = [];
+
+        $latest1 = Intrinio::data_tag_qtr_year_wise_avg_latest_date($id,'netcashfromoperatingactivities',"$cyear-01-01","$cyear-$cmonth-$lday");
+        $latest2 = Intrinio::data_tag_qtr_year_wise_avg_latest_date($id,'totalcurrentliabilities',"$cyear-01-01","$cyear-$cmonth-$lday");
+
+        $avg['last3year']['netcashfromoperatingactivities'] = array(
+            "$cyear2" => Intrinio::data_tag_qtr_year_wise_avg($id,'netcashfromoperatingactivities',"$cyear2-01-01","$cyear2-$cmonth-$lday",$latest1),
+            "$cyear1" => Intrinio::data_tag_qtr_year_wise_avg($id,'netcashfromoperatingactivities',"$cyear1-01-01","$cyear1-$cmonth-$lday",$latest1),
+            "$cyear" => Intrinio::data_tag_qtr_year_wise_avg($id,'netcashfromoperatingactivities',"$cyear-01-01","$cyear-$cmonth-$lday",$latest1)
+        );
+        $avg['last3year']['totalcurrentliabilities'] = array(
+            "$cyear2" => Intrinio::data_tag_qtr_year_wise_avg($id,'totalcurrentliabilities',"$cyear2-01-01","$cyear2-$cmonth-$lday",$latest2),
+            "$cyear1" => Intrinio::data_tag_qtr_year_wise_avg($id,'totalcurrentliabilities',"$cyear1-01-01","$cyear1-$cmonth-$lday",$latest2),
+            "$cyear" => Intrinio::data_tag_qtr_year_wise_avg($id,'totalcurrentliabilities',"$cyear-01-01","$cyear-$cmonth-$lday",$latest2)
+        );
+        $r = 0;
+        $r1 = 0;
+        $r2 = 0;
+        if($avg['last3year']['totalcurrentliabilities'][$cyear2] != 0 && $avg['last3year']['netcashfromoperatingactivities'][$cyear2]!=0):
+          $r2 = $avg['last3year']['netcashfromoperatingactivities'][$cyear2]/$avg['last3year']['totalcurrentliabilities'][$cyear2];
+        endif;
+        if($avg['last3year']['totalcurrentliabilities'][$cyear1] != 0 && $avg['last3year']['netcashfromoperatingactivities'][$cyear1]!=0):
+            $r1 = $avg['last3year']['netcashfromoperatingactivities'][$cyear1]/$avg['last3year']['totalcurrentliabilities'][$cyear1];
+        endif;
+        if($avg['last3year']['totalcurrentliabilities'][$cyear] != 0 && $avg['last3year']['netcashfromoperatingactivities'][$cyear]!=0):
+            $r = $avg['last3year']['netcashfromoperatingactivities'][$cyear]/$avg['last3year']['totalcurrentliabilities'][$cyear];
+        endif;
+        $avg['last3year']['ratio'] = array(
+            "$cyear2" => $r2,
+            "$cyear1" => $r1,
+            "$cyear" => $r,
+        );
+        $avg['ratio'] = round($avg['last3year']['ratio'][$cyear],2);
+        $avg['rating'] = 0;
+        if($avg['ratio']>=0.70):
+            if($avg['last3year']['ratio'][$cyear]>$avg['last3year']['ratio'][$cyear1]):
+                if($avg['last3year']['ratio'][$cyear1]>$avg['last3year']['ratio'][$cyear2]):
+                    $avg['rating'] = 5;
+                endif;
+            endif;
+        elseif($avg['ratio']<0.70 && $avg['ratio']>=0.40):
+            $avg['rating'] = 4;
+        elseif($avg['ratio']<0.40 && $avg['ratio']>=0.20):
+            $avg['rating'] = 3;
+        elseif($avg['ratio']<0.20 && $avg['ratio']>=0.10):
+            $avg['rating'] = 2;
+        elseif($avg['ratio']<0.10 && $avg['ratio']>=0.01):
+            $avg['rating'] = 1;
+        endif;
+        return $avg;
+    }
 
      private function getXsum($d){
         $sum = $d;
