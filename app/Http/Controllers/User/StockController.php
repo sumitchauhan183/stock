@@ -570,7 +570,17 @@ dd($c);
             "$cyear1" => $r1,
             "$cyear" => $r,
         );
-        $avg['ratio'] = round($avg['last3year']['ratio'][$cyear],2);
+
+        if($avg['last3year']['netcashfromoperatingactivities'][$cyear]>0 &&
+           $avg['last3year']['netcashfromoperatingactivities'][$cyear1]>0 &&
+           $avg['last3year']['netcashfromoperatingactivities'][$cyear2]>0
+        ):
+            $avg['ratio'] = round($avg['last3year']['ratio'][$cyear],2);
+        else:
+            $avg['ratio'] = 0;
+        endif;
+
+
         $avg['rating'] = 0;
         if($avg['ratio']>=0.70):
             if($avg['last3year']['ratio'][$cyear]>$avg['last3year']['ratio'][$cyear1]):
