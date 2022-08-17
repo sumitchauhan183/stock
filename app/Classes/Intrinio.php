@@ -41,6 +41,20 @@ class Intrinio
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
+    public static function getAllCompanies($size,$next='')
+    {
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        $uri = $endpoint."companies?page_size=$size&next_page=$next&api_key=$key";
+        $request = Utils::curlRequest($uri);
+        return $request;
+    }
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
     public static function companies_search($query='Lodging')
     {
         $key = env("INTRINIO_KEY");

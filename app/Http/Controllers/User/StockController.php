@@ -111,7 +111,7 @@ class StockController extends Controller
         $c->ticker                       = $ticker;
 
         // STEP 1 - calculate Ebit Margin
-       /* $c->revenue      = Intrinio::revenueArray($c->ticker);
+        $c->revenue      = Intrinio::revenueArray($c->ticker);
         $c->netppe               =  Intrinio::netppeArray($c->ticker);
         $c->CAPEX                =  Intrinio::CAPEXArray($c->ticker);
         $c->revenueChange        =  $this->changeInRevenue($c);
@@ -140,7 +140,7 @@ class StockController extends Controller
         $c->cashandequi                = Intrinio::data_tag($c->ticker,'cashandequivalents')[0]->value/1000000;
         $c->wacc                       = 0.09;
         $c->EPV                        =  (( ($c->normalizedEarnings-$c->avgmaintainanceCAPEX) / $c->wacc) + $c->cashandequi - $c->intBearDebt ) / $c->dilutedSharesOutstanding;
-        $data = array(
+        /*$data = array(
             "avg maintainance CAPEX" => $c->avgmaintainanceCAPEX,
             "Normalised Ebit" => $c->normalizedEbit,
             "operating revenue" => $c->avgRevenue,
@@ -159,7 +159,7 @@ class StockController extends Controller
             "CASH EQUIV" => $c->cashandequi,
             "CLO" => $c->capitalLeaseObligation,
             "SHRS OUTST" => $c->dilutedSharesOutstanding
-        );
+        );*/
 
          $c->dilutedSharesOutstanding   = Intrinio::data_tag_qtr($c->ticker,'weightedavedilutedsharesos')[0]->value/1000000;
          $c->totalEquity                = Intrinio::data_tag_qtr($c->ticker,'totalequity')[0]->value/1000000;
@@ -171,7 +171,7 @@ class StockController extends Controller
          $c->cashflowOperation   = Intrinio::data_tag_yearly($c->ticker,'netcashfromoperatingactivities')[0]->value/1000000;
          $c->capexCashFlow       = Intrinio::data_tag_yearly($c->ticker,'capex')[0]->value/1000000*(-1);
          $c->dilutedSharesCashflow       = Intrinio::data_tag_yearly($c->ticker,'weightedavedilutedsharesos')[0]->value/1000000;
-         $c->freeCashFlowPerShare  = ($c->cashflowOperation + $c->capexCashFlow) / $c->dilutedSharesCashflow;
+         //$c->freeCashFlowPerShare  = ($c->cashflowOperation + $c->capexCashFlow) / $c->dilutedSharesCashflow;
          $c->EPS = Intrinio::data_tag($c->ticker,'adjdilutedeps')[0]->value;
          $c->GN = sqrt($c->TB * $c->EPS * 22.5);
 
@@ -218,19 +218,25 @@ class StockController extends Controller
              $c->NRI = 0;
          endif;
          $c->EPS = Intrinio::data_tag_yearly($c->ticker,'adjdilutedeps')[0]->value;
-         $c->PLV = 1*$c->avgCAGR*($c->EPS-$c->NRI)."(1x".$c->avgCAGR."x(".$c->EPS."-".$c->NRI.")";
+         $c->PLV = 1*$c->avgCAGR*($c->EPS-$c->NRI);
 
 
-       */
          $c->ebitRating  = $this->getRatingsEbit($c->ticker);
          $c->OperatingIncomeRating = $this->getRatingsOI($c->ticker);
          $c->OPCPERCURDEBTRating = $this->getRatingsRatio($c->ticker);
          $c->quickRatioRating = $this->getRatingsquick($c->ticker);
          $c->DtoERating = $this->getRatingsDtoE($c->ticker);
          $c->freecashflowRating = $this->getRatingsfreecashflow($c->ticker);
-
          $c->afterWeightRating = $this->getAfterWeightRating($c);
-dd($c);
+
+         $d = (object)[];
+         $d->FCF = $c->fcfpershare;
+         $d->DCF = $c->dilutedSharesCashflow;
+         $d->EPV = $c->EPV;
+         $d->TB  = $c->TB;
+         $d->GRAHAM = $c->GN;
+         $d->PL  = $c->PLV;
+dd($d);
 
          echo "<pre>";print_r($c);die();
         return view('user.stocks.sector',[

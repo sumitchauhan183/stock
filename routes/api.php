@@ -31,7 +31,9 @@ Route::post('user/reset/password',[App\Http\Controllers\API\UserController::clas
 Route::post('user/change/password',[App\Http\Controllers\API\UserController::class,'changePassword']);
 Route::post('user/profile/update',[App\Http\Controllers\API\UserController::class,'updateProfile']);
 
- 
+// CRON APIS
+Route::get('cron/companies/save/{key}',[App\Http\Controllers\API\CronController::class,'saveCompanies']);
+
 // INTRINIO API
 Route::any('find-value-stock/sector/{sector}',[App\Http\Controllers\API\Intrinio\FVSController::class,'companies']);
 Route::any('find-value-stock/sector/company/{id}',[App\Http\Controllers\API\Intrinio\FVSController::class,'companyDetail']);
