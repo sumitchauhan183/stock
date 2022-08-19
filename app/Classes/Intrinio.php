@@ -69,6 +69,20 @@ class Intrinio
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
+    public static function companDetail($id)
+    {
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        $uri = $endpoint."companies/$id?api_key=$key";
+        $request = Utils::curlRequest($uri);
+        return $request;
+    }
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
     public static function companies_all()
     {
         $key = env("INTRINIO_KEY");
@@ -990,15 +1004,18 @@ class Intrinio
         if(isset($request->error)):
             return [];
         else:
-            $acdep = 0;
-            $x=0;
             $data = $request->historical_data;
-            foreach($data as $d):
-                $x++;
-                $acdep += $d->value;
-            endforeach;
+            if(count($data)>0):
+                $dsos = 0;
+                $x=0;
 
-            return $acdep/$x;
+                foreach($data as $d):
+                    $x++;
+                    $dsos += $d->value;
+                endforeach;
+                return $dsos/$x;
+            endif;
+            return 0;
         endif;
     }
 
@@ -1115,14 +1132,18 @@ class Intrinio
         if(isset($request->error)):
             return [];
         else:
-            $dsos = 0;
-            $x=0;
             $data = $request->historical_data;
-            foreach($data as $d):
-                $x++;
-                $dsos += $d->value;
-            endforeach;
-            return $dsos/$x;
+            if(count($data)>0):
+                $dsos = 0;
+                $x=0;
+
+                foreach($data as $d):
+                    $x++;
+                    $dsos += $d->value;
+                endforeach;
+                return $dsos/$x;
+            endif;
+            return 0;
         endif;
     }
 
@@ -1146,14 +1167,18 @@ class Intrinio
         if(isset($request->error)):
             return [];
         else:
-            $dsos = 0;
-            $x=0;
             $data = $request->historical_data;
-            foreach($data as $d):
-                $x++;
-                $dsos += $d->value;
-            endforeach;
-            return $dsos/$x;
+            if(count($data)>0):
+                $dsos = 0;
+                $x=0;
+
+                foreach($data as $d):
+                    $x++;
+                    $dsos += $d->value;
+                endforeach;
+                return $dsos/$x;
+            endif;
+            return 0;
         endif;
     }
     /**
@@ -1176,14 +1201,18 @@ class Intrinio
         if(isset($request->error)):
             return [];
         else:
-            $dsos = 0;
-            $x=0;
             $data = $request->historical_data;
-            foreach($data as $d):
-                $x++;
-                $dsos += $d->value;
-            endforeach;
-            return $dsos/$x;
+            if(count($data)>0):
+                $dsos = 0;
+                $x=0;
+
+                foreach($data as $d):
+                    $x++;
+                    $dsos += $d->value;
+                endforeach;
+                return $dsos/$x;
+            endif;
+            return 0;
         endif;
     }
 
@@ -1207,14 +1236,18 @@ class Intrinio
         if(isset($request->error)):
             return [];
         else:
+            $data = $request->historical_data;
+            if(count($data)>0):
             $dsos = 0;
             $x=0;
-            $data = $request->historical_data;
+
             foreach($data as $d):
                 $x++;
                   $dsos += $d->value;
             endforeach;
             return $dsos/$x;
+            endif;
+            return 0;
         endif;
     }
 
@@ -1238,16 +1271,21 @@ class Intrinio
         if(isset($request->error)):
             return [];
         else:
-            $dsos = 0;
-            $x=0;
             $data = $request->historical_data;
-            foreach($data as $d):
-                if($d->value!=null):
-                $x++;
-                $dsos += $d->value;
+            if(count($data)>0):
+                $dsos = 0;
+                $x=0;
+                foreach($data as $d):
+                    if($d->value!=null):
+                        $x++;
+                        $dsos += $d->value;
+                    endif;
+                endforeach;
+                if($x>0):
+                  return $dsos/$x;
                 endif;
-            endforeach;
-            return $dsos/$x;
+            endif;
+            return 0;
         endif;
     }
 

@@ -111,7 +111,7 @@ class StockController extends Controller
         $c->ticker                       = $ticker;
 
         // STEP 1 - calculate Ebit Margin
-        $c->revenue      = Intrinio::revenueArray($c->ticker);
+        $c->revenue              = Intrinio::revenueArray($c->ticker);
         $c->netppe               =  Intrinio::netppeArray($c->ticker);
         $c->CAPEX                =  Intrinio::CAPEXArray($c->ticker);
         $c->revenueChange        =  $this->changeInRevenue($c);
@@ -230,7 +230,7 @@ class StockController extends Controller
          $c->afterWeightRating = $this->getAfterWeightRating($c);
 
          $d = (object)[];
-         $d->FCF = $c->fcfpershare;
+         $d->FCF = $c->FutCF;
          $d->DCF = $c->dilutedSharesCashflow;
          $d->EPV = $c->EPV;
          $d->TB  = $c->TB;

@@ -33,6 +33,10 @@ Route::post('user/profile/update',[App\Http\Controllers\API\UserController::clas
 
 // CRON APIS
 Route::get('cron/companies/save/{key}',[App\Http\Controllers\API\CronController::class,'saveCompanies']);
+Route::get('cron/companies/EPV/save/{key}',[App\Http\Controllers\API\CronController::class,'saveEPV']);
+Route::get('cron/companies/detail/save/{key}',[App\Http\Controllers\API\CronController::class,'saveCompanyDetail']);
+
+
 
 // INTRINIO API
 Route::any('find-value-stock/sector/{sector}',[App\Http\Controllers\API\Intrinio\FVSController::class,'companies']);
