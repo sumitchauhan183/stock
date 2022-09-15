@@ -34,6 +34,10 @@ Route::post('user/profile/update',[App\Http\Controllers\API\UserController::clas
 // CRON APIS
 Route::get('cron/companies/save/{key}',[App\Http\Controllers\API\CronController::class,'saveCompanies']);
 Route::get('cron/companies/EPV/save/{key}',[App\Http\Controllers\API\CronController::class,'saveEPV']);
+Route::get('cron/companies/FCF/save/{key}',[App\Http\Controllers\API\CronController::class,'saveFCF']);
+Route::get('cron/companies/DCF/save/{key}',[App\Http\Controllers\API\CronController::class,'saveDCF']);
+Route::get('cron/companies/TB/save/{key}',[App\Http\Controllers\API\CronController::class,'saveTB']);
+Route::get('cron/companies/PL/save/{key}',[App\Http\Controllers\API\CronController::class,'savePL']);
 Route::get('cron/companies/detail/save/{key}',[App\Http\Controllers\API\CronController::class,'saveCompanyDetail']);
 
 

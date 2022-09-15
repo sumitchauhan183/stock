@@ -8,6 +8,7 @@ use App\Models\CompaniesSetting;
 use App\Models\Companies;
 use App\Models\CompanyDetail;
 use App\Classes\Intrinio;
+use PhpOffice\PhpSpreadsheet\Calculation\Statistical;
 
 class CronController extends Controller
 {
@@ -86,7 +87,7 @@ class CronController extends Controller
         if($key==$this->key):
             $date = date('Y-m-d H:i:s',strtotime('-150 hours'));
             $ndate = date('Y-m-d H:i:s');
-            $companies = Companies::where('FCF_last_updated','>',"$date")
+            $companies = Companies::where('FCF_last_updated','<',"$date")
                 ->orderBy('company_id','ASC')
                 ->take('25')
                 ->get()
@@ -100,12 +101,91 @@ class CronController extends Controller
                     ]
                 );
             endforeach;
-
+            return json_encode(["error"=>'success',"code"=>200]);
         else:
             dd("Please provide valid API key");
         endif;
 
     }
+
+    public function saveDCF($key){
+
+        if($key==$this->key):
+            $date = date('Y-m-d H:i:s',strtotime('-150 hours'));
+            $ndate = date('Y-m-d H:i:s');
+            $companies = Companies::where('DCF_last_updated','<',"$date")
+                ->orderBy('company_id','ASC')
+                ->take('25')
+                ->get()
+                ->toArray();
+            foreach ($companies as $c):
+                $fcf = $this->calculateDCF($c['id']);
+                Companies::where('company_id',$c['company_id'])->update(
+                    [
+                        "DCF" => $fcf,
+                        "DCF_last_updated" => $ndate
+                    ]
+                );
+            endforeach;
+            return json_encode(["error"=>'success',"code"=>200]);
+        else:
+            dd("Please provide valid API key");
+        endif;
+
+    }
+
+    public function saveTB($key){
+
+        if($key==$this->key):
+            $date = date('Y-m-d H:i:s',strtotime('-150 hours'));
+            $ndate = date('Y-m-d H:i:s');
+            $companies = Companies::where('TB_last_updated','<',"$date")
+                ->orderBy('company_id','ASC')
+                ->take('25')
+                ->get()
+                ->toArray();
+            foreach ($companies as $c):
+                $fcf = $this->calculateTB($c['id']);
+                Companies::where('company_id',$c['company_id'])->update(
+                    [
+                        "TB" => $fcf,
+                        "TB_last_updated" => $ndate
+                    ]
+                );
+            endforeach;
+            return json_encode(["error"=>'success',"code"=>200]);
+        else:
+            dd("Please provide valid API key");
+        endif;
+
+    }
+
+    public function savePL($key){
+
+        if($key==$this->key):
+            $date = date('Y-m-d H:i:s',strtotime('-150 hours'));
+            $ndate = date('Y-m-d H:i:s');
+            $companies = Companies::where('PL_last_updated','<',"$date")
+                ->orderBy('company_id','ASC')
+                ->take('25')
+                ->get()
+                ->toArray();
+            foreach ($companies as $c):
+                $fcf = $this->calculatePL($c['id']);
+                Companies::where('company_id',$c['company_id'])->update(
+                    [
+                        "PL" => $fcf,
+                        "PL_last_updated" => $ndate
+                    ]
+                );
+            endforeach;
+            return json_encode(["error"=>'success',"code"=>200]);
+        else:
+            dd("Please provide valid API key");
+        endif;
+
+    }
+
 
     public function saveCompanyDetail($key){
 
@@ -122,6 +202,91 @@ class CronController extends Controller
         else:
             dd("Please provide valid API key");
         endif;
+
+    }
+
+    private function calculateFCF($id){
+
+        $ebitpershare = $this->ebitpershare($id);
+        if(count($ebitpershare["z"])>0):
+            $CAGR = $this->getCagr($ebitpershare['z'])*100;
+        else:
+            $CAGR = 0;
+        endif;
+
+        if(count($ebitpershare["x"])>0 && count($ebitpershare["y"])>0):
+            $LINEST  = $this->getLinest($ebitpershare);
+            if(is_array($LINEST)){
+                $growthRate = (pow(10,$LINEST[0])-1)*100;
+            }else{
+                $growthRate = 0;
+            }
+
+        else:
+            $growthRate = 0;
+        endif;
+
+        if($CAGR > 0 || $growthRate > 0):
+            $avgCAGR = floor(($growthRate+$CAGR)/2);
+        else:
+            $avgCAGR = 0;
+        endif;
+
+        if($avgCAGR<4):
+            $g1 = 4;
+        else:
+            $g1 = $avgCAGR;
+        endif;
+
+        if($avgCAGR>20):
+            $g1 = 20;
+        endif;
+        $avgFreeCashFlows = (Intrinio::data_tag_avg_yearly($id,'netcashfromoperatingactivities')-Intrinio::data_tag_avg_yearly($id,'capex'))/1000000;
+        $growthMultiple = 8.3459 * pow(1.07, $g1-4);
+        $totalEquity = Intrinio::data_tag_qtr($id,'totalequity');
+        if(count($totalEquity)>0):
+            $totalEquity = $totalEquity[0]->value/1000000;
+        else:
+            $totalEquity = 0;
+        endif;
+        $FutCF = ($growthMultiple*$avgFreeCashFlows)+(0.75*$totalEquity);
+        $dilShareOut = Intrinio::data_tag_avg_yearly($id,'weightedavedilutedsharesos');
+        if($dilShareOut>0):
+            $dilShareOut = $dilShareOut /1000000;
+            $FutCF = $FutCF/$dilShareOut;
+        else:
+            $FutCF = 0;
+        endif;
+
+
+        return $FutCF;
+    }
+
+    private function calculateDCF($id){
+
+        $dilutedSharesCashflow       = Intrinio::data_tag_yearly($id,'weightedavedilutedsharesos');
+
+        if(count($dilutedSharesCashflow)>0):
+            $dilutedSharesCashflow       = $dilutedSharesCashflow[0]->value/1000000;
+        else:
+            $dilutedSharesCashflow       = 0;
+        endif;
+
+        return $dilutedSharesCashflow;
+    }
+
+    private function calculateTB($id){
+        $dilutedSharesOutstanding   = Intrinio::data_tag_qtr($id,'weightedavedilutedsharesos')[0]->value/1000000;
+        $totalEquity                = Intrinio::data_tag_qtr($id,'totalequity')[0]->value/1000000;
+        $totalPreferedEquity        = Intrinio::data_tag_qtr($id,'totalpreferredequity')[0]->value/1000000;
+        $intengibleAssets           = Intrinio::data_tag_qtr($id,'intangibleassets')[0]->value/1000000;
+        $goodWill                   = Intrinio::data_tag_qtr($id,'goodwill')[0]->value/1000000;
+        $TB = ($totalEquity - $totalPreferedEquity - ($intengibleAssets + $goodWill)) / $dilutedSharesOutstanding;
+
+        return $TB;
+    }
+
+    private function calculatePL($id){
 
     }
 
@@ -355,4 +520,77 @@ class CronController extends Controller
     }
 
 
+
+
+    private function ebitpershare($id){
+
+        $ebitArr  = Intrinio::data_tag_yearly($id,'ebit');
+        $shareArr = Intrinio::data_tag_yearly($id,'weightedavedilutedsharesos');
+        $avg = $this->getAvg($shareArr);
+        $arr = [
+            'x' => [],
+            'y' => [],
+            'z' => [],
+            'detail' => []
+        ];
+        $y = 0;
+        $coun = count($ebitArr);
+        if($coun > count($shareArr)):
+            $coun = count($shareArr);
+        endif;
+        for($i=$coun-1;$i>=0;$i--):
+
+            $x = (object)[];
+            $x->count     = $y;
+            $x->date      = $ebitArr[$i]->date;
+            if($shareArr[$i]->value==0):
+                $shareArr[$i]->value = $avg;
+            endif;
+            $x->ebitpershare = abs($ebitArr[$i]->value/$shareArr[$i]->value);
+            $x->log10 = log10($x->ebitpershare);
+
+            //echo $revArr[$i]->value."/".$shareArr[$i]->value."=".$x.'<br>';
+            array_push($arr['detail'],$x);
+            array_push($arr['x'],$x->log10);
+            array_push($arr['y'],$x->count);
+            array_push($arr['z'],$x->ebitpershare);
+            $y++;
+        endfor;
+        return $arr;
+    }
+
+    private function getAvg($d){
+        $count = 0;
+        $val = 0;
+        foreach($d as $a):
+            $val = $val+$a->value;
+            $count++;
+        endforeach;
+        if($count>0):
+            return $val/$count;
+        else:
+            return 0;
+        endif;
+    }
+
+    private  function getLinest($d){
+        $stats = new Statistical();
+        $stat = $stats->LINEST($d['x'],$d['y']);
+        return $stat;
+    }
+
+    private  function getCagr($d){
+
+        $count = count($d);
+        if($count>0):
+            $tot = $d[$count-1]/$d[0];
+
+            $exp = pow($tot,1/($count));
+            $cagr = $exp-1;
+            return $cagr;
+        else:
+            return 0;
+        endif;
+
+    }
 }

@@ -645,7 +645,6 @@ dd($d);
      }
      private function ebitpershare($c){
         $ebitArr = $c->ebityearlyarr;
-
         $shareArr = $c->dilsharesyearlyarr;
         $avg = $this->getAvg($c->dilsharesyearlyarr);
         $arr = [

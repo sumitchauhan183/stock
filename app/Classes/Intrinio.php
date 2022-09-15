@@ -382,7 +382,12 @@ class Intrinio
                 $count++;
                 $ebm += $d->value;
             endforeach;
-            return $ebm/$count;
+            if($count > 0):
+                return $ebm/$count;
+            else:
+                return 0;
+            endif;
+
         endif;
     }
 
