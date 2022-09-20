@@ -38,6 +38,8 @@ Route::get('cron/companies/FCF/save/{key}',[App\Http\Controllers\API\CronControl
 Route::get('cron/companies/DCF/save/{key}',[App\Http\Controllers\API\CronController::class,'saveDCF']);
 Route::get('cron/companies/TB/save/{key}',[App\Http\Controllers\API\CronController::class,'saveTB']);
 Route::get('cron/companies/PL/save/{key}',[App\Http\Controllers\API\CronController::class,'savePL']);
+Route::get('cron/companies/GRAHAM/save/{key}',[App\Http\Controllers\API\CronController::class,'saveGRAHAM']);
+Route::get('cron/companies/FinRat/save/{key}',[App\Http\Controllers\API\CronController::class,'saveFinRat']);
 Route::get('cron/companies/detail/save/{key}',[App\Http\Controllers\API\CronController::class,'saveCompanyDetail']);
 
 

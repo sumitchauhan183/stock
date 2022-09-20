@@ -22,7 +22,7 @@ class CronController extends Controller
     private $size = 1000;
     public function __construct()
     {
-       $this->key = env('CRON_API_KEY');
+        $this->key = env('CRON_API_KEY');
     }
 
     /**
@@ -30,8 +30,7 @@ class CronController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
-    {
+    public function index(){
         return "Wrong page";
     }
 
@@ -46,10 +45,11 @@ class CronController extends Controller
                     $this->saveCompanySettings($count,$settings->next_page_id,$companies->next_page);
                 endif;
             else:
-               $companies = Intrinio::getAllCompanies($this->size,'');
-               $count = $this->saveCompanyDetails($companies->companies);
-               $this->saveCompanySettings($count,'',$companies->next_page);
+                $companies = Intrinio::getAllCompanies($this->size,'');
+                $count = $this->saveCompanyDetails($companies->companies);
+                $this->saveCompanySettings($count,'',$companies->next_page);
             endif;
+            return json_encode(["error"=>'success',"code"=>200]);
         else:
             dd("Please provide valid API key");
         endif;
@@ -59,23 +59,26 @@ class CronController extends Controller
     public function saveEPV($key){
 
         if($key==$this->key):
-        $date = date('Y-m-d H:i:s',strtotime('-24 hours'));
-        $ndate = date('Y-m-d H:i:s');
-        $companies = Companies::where('EPV_last_updated','<',"$date")
-                                ->orderBy('company_id','ASC')
-                                ->take('25')
-                                ->get()
-                                ->toArray();
-        foreach ($companies as $c):
-            $epv = $this->calculateEPV($c['id']);
-            Companies::where('company_id',$c['company_id'])->update(
-                [
-                    "EPV" => $epv,
-                    "EPV_last_updated" => $ndate
-                ]
-            );
-        endforeach;
-
+            $date = date('Y-m-d H:i:s',strtotime('-24 hours'));
+            $ndate = date('Y-m-d H:i:s');
+            $companies = Companies::where('EPV_last_updated','<',"$date")
+                ->orderBy('company_id','ASC')
+                ->take('25')
+                ->get()
+                ->toArray();
+            foreach ($companies as $c):
+                $epv = $this->calculateEPV($c['id']);
+                if(is_nan($epv)):
+                    $epv = 0;
+                endif;
+                Companies::where('company_id',$c['company_id'])->update(
+                    [
+                        "EPV" => $epv,
+                        "EPV_last_updated" => $ndate
+                    ]
+                );
+            endforeach;
+            return json_encode(["error"=>'success',"code"=>200]);
         else:
             dd("Please provide valid API key");
         endif;
@@ -94,6 +97,9 @@ class CronController extends Controller
                 ->toArray();
             foreach ($companies as $c):
                 $fcf = $this->calculateFCF($c['id']);
+                if(is_nan($fcf)):
+                    $fcf = 0;
+                endif;
                 Companies::where('company_id',$c['company_id'])->update(
                     [
                         "FCF" => $fcf,
@@ -119,10 +125,13 @@ class CronController extends Controller
                 ->get()
                 ->toArray();
             foreach ($companies as $c):
-                $fcf = $this->calculateDCF($c['id']);
+                $dcf = $this->calculateDCF($c['id']);
+                if(is_nan($dcf)):
+                    $dcf = 0;
+                endif;
                 Companies::where('company_id',$c['company_id'])->update(
                     [
-                        "DCF" => $fcf,
+                        "DCF" => $dcf,
                         "DCF_last_updated" => $ndate
                     ]
                 );
@@ -145,10 +154,13 @@ class CronController extends Controller
                 ->get()
                 ->toArray();
             foreach ($companies as $c):
-                $fcf = $this->calculateTB($c['id']);
+                $tb = $this->calculateTB($c['id']);
+                if(is_nan($tb)):
+                    $tb = 0;
+                endif;
                 Companies::where('company_id',$c['company_id'])->update(
                     [
-                        "TB" => $fcf,
+                        "TB" => $tb,
                         "TB_last_updated" => $ndate
                     ]
                 );
@@ -171,10 +183,13 @@ class CronController extends Controller
                 ->get()
                 ->toArray();
             foreach ($companies as $c):
-                $fcf = $this->calculatePL($c['id']);
+                $pl = $this->calculatePL($c['id']);
+                if(is_nan($pl)):
+                    $pl = 0;
+                endif;
                 Companies::where('company_id',$c['company_id'])->update(
                     [
-                        "PL" => $fcf,
+                        "PL" => $pl,
                         "PL_last_updated" => $ndate
                     ]
                 );
@@ -186,6 +201,63 @@ class CronController extends Controller
 
     }
 
+    public function saveGRAHAM($key){
+
+        if($key==$this->key):
+            $date = date('Y-m-d H:i:s',strtotime('-150 hours'));
+            $ndate = date('Y-m-d H:i:s');
+            $companies = Companies::where('GRAHAM_last_updated','<',"$date")
+                ->orderBy('company_id','ASC')
+                ->take('25')
+                ->get()
+                ->toArray();
+            foreach ($companies as $c):
+                $GRAHAM = $this->calculateGRAHAM($c['id']);
+                if(is_nan($GRAHAM)):
+                    $GRAHAM = 0;
+                endif;
+                Companies::where('company_id',$c['company_id'])->update(
+                    [
+                        "GRAHAM" => $GRAHAM,
+                        "GRAHAM_last_updated" => $ndate
+                    ]
+                );
+            endforeach;
+            return json_encode(["error"=>'success',"code"=>200]);
+        else:
+            dd("Please provide valid API key");
+        endif;
+
+    }
+
+    public function saveFinRat($key){
+
+        if($key==$this->key):
+            $date = date('Y-m-d H:i:s',strtotime('-150 hours'));
+            $ndate = date('Y-m-d H:i:s');
+            $companies = Companies::where('FRating_last_updated','<',"$date")
+                ->orderBy('company_id','ASC')
+                ->take('25')
+                ->get()
+                ->toArray();
+            foreach ($companies as $c):
+                $FinRat = $this->calculateFinancialRating($c['id']);
+                if(is_nan($FinRat)):
+                    $FinRat = 0;
+                endif;
+                Companies::where('company_id',$c['company_id'])->update(
+                    [
+                        "financial_rating" => $FinRat,
+                        "FRating_last_updated" => $ndate
+                    ]
+                );
+            endforeach;
+            return json_encode(["error"=>'success',"code"=>200]);
+        else:
+            dd("Please provide valid API key");
+        endif;
+
+    }
 
     public function saveCompanyDetail($key){
 
@@ -199,10 +271,63 @@ class CronController extends Controller
                 $detail = Intrinio::companDetail($c['id']);
                 $this->addUpdateCompanyDetail($c['company_id'],$detail);
             endforeach;
+            return json_encode(["error"=>'success',"code"=>200]);
         else:
             dd("Please provide valid API key");
         endif;
 
+    }
+
+    private function addUpdateCompanyDetail($id,$detail){
+        $check = CompanyDetail::where('company_id',$id)
+            ->get()
+            ->count();
+        if($check==0):
+            $detail->company_id = $id;
+            $save = CompanyDetail::create((array)$detail);
+            if($save):
+                Companies::where('company_id',$id)->update(['details_saved'=>1]);
+            endif;
+        endif;
+    }
+
+    private function calculateEPV($id){
+        $avgOperatingmargin         = Intrinio::avgFiveYearOperatingMargin($id);
+        $avgRevenue                 = Intrinio::avgSustainableRevenue($id)/1000000;
+        $avgSGA                     = Intrinio::avgFiveYearSGA($id)/1000000;
+        $avgtaxRate                 = Intrinio::avgFiveYearTaxRate($id);
+        $avgDDA                     = (Intrinio::avgFiveYearDDA($id)/1000000)*4;
+        $excessDepriciation         = $avgDDA * 0.5 * $avgtaxRate;
+        $revenue                    = Intrinio::revenueArray($id);
+        $CAPEX                      = Intrinio::CAPEXArray($id);
+        $netppe                     = Intrinio::netppeArray($id);
+        $capitalLeaseObligation     = Intrinio::capitalLeaseObligation($id)/1000000;
+        $dilutedSharesOutstanding   = isset(Intrinio::data_tag($id,'weightedavedilutedsharesos')[0])?Intrinio::data_tag($id,'weightedavedilutedsharesos')[0]->value/1000000:0;
+        $longTermDebt               = isset(Intrinio::data_tag($id,'longtermdebt')[0])?Intrinio::data_tag($id,'longtermdebt')[0]->value/1000000:0;
+        $shortTermDebt              = isset(Intrinio::data_tag($id,'shorttermdebt')[0])?Intrinio::data_tag($id,'shorttermdebt')[0]->value/1000000:0;
+        $intBearDebt                = $longTermDebt + $shortTermDebt + $capitalLeaseObligation;
+        $cashandequi                = isset(Intrinio::data_tag($id,'cashandequivalents')[0])?Intrinio::data_tag($id,'cashandequivalents')[0]->value/1000000:0;
+        $wacc                       = 0.09;
+
+        $c = (object) [];
+        $c->CAPEXpos               =  $this->capexpositive($CAPEX);
+        $c->revenueChange          =  $this->changeInRevenue($revenue);
+        $c->revenueTTM             =  $this->revenueTTM($revenue);
+        $c->ppeToRevenueTTM        =  $this->ppetorevenuettm($netppe,$c->revenueTTM);
+        $c->maintainanceCAPEXnoCon =  $this->maintainanceCapexnocon($c);
+        $maintainanceCAPEX         =  $this->maintainanceCapex($c);
+        $avgmaintainanceCAPEX      =  $this->avgmaintainanceCapex($maintainanceCAPEX);
+
+        $normalizedEbit             = ($avgRevenue*$avgOperatingmargin)+$avgSGA;
+        $normalizedEbitAfterTax     = $normalizedEbit * (1-$avgtaxRate);
+        $normalizedEarnings         = $normalizedEbitAfterTax + $excessDepriciation;
+
+
+        if($dilutedSharesOutstanding!=0):
+            $EPV =  ((($normalizedEarnings-$avgmaintainanceCAPEX) / $wacc) + $cashandequi - $intBearDebt ) / $dilutedSharesOutstanding;
+            return $EPV;
+        endif;
+        return 0;
     }
 
     private function calculateFCF($id){
@@ -262,6 +387,49 @@ class CronController extends Controller
         return $FutCF;
     }
 
+    private function calculatePL($id){
+
+        $NRI = Intrinio::data_tag_yearly($id,'extraordinaryincome');
+        if(count($NRI)>0):
+            $NRI = $NRI[0]->value;
+        else:
+            $NRI = 0;
+        endif;
+        $EPS = Intrinio::data_tag_yearly($id,'adjdilutedeps');
+        if(count($EPS)>0):
+            $EPS = $EPS[0]->value;
+        else:
+            $EPS = 0;
+        endif;
+        $ebitpershare = $this->ebitpershare($id);
+        if(count($ebitpershare["z"])>0):
+            $CAGR = $this->getCagr($ebitpershare['z'])*100;
+        else:
+            $CAGR = 0;
+        endif;
+
+        if(count($ebitpershare["x"])>0 && count($ebitpershare["y"])>0):
+            $LINEST  = $this->getLinest($ebitpershare);
+            if(is_array($LINEST)){
+                $growthRate = (pow(10,$LINEST[0])-1)*100;
+            }else{
+                $growthRate = 0;
+            }
+
+        else:
+            $growthRate = 0;
+        endif;
+
+        if($CAGR > 0 || $growthRate > 0):
+            $avgCAGR = floor(($growthRate+$CAGR)/2);
+        else:
+            $avgCAGR = 0;
+        endif;
+        $PLV = 1*$avgCAGR*($EPS-$NRI);
+
+        return $PLV;
+    }
+
     private function calculateDCF($id){
 
         $dilutedSharesCashflow       = Intrinio::data_tag_yearly($id,'weightedavedilutedsharesos');
@@ -276,71 +444,78 @@ class CronController extends Controller
     }
 
     private function calculateTB($id){
-        $dilutedSharesOutstanding   = Intrinio::data_tag_qtr($id,'weightedavedilutedsharesos')[0]->value/1000000;
-        $totalEquity                = Intrinio::data_tag_qtr($id,'totalequity')[0]->value/1000000;
-        $totalPreferedEquity        = Intrinio::data_tag_qtr($id,'totalpreferredequity')[0]->value/1000000;
-        $intengibleAssets           = Intrinio::data_tag_qtr($id,'intangibleassets')[0]->value/1000000;
-        $goodWill                   = Intrinio::data_tag_qtr($id,'goodwill')[0]->value/1000000;
-        $TB = ($totalEquity - $totalPreferedEquity - ($intengibleAssets + $goodWill)) / $dilutedSharesOutstanding;
+
+        $dilutedSharesOutstanding   = Intrinio::data_tag_qtr($id,'weightedavedilutedsharesos');
+        if(count($dilutedSharesOutstanding)>0):
+            $dilutedSharesOutstanding   = $dilutedSharesOutstanding[0]->value/1000000;
+            $totalEquity                = Intrinio::data_tag_qtr($id,'totalequity');
+            if(count($totalEquity)>0):
+                $totalEquity                =  $totalEquity[0]->value/1000000;
+            else:
+                $totalEquity                =  0;
+            endif;
+            $totalPreferedEquity        = Intrinio::data_tag_qtr($id,'totalpreferredequity');
+            if(count($totalPreferedEquity)>0):
+                $totalPreferedEquity                =  $totalPreferedEquity[0]->value/1000000;
+            else:
+                $totalPreferedEquity                =  0;
+            endif;
+            $intengibleAssets           = Intrinio::data_tag_qtr($id,'intangibleassets');
+            if(count($intengibleAssets)>0):
+                $intengibleAssets                =  $intengibleAssets[0]->value/1000000;
+            else:
+                $intengibleAssets                =  0;
+            endif;
+            $goodWill                   = Intrinio::data_tag_qtr($id,'goodwill');
+            if(count($goodWill)>0):
+                $goodWill                =  $goodWill[0]->value/1000000;
+            else:
+                $goodWill                =  0;
+            endif;
+            if($dilutedSharesOutstanding > 0):
+                $TB = ($totalEquity - $totalPreferedEquity - ($intengibleAssets + $goodWill)) / $dilutedSharesOutstanding;
+            else:
+                $TB = 0;
+            endif;
+        else:
+            $TB = 0;
+        endif;
+
+
 
         return $TB;
     }
 
-    private function calculatePL($id){
-
-    }
-
-    private function addUpdateCompanyDetail($id,$detail){
-        $check = CompanyDetail::where('company_id',$id)
-            ->get()
-            ->count();
-        if($check==0):
-            $detail->company_id = $id;
-            $save = CompanyDetail::create((array)$detail);
-            if($save):
-                Companies::where('company_id',$id)->update(['details_saved'=>1]);
-            endif;
+    private function calculateGRAHAM($id){
+        $EPS = Intrinio::data_tag($id,'adjdilutedeps');
+        if(count($EPS)>0):
+            $EPS = $EPS[0]->value;
+        else:
+            $EPS = 0;
         endif;
-    }
-
-    private function calculateEPV($id){
-        $avgOperatingmargin         = Intrinio::avgFiveYearOperatingMargin($id);
-        $avgRevenue                 = Intrinio::avgSustainableRevenue($id)/1000000;
-        $avgSGA                     = Intrinio::avgFiveYearSGA($id)/1000000;
-        $avgtaxRate                 = Intrinio::avgFiveYearTaxRate($id);
-        $avgDDA                     = (Intrinio::avgFiveYearDDA($id)/1000000)*4;
-        $excessDepriciation         = $avgDDA * 0.5 * $avgtaxRate;
-        $revenue                    = Intrinio::revenueArray($id);
-        $CAPEX                      = Intrinio::CAPEXArray($id);
-        $netppe                     = Intrinio::netppeArray($id);
-        $capitalLeaseObligation     = Intrinio::capitalLeaseObligation($id)/1000000;
-        $dilutedSharesOutstanding   = isset(Intrinio::data_tag($id,'weightedavedilutedsharesos')[0])?Intrinio::data_tag($id,'weightedavedilutedsharesos')[0]->value/1000000:0;
-        $longTermDebt               = isset(Intrinio::data_tag($id,'longtermdebt')[0])?Intrinio::data_tag($id,'longtermdebt')[0]->value/1000000:0;
-        $shortTermDebt              = isset(Intrinio::data_tag($id,'shorttermdebt')[0])?Intrinio::data_tag($id,'shorttermdebt')[0]->value/1000000:0;
-        $intBearDebt                = $longTermDebt + $shortTermDebt + $capitalLeaseObligation;
-        $cashandequi                = isset(Intrinio::data_tag($id,'cashandequivalents')[0])?Intrinio::data_tag($id,'cashandequivalents')[0]->value/1000000:0;
-        $wacc                       = 0.09;
-
-        $c = (object) [];
-        $c->CAPEXpos               =  $this->capexpositive($CAPEX);
-        $c->revenueChange          =  $this->changeInRevenue($revenue);
-        $c->revenueTTM             =  $this->revenueTTM($revenue);
-        $c->ppeToRevenueTTM        =  $this->ppetorevenuettm($netppe,$c->revenueTTM);
-        $c->maintainanceCAPEXnoCon =  $this->maintainanceCapexnocon($c);
-        $maintainanceCAPEX         =  $this->maintainanceCapex($c);
-        $avgmaintainanceCAPEX      =  $this->avgmaintainanceCapex($maintainanceCAPEX);
-
-        $normalizedEbit             = ($avgRevenue*$avgOperatingmargin)+$avgSGA;
-        $normalizedEbitAfterTax     = $normalizedEbit * (1-$avgtaxRate);
-        $normalizedEarnings         = $normalizedEbitAfterTax + $excessDepriciation;
-
-
-        if($dilutedSharesOutstanding!=0):
-            $EPV =  ((($normalizedEarnings-$avgmaintainanceCAPEX) / $wacc) + $cashandequi - $intBearDebt ) / $dilutedSharesOutstanding;
-            return $EPV;
+        $TB = $this->calculateTB($id);
+        $GN = sqrt($TB * $EPS * 22.5);
+        if( is_nan($GN)):
+            $GN = 0;
         endif;
-        return 0;
+        return $GN;
     }
+
+    private function calculateFinancialRating($id){
+        $c = (object)[];
+        $c->ebitRating  = $this->getRatingsEbit($id);
+        $c->OperatingIncomeRating = $this->getRatingsOI($id);
+        $c->OPCPERCURDEBTRating = $this->getRatingsRatio($id);
+        $c->quickRatioRating = $this->getRatingsquick($id);
+        $c->DtoERating = $this->getRatingsDtoE($id);
+        $c->freecashflowRating = $this->getRatingsfreecashflow($id);
+        $afterWeightRating = $this->getAfterWeightRating($c);
+
+        return $afterWeightRating['weight'];
+    }
+
+
+
 
     private function ppetorevenuettm($ppe,$revttm){
         $x = count($ppe);
@@ -395,7 +570,7 @@ class CronController extends Controller
         $d = $revenue;
         foreach($d as $r):
             $x--;
-            if($x==$top1):
+            if($x==$top1 && $top1 > 0):
                 $cal = $d[$x]->value + $d[$x-1]->value;
                 array_push($data,$cal);
             elseif($x==$top2 && $top2 > 1):
@@ -484,10 +659,15 @@ class CronController extends Controller
                     $data = $data+$r;
                 }
             endforeach;
-            //echo ($data/$x)*4;die();
-            return (($data/$x)*4)/1000000;
+            if($x > 0):
+                return (($data/$x)*4)/1000000;
+            else:
+                return 0;
+            endif;
+        else:
+            return 0;
         endif;
-        return 0;
+
     }
 
     private function saveCompanySettings($count,$last,$next){
@@ -519,9 +699,6 @@ class CronController extends Controller
         return $count;
     }
 
-
-
-
     private function ebitpershare($id){
 
         $ebitArr  = Intrinio::data_tag_yearly($id,'ebit');
@@ -546,10 +723,14 @@ class CronController extends Controller
             if($shareArr[$i]->value==0):
                 $shareArr[$i]->value = $avg;
             endif;
-            $x->ebitpershare = abs($ebitArr[$i]->value/$shareArr[$i]->value);
+            if($shareArr[$i]->value>0):
+                $x->ebitpershare = abs($ebitArr[$i]->value/$shareArr[$i]->value);
+            else:
+                $x->ebitpershare = 0;
+            endif;
+
             $x->log10 = log10($x->ebitpershare);
 
-            //echo $revArr[$i]->value."/".$shareArr[$i]->value."=".$x.'<br>';
             array_push($arr['detail'],$x);
             array_push($arr['x'],$x->log10);
             array_push($arr['y'],$x->count);
@@ -583,14 +764,379 @@ class CronController extends Controller
 
         $count = count($d);
         if($count>0):
-            $tot = $d[$count-1]/$d[0];
-
-            $exp = pow($tot,1/($count));
-            $cagr = $exp-1;
-            return $cagr;
+            if($d[0] > 0):
+                $tot = $d[$count-1]/$d[0];
+                $exp = pow($tot,1/($count));
+                $cagr = $exp-1;
+                return $cagr;
+            else:
+                return 0;
+            endif;
         else:
             return 0;
         endif;
 
+    }
+
+
+    private function getAfterWeightRating($c){
+        $arr['weight'] = 0;
+        $arr['oiweight'] = 0.05*$c->OperatingIncomeRating['rating'];
+        $arr['weight'] = $arr['weight']+$arr['oiweight'];
+
+        $arr['ebitweight'] = 0.23*$c->ebitRating['rating'];
+        $arr['weight'] = $arr['weight']+$arr['ebitweight'];
+
+        $arr['OPCPERCweight'] = 0.23*$c->OPCPERCURDEBTRating['rating'];
+        $arr['weight'] = $arr['weight']+$arr['OPCPERCweight'];
+
+        $arr['quickWeight'] = 0.18*$c->quickRatioRating['rating'];
+        $arr['weight'] = $arr['weight']+$arr['quickWeight'];
+
+        $arr['freecfweight'] = 0.14*$c->freecashflowRating['rating'];
+        $arr['weight'] = $arr['weight']+$arr['freecfweight'];
+
+        $arr['dtoeweight'] = 0.18*$c->DtoERating['rating'];
+        $arr['weight'] = $arr['weight']+$arr['dtoeweight'];
+
+
+        return $arr;
+    }
+    private function getRatingsfreecashflow($id){
+        $cyear = date('Y');
+        $cmonth = date('m');
+        $lday = date('t');
+
+        $cyear1 = $cyear-1;
+        $cyear2 = $cyear-2;
+        $cyear3 = $cyear-3;
+        $cyear4 = $cyear-4;
+
+        $latest = Intrinio::data_tag_qtr_year_wise_avg_latest_date($id,'freecashflow',"$cyear-01-01","$cyear-$cmonth-$lday");
+
+        $avg = array(
+            // "2017" => Intrinio::data_tag_qtr_year_wise_avg($id,'ebit','2017-01-01','2017-04-30'),
+            "$cyear4" => Intrinio::data_tag_qtr_year_wise_avg($id,'freecashflow',"$cyear4-01-01","$cyear4-$cmonth-$lday",$latest),
+            "$cyear3" => Intrinio::data_tag_qtr_year_wise_avg($id,'freecashflow',"$cyear3-01-01","$cyear3-$cmonth-$lday",$latest),
+            "$cyear2" => Intrinio::data_tag_qtr_year_wise_avg($id,'freecashflow',"$cyear2-01-01","$cyear2-$cmonth-$lday",$latest),
+            "$cyear1" => Intrinio::data_tag_qtr_year_wise_avg($id,'freecashflow',"$cyear1-01-01","$cyear1-$cmonth-$lday",$latest),
+            "$cyear" => Intrinio::data_tag_qtr_year_wise_avg($id,'freecashflow',"$cyear-01-01","$cyear-$cmonth-$lday",'')
+        );
+
+        $rating = 0;
+        $tpositive = 0;
+
+        foreach ($avg as $a):
+            if($a>0):
+                $tpositive++;
+            endif;
+        endforeach;
+        $avg['totalPositive'] = $tpositive;
+        // check for star rating 5
+        if($avg[$cyear1] > 0 && $avg[$cyear] > $avg[$cyear1]):
+            if($tpositive >= 3):
+                $rating = 5;
+            endif;
+        endif;
+
+        // check for star rating 4
+        if($rating==0):
+            if($avg[$cyear] > 0 && $avg[$cyear] > $avg[$cyear1]):
+                if($tpositive >= 3):
+                    $rating = 4;
+                endif;
+            endif;
+        endif;
+
+        // check for star rating 3
+        if($rating==0):
+            if($avg[$cyear] > 0 || $avg[$cyear1] > 0):
+                if($tpositive >= 3):
+                    $rating = 3;
+                endif;
+            endif;
+        endif;
+
+        // check for star rating 2
+        if($rating==0):
+            if($avg[$cyear] > 0 || $avg[$cyear1] > 0):
+                if($tpositive >= 2):
+                    $rating = 2;
+                endif;
+            endif;
+        endif;
+
+        // check for star rating 1
+        if($rating==0):
+            if($avg[$cyear1] > 0):
+                if($avg[$cyear] > 0):
+                    $rating = 1;
+                else:
+                    if($avg[$cyear] > $avg[$cyear1]):
+                        $rating = 1;
+                    endif;
+                endif;
+            else:
+                if($avg[$cyear1] > $avg[$cyear2]):
+                    $rating = 1;
+                endif;
+            endif;
+        endif;
+        $avg["rating"] = $rating;
+        return $avg;
+    }
+    private function getRatingsDtoE($id){
+        $cyear = date('Y');
+        $cmonth = date('m');
+        $lday = date('t');
+
+        $latest = Intrinio::data_tag_qtr_year_wise_avg_latest_date($id,'debttoequity',"$cyear-01-01","$cyear-$cmonth-$lday");
+
+        $avg = array(
+            "$cyear" => Intrinio::data_tag_qtr_year_wise_avg_per($id,'debttoequity',"$cyear-01-01","$cyear-$cmonth-$lday",$latest)
+        );
+
+        $avg['rating'] = 0;
+        // check for star rating 5
+        if($avg[$cyear]<=0.8):
+            $avg['rating'] = 5;
+        elseif($avg[$cyear]>0.8 && $avg[$cyear]<=1.1):
+            $avg['rating'] = 4;
+        elseif($avg[$cyear]>1.1 && $avg[$cyear]<=1.3):
+            $avg['rating'] = 3;
+        elseif($avg[$cyear]>1.3 && $avg[$cyear]<=1.6):
+            $avg['rating'] = 2;
+        elseif($avg[$cyear]>1.6 && $avg[$cyear]<=2.2):
+            $avg['rating'] = 1;
+        endif;
+        return $avg;
+    }
+    private function getRatingsquick($id){
+        $cyear = date('Y');
+        $cmonth = date('m');
+        $lday = date('t');
+        $latest = Intrinio::data_tag_qtr_year_wise_avg_latest_date($id,'quickratio',"$cyear-01-01","$cyear-$cmonth-$lday");
+
+        $avg = array(
+            "$cyear" => Intrinio::data_tag_qtr_year_wise_avg_per($id,'quickratio',"$cyear-01-01","$cyear-$cmonth-$lday",$latest)
+        );
+
+        $avg['rating'] = 0;
+        // check for star rating 5
+        if($avg[$cyear]>1):
+            $avg['rating'] = 5;
+        elseif($avg[$cyear]<1 && $avg[$cyear]>=0.8):
+            $avg['rating'] = 4;
+        elseif($avg[$cyear]<0.8 && $avg[$cyear]>=0.7):
+            $avg['rating'] = 3;
+        elseif($avg[$cyear]<0.7 && $avg[$cyear]>=0.6):
+            $avg['rating'] = 2;
+        elseif($avg[$cyear]<0.6):
+            $avg['rating'] = 1;
+        endif;
+        return $avg;
+    }
+    private function getRatingsOI($id){
+        $cyear = date('Y');
+        $cmonth = date('m');
+        $lday = date('t');
+        //echo $lday;die();
+        $cyear1 = $cyear-1;
+        $cyear2 = $cyear-2;
+        $cyear3 = $cyear-3;
+        $cyear4 = $cyear-4;
+
+        $latest = Intrinio::data_tag_qtr_year_wise_avg_latest_date($id,'totaloperatingincome',"$cyear-01-01","$cyear-$cmonth-$lday");
+        //echo "$cyear // $cyear1 // $cyear2 // $cyear3 // $cyear4";die();
+        $avg = array(
+            // "2017" => Intrinio::data_tag_qtr_year_wise_avg($id,'ebit','2017-01-01','2017-04-30'),
+            "$cyear4" => Intrinio::data_tag_qtr_year_wise_avg($id,'totaloperatingincome',"$cyear4-01-01","$cyear4-$cmonth-$lday",$latest),
+            "$cyear3" => Intrinio::data_tag_qtr_year_wise_avg($id,'totaloperatingincome',"$cyear3-01-01","$cyear3-$cmonth-$lday",$latest),
+            "$cyear2" => Intrinio::data_tag_qtr_year_wise_avg($id,'totaloperatingincome',"$cyear2-01-01","$cyear2-$cmonth-$lday",$latest),
+            "$cyear1" => Intrinio::data_tag_qtr_year_wise_avg($id,'totaloperatingincome',"$cyear1-01-01","$cyear1-$cmonth-$lday",$latest),
+            "$cyear" => Intrinio::data_tag_qtr_year_wise_avg($id,'totaloperatingincome',"$cyear-01-01","$cyear-$cmonth-$lday",'')
+        );
+
+        $rating = 0;
+        // check for star rating 5
+        if($avg[$cyear3] > 0):
+            if($avg[$cyear2]>$avg[$cyear3]):
+                if($avg[$cyear1]>$avg[$cyear2]):
+                    if($avg[$cyear]>$avg[$cyear1]):
+                        $rating = 5;
+                    endif;
+                endif;
+            endif;
+        endif;
+
+        // check for star rating 4
+        if($rating==0):
+            if($avg[$cyear3] > 0 && $avg[$cyear2] > 0):
+                if($avg[$cyear1]>$avg[$cyear2] && $avg[$cyear] >$avg[$cyear2]):
+                    $rating = 4;
+                endif;
+            endif;
+        endif;
+
+        // check for star rating 3
+        if($rating==0):
+            if($avg[$cyear3] > 0 && $avg[$cyear2] > 0 && $avg[$cyear1] > 0):
+                if($avg[$cyear]>$avg[$cyear2]):
+                    $rating = 3;
+                endif;
+            endif;
+        endif;
+
+        // check for star rating 2
+        if($rating==0):
+            if($avg[$cyear]>$avg[$cyear2] && $avg[$cyear] > 0):
+                $rating = 2;
+            endif;
+        endif;
+
+        // check for star rating 1
+        if($rating==0):
+            if($avg[$cyear]>$avg[$cyear1]):
+                $rating = 1;
+            endif;
+        endif;
+        $avg["rating"] = $rating;
+        return $avg;
+    }
+    private function getRatingsEbit($id){
+        $cyear = date('Y');
+        $cmonth = date('m');
+        $lday = date('t');
+
+        $cyear1 = $cyear-1;
+        $cyear2 = $cyear-2;
+        $cyear3 = $cyear-3;
+        $cyear4 = $cyear-4;
+
+        $latest = Intrinio::data_tag_qtr_year_wise_avg_latest_date($id,'ebit',"$cyear-01-01","$cyear-$cmonth-$lday");
+        //echo "$cyear // $cyear1 // $cyear2 // $cyear3 // $cyear4";die();
+        $avg = array(
+            // "2017" => Intrinio::data_tag_qtr_year_wise_avg($id,'ebit','2017-01-01','2017-04-30'),
+            "$cyear4" => Intrinio::data_tag_qtr_year_wise_avg($id,'ebit',"$cyear4-01-01","$cyear4-$cmonth-$lday",$latest),
+            "$cyear3" => Intrinio::data_tag_qtr_year_wise_avg($id,'ebit',"$cyear3-01-01","$cyear3-$cmonth-$lday",$latest),
+            "$cyear2" => Intrinio::data_tag_qtr_year_wise_avg($id,'ebit',"$cyear2-01-01","$cyear2-$cmonth-$lday",$latest),
+            "$cyear1" => Intrinio::data_tag_qtr_year_wise_avg($id,'ebit',"$cyear1-01-01","$cyear1-$cmonth-$lday",$latest),
+            "$cyear" => Intrinio::data_tag_qtr_year_wise_avg($id,'ebit',"$cyear-01-01","$cyear-$cmonth-$lday",'')
+        );
+
+        $rating = 0;
+        // check for star rating 5
+        if($avg[$cyear3] > 0):
+            if($avg[$cyear2]>$avg[$cyear3]):
+                if($avg[$cyear1]>$avg[$cyear2]):
+                    if($avg[$cyear]>$avg[$cyear1]):
+                        $rating = 5;
+                    endif;
+                endif;
+            endif;
+        endif;
+
+        // check for star rating 4
+        if($rating==0):
+            if($avg[$cyear3] > 0 && $avg[$cyear2] > 0):
+                if($avg[$cyear1]>$avg[$cyear2] && $avg[$cyear] >$avg[$cyear2]):
+                    $rating = 4;
+                endif;
+            endif;
+        endif;
+
+        // check for star rating 3
+        if($rating==0):
+            if($avg[$cyear3] > 0 && $avg[$cyear2] > 0 && $avg[$cyear1] > 0):
+                if($avg[$cyear]>$avg[$cyear2]):
+                    $rating = 3;
+                endif;
+            endif;
+        endif;
+
+        // check for star rating 2
+        if($rating==0):
+            if($avg[$cyear]>$avg[$cyear2] && $avg[$cyear] > 0):
+                $rating = 2;
+            endif;
+        endif;
+
+        // check for star rating 1
+        if($rating==0):
+            if($avg[$cyear]>$avg[$cyear1]):
+                $rating = 1;
+            endif;
+        endif;
+        $avg["rating"] = $rating;
+        return $avg;
+    }
+    private function getRatingsRatio($id){
+
+        $cyear = date('Y');
+        $cmonth = date('m');
+        $lday = date('t');
+
+        $cyear1 = $cyear-1;
+        $cyear2 = $cyear-2;
+        $avg = [];
+
+        $latest1 = Intrinio::data_tag_qtr_year_wise_avg_latest_date($id,'netcashfromoperatingactivities',"$cyear-01-01","$cyear-$cmonth-$lday");
+        $latest2 = Intrinio::data_tag_qtr_year_wise_avg_latest_date($id,'totalcurrentliabilities',"$cyear-01-01","$cyear-$cmonth-$lday");
+
+        $avg['last3year']['netcashfromoperatingactivities'] = array(
+            "$cyear2" => Intrinio::data_tag_qtr_year_wise_avg($id,'netcashfromoperatingactivities',"$cyear2-01-01","$cyear2-$cmonth-$lday",$latest1),
+            "$cyear1" => Intrinio::data_tag_qtr_year_wise_avg($id,'netcashfromoperatingactivities',"$cyear1-01-01","$cyear1-$cmonth-$lday",$latest1),
+            "$cyear" => Intrinio::data_tag_qtr_year_wise_avg($id,'netcashfromoperatingactivities',"$cyear-01-01","$cyear-$cmonth-$lday",$latest1)
+        );
+        $avg['last3year']['totalcurrentliabilities'] = array(
+            "$cyear2" => Intrinio::data_tag_qtr_year_wise_avg($id,'totalcurrentliabilities',"$cyear2-01-01","$cyear2-$cmonth-$lday",$latest2),
+            "$cyear1" => Intrinio::data_tag_qtr_year_wise_avg($id,'totalcurrentliabilities',"$cyear1-01-01","$cyear1-$cmonth-$lday",$latest2),
+            "$cyear" => Intrinio::data_tag_qtr_year_wise_avg($id,'totalcurrentliabilities',"$cyear-01-01","$cyear-$cmonth-$lday",$latest2)
+        );
+        $r = 0;
+        $r1 = 0;
+        $r2 = 0;
+        if($avg['last3year']['totalcurrentliabilities'][$cyear2] != 0 && $avg['last3year']['netcashfromoperatingactivities'][$cyear2]!=0):
+            $r2 = $avg['last3year']['netcashfromoperatingactivities'][$cyear2]/$avg['last3year']['totalcurrentliabilities'][$cyear2];
+        endif;
+        if($avg['last3year']['totalcurrentliabilities'][$cyear1] != 0 && $avg['last3year']['netcashfromoperatingactivities'][$cyear1]!=0):
+            $r1 = $avg['last3year']['netcashfromoperatingactivities'][$cyear1]/$avg['last3year']['totalcurrentliabilities'][$cyear1];
+        endif;
+        if($avg['last3year']['totalcurrentliabilities'][$cyear] != 0 && $avg['last3year']['netcashfromoperatingactivities'][$cyear]!=0):
+            $r = $avg['last3year']['netcashfromoperatingactivities'][$cyear]/$avg['last3year']['totalcurrentliabilities'][$cyear];
+        endif;
+        $avg['last3year']['ratio'] = array(
+            "$cyear2" => $r2,
+            "$cyear1" => $r1,
+            "$cyear" => $r,
+        );
+
+        if($avg['last3year']['netcashfromoperatingactivities'][$cyear]>0 &&
+            $avg['last3year']['netcashfromoperatingactivities'][$cyear1]>0 &&
+            $avg['last3year']['netcashfromoperatingactivities'][$cyear2]>0
+        ):
+            $avg['ratio'] = round($avg['last3year']['ratio'][$cyear],2);
+        else:
+            $avg['ratio'] = 0;
+        endif;
+
+
+        $avg['rating'] = 0;
+        if($avg['ratio']>=0.70):
+            if($avg['last3year']['ratio'][$cyear]>$avg['last3year']['ratio'][$cyear1]):
+                if($avg['last3year']['ratio'][$cyear1]>$avg['last3year']['ratio'][$cyear2]):
+                    $avg['rating'] = 5;
+                endif;
+            endif;
+        elseif($avg['ratio']<0.70 && $avg['ratio']>=0.40):
+            $avg['rating'] = 4;
+        elseif($avg['ratio']<0.40 && $avg['ratio']>=0.20):
+            $avg['rating'] = 3;
+        elseif($avg['ratio']<0.20 && $avg['ratio']>=0.10):
+            $avg['rating'] = 2;
+        elseif($avg['ratio']<0.10 && $avg['ratio']>=0.01):
+            $avg['rating'] = 1;
+        endif;
+        return $avg;
     }
 }

@@ -164,7 +164,7 @@ class Intrinio
         endif;
     }
 
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -182,7 +182,7 @@ class Intrinio
         endif;
     }
 
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -200,7 +200,7 @@ class Intrinio
         endif;
     }
 
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -212,8 +212,8 @@ class Intrinio
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
         $uri = $endpoint."companies/$id/historical_data/$tag?frequency=quarterly&start_date=$start&end_date=$end&api_key=$key";
-       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
-       // dd($uri);
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        // dd($uri);
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
             return [];
@@ -260,7 +260,7 @@ class Intrinio
         //dd($uri);
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
-             return [];
+            return [];
         else:
             if($latest!=""):
                 $latest = date('m-d',strtotime($latest));
@@ -272,7 +272,12 @@ class Intrinio
                 endforeach;
             else:
                 $data = $request->historical_data;
-                return $data[0]->value/1000000;
+                if(count($data)>0):
+                    return $data[0]->value/1000000;
+                else:
+                    return 0;
+                endif;
+
             endif;
         endif;
     }
@@ -296,7 +301,12 @@ class Intrinio
             return [];
         else:
             $data = $request->historical_data;
-            return $data[0]->date;
+            if(count($data)>0):
+                return $data[0]->date;
+            else:
+                return $start;
+            endif;
+
         endif;
     }
 
@@ -336,7 +346,7 @@ class Intrinio
         $endpoint = env("INTRINIO_ENDPOINT");
         $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=2016-05-31&end_date=2022-05-31&api_key=$key";
         // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
-         //dd($uri);
+        //dd($uri);
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
             return [];
@@ -391,7 +401,7 @@ class Intrinio
         endif;
     }
 
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -411,7 +421,7 @@ class Intrinio
         endif;
     }
 
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -423,9 +433,9 @@ class Intrinio
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
         //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
-       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
 
-       $uri = $endpoint."companies/$id/historical_data/ebitmargin?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        $uri = $endpoint."companies/$id/historical_data/ebitmargin?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
 
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
@@ -441,7 +451,7 @@ class Intrinio
         endif;
     }
 
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -451,9 +461,9 @@ class Intrinio
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
         //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
-       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
 
-       $uri = $endpoint."companies/$id/historical_data/capex?type=QTR&api_key=$key";
+        $uri = $endpoint."companies/$id/historical_data/capex?type=QTR&api_key=$key";
 
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
@@ -480,9 +490,9 @@ class Intrinio
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
         //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
-       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
 
-       $uri = $endpoint."companies/$id/historical_data/netincomegrowth?frequency=quarterly&start_date=$start&end_date=$end&api_key=$key";
+        $uri = $endpoint."companies/$id/historical_data/netincomegrowth?frequency=quarterly&start_date=$start&end_date=$end&api_key=$key";
 
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
@@ -509,10 +519,10 @@ class Intrinio
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
         //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
-       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
 
-       $uri = $endpoint."companies/$id/historical_data/netppe?type=QTR&api_key=$key";
-       //dd($uri);
+        $uri = $endpoint."companies/$id/historical_data/netppe?type=QTR&api_key=$key";
+        //dd($uri);
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
             return [];
@@ -536,9 +546,9 @@ class Intrinio
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
         //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
-       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
 
-       $uri = $endpoint."companies/$id/historical_data/revenuegrowth?frequency=quarterly&start_date=$start&end_date=$end&api_key=$key";
+        $uri = $endpoint."companies/$id/historical_data/revenuegrowth?frequency=quarterly&start_date=$start&end_date=$end&api_key=$key";
 
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
@@ -553,7 +563,7 @@ class Intrinio
             return $incg/20;
         endif;
     }
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -607,7 +617,7 @@ class Intrinio
     }
 
 
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -619,10 +629,10 @@ class Intrinio
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
         //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
-       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
 
-       $uri = $endpoint."companies/$id/historical_data/debt?frequency=quarterly&api_key=$key";
-       //dd($uri);
+        $uri = $endpoint."companies/$id/historical_data/debt?frequency=quarterly&api_key=$key";
+        //dd($uri);
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
             return [];
@@ -639,7 +649,7 @@ class Intrinio
         endif;
     }
 
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -651,10 +661,10 @@ class Intrinio
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
         //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
-       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
 
-       $uri = $endpoint."companies/$id/historical_data/debt?frequency=yearly&api_key=$key";
-       //dd($uri);
+        $uri = $endpoint."companies/$id/historical_data/debt?frequency=yearly&api_key=$key";
+        //dd($uri);
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
             return [];
@@ -671,7 +681,7 @@ class Intrinio
         endif;
     }
 
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -683,8 +693,8 @@ class Intrinio
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
 
-       $uri = $endpoint.'indices/economic/$DGS10/historical_data/level?api_key='.$key;
-       //dd($uri);
+        $uri = $endpoint.'indices/economic/$DGS10/historical_data/level?api_key='.$key;
+        //dd($uri);
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
             return [];
@@ -693,7 +703,7 @@ class Intrinio
         endif;
     }
 
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -720,7 +730,7 @@ class Intrinio
         endif;
     }
 
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -745,7 +755,7 @@ class Intrinio
         endif;
     }
 
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -769,7 +779,7 @@ class Intrinio
             endif;
         endif;
     }
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -794,7 +804,7 @@ class Intrinio
         endif;
     }
 
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -819,7 +829,7 @@ class Intrinio
         endif;
     }
 
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -829,8 +839,8 @@ class Intrinio
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
 
-       $uri = $endpoint."companies/$id/historical_data/one_year_beta?api_key=$key";
-       //dd($uri);
+        $uri = $endpoint."companies/$id/historical_data/one_year_beta?api_key=$key";
+        //dd($uri);
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
             return [];
@@ -849,8 +859,8 @@ class Intrinio
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
 
-       $uri = $endpoint."companies/$id/historical_data/ten_year_beta?api_key=$key";
-       //dd($uri);
+        $uri = $endpoint."companies/$id/historical_data/ten_year_beta?api_key=$key";
+        //dd($uri);
         $request = Utils::curlRequest($uri);
 
         if(isset($request->error)):
@@ -861,7 +871,7 @@ class Intrinio
     }
 
 
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -873,9 +883,9 @@ class Intrinio
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
         //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
-       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
 
-       $uri = $endpoint."companies/$id/historical_data/totalinterestexpense?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        $uri = $endpoint."companies/$id/historical_data/totalinterestexpense?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
 
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
@@ -890,7 +900,7 @@ class Intrinio
             return $dsos/5;
         endif;
     }
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -902,9 +912,9 @@ class Intrinio
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
         //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
-       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
 
-       $uri = $endpoint."companies/$id/historical_data/nopat?frequency=quarterly&api_key=$key";
+        $uri = $endpoint."companies/$id/historical_data/nopat?frequency=quarterly&api_key=$key";
 
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
@@ -923,7 +933,7 @@ class Intrinio
     }
 
 
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -935,9 +945,9 @@ class Intrinio
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
         //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
-       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
 
-       $uri = $endpoint."companies/$id/historical_data/efftaxrate?type=QTR&api_key=$key";
+        $uri = $endpoint."companies/$id/historical_data/efftaxrate?type=QTR&api_key=$key";
 
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
@@ -957,7 +967,7 @@ class Intrinio
 
 
 
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -969,9 +979,9 @@ class Intrinio
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
         //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
-       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
 
-       $uri = $endpoint."companies/$id/historical_data/depletionexpense?frequency=quarterly&start_date=$start&end_date=$end&api_key=$key";
+        $uri = $endpoint."companies/$id/historical_data/depletionexpense?frequency=quarterly&start_date=$start&end_date=$end&api_key=$key";
 
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
@@ -989,7 +999,7 @@ class Intrinio
         endif;
     }
 
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -1001,10 +1011,10 @@ class Intrinio
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
         //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&api_key=$key";
-       // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
 
-       $uri = $endpoint."companies/$id/historical_data/capitalleaseobligations?type=QTR&api_key=$key";
-       //dd($uri);
+        $uri = $endpoint."companies/$id/historical_data/capitalleaseobligations?type=QTR&api_key=$key";
+        //dd($uri);
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
             return [];
@@ -1036,7 +1046,7 @@ class Intrinio
         dd($request);
     }
 
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -1117,7 +1127,7 @@ class Intrinio
         endif;
     }
 
-/**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -1236,21 +1246,21 @@ class Intrinio
         //$uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
 
         $uri = $endpoint."companies/$id/historical_data/operatingmargin?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
-       //dd($uri);
+        //dd($uri);
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
             return [];
         else:
             $data = $request->historical_data;
             if(count($data)>0):
-            $dsos = 0;
-            $x=0;
+                $dsos = 0;
+                $x=0;
 
-            foreach($data as $d):
-                $x++;
-                  $dsos += $d->value;
-            endforeach;
-            return $dsos/$x;
+                foreach($data as $d):
+                    $x++;
+                    $dsos += $d->value;
+                endforeach;
+                return $dsos/$x;
             endif;
             return 0;
         endif;
@@ -1287,7 +1297,7 @@ class Intrinio
                     endif;
                 endforeach;
                 if($x>0):
-                  return $dsos/$x;
+                    return $dsos/$x;
                 endif;
             endif;
             return 0;
