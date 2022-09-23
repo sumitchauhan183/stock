@@ -31,5 +31,6 @@ class CompanyDetail extends Authenticatable
         'last_fundamental_date', 'first_stock_price_date', 'last_stock_price_date', 'thea_enabled'
     ];
 
+    public $incrementing = false;
     public $timestamps = true;
 }

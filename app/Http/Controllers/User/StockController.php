@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Classes\Utils;
 use App\Classes\Intrinio;
 use App\Models\User;
+use App\Models\CompanyDetail;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use PhpOffice\PhpSpreadsheet\Calculation\Statistical;
+use Illuminate\Support\Facades\DB;
 
 class StockController extends Controller
 {
@@ -33,7 +33,14 @@ class StockController extends Controller
 
     public function all(){
        $user = User::where('user_id',$this->userId)->get()->first()->toArray();
-       $companies = Intrinio::companies_all();
+       $companies = CompanyDetail::where(function($query){
+                                            $query->where('legal_name','!=','')
+                                            ->where('ticker','!=','');
+                                        })
+                                    ->where(function($query){
+                                           $query->where('stock_exchange','NASDAQ')
+                                               ->orwhere('stock_exchange','NYSE');
+                                       })->get();
 
        return view('user.stocks.all',[
            'user'=>$user,
@@ -104,7 +111,24 @@ class StockController extends Controller
      }
 
 
-     public function companyDetail($ticker){
+    public function companyDetail($ticker)
+    {
+
+        $user = User::where('user_id', $this->userId)->get()->first()->toArray();
+
+        $detail = CompanyDetail::where('company_detail.id',$ticker)
+                   ->join('companies as c','c.id','company_detail.id')
+                   ->get()->toArray();
+        dd($detail);
+        return view('user.stocks.sector',[
+            'user'=>$user,
+            'url'=>'sectorstocks',
+            'tools'=> $this->tools,
+            'detail'=>$detail
+        ]);
+
+    }
+     public function companyDetailOLD($ticker){
 
         $user                           = User::where('user_id',$this->userId)->get()->first()->toArray();
         $c = (object)[];
@@ -853,22 +877,23 @@ dd($d);
         if(isset($input['sector'])):
             $sector = $input['sector'];
         $user  = User::where('user_id',$this->userId)->get()->first()->toArray();
-        $companies = array();
+        $sectors = CompanyDetail::select('*');
         foreach($sector as $s):
-            $company = Intrinio::companies($s);
-            if($company):
-                $companies = array_merge($companies,$company);
-            endif;
+            $sectors = $sectors->orWhere('sector','like','%'.$s.'%');
         endforeach;
-        /*$newcom = [];
-        foreach($companies as $c):
-
-            array_push($newcom,$c);
-        endforeach;*/
+        $sectors = $sectors->where(function($query){
+                                $query->where('legal_name','!=','')
+                                    ->where('ticker','!=','');
+                            })
+                            ->where(function($query){
+                                $query->where('stock_exchange','NASDAQ')
+                                    ->orwhere('stock_exchange','NYSE');
+                            })->get();
+        //dd($sectors);
         return view('user.stocks.sector_companies',[
             'user'=>$user,
             'url'=>'sector-result',
-            'companies'=>$companies,
+            'companies'=>$sectors,
             'tools'=> $this->tools
         ]);
         else:

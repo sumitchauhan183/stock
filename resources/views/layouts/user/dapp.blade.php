@@ -16,10 +16,12 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('css/theme-style.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('css/responsive.css') }}" />
-    
+
     <link rel="stylesheet" type="text/css" href="{{ asset('css/information.css') }}" />
     <title>{{config('app.name')}}</title>
-  
+    @if($url=='sector-result' || $url == 'allStocks')
+        <link href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css"  rel="stylesheet">
+    @endif
 </head>
 <body>
     <div class="app">
@@ -32,7 +34,7 @@
                     </div>
                 </div>
             </div>
-            <!-- end pre-loader --> 
+            <!-- end pre-loader -->
 @include('inc.user.header')
 <!-- begin app-container -->
 
@@ -48,7 +50,7 @@
     <!-- Modal Efects -->
     <script src="{{ asset('js/velocity.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('js/velocity.ui.min.js') }}" type="text/javascript"></script>
-    
+
        <!-- plugins -->
     <!-- Modal Efects -->
 
@@ -57,7 +59,7 @@
     <script>
         //close the alert after 3 seconds.
         $(document).ready(function(){
-              profile.init(); 
+              profile.init();
           });
     </script>
     @endif
@@ -67,7 +69,7 @@
     <script>
         //close the alert after 3 seconds.
         $(document).ready(function(){
-              settings.init(); 
+              settings.init();
           });
     </script>
     @endif
@@ -77,7 +79,7 @@
     <script>
         //close the alert after 3 seconds.
         $(document).ready(function(){
-              changePassword.init(); 
+              changePassword.init();
           });
     </script>
     @endif
@@ -87,7 +89,7 @@
     <script>
         //close the alert after 3 seconds.
         $(document).ready(function(){
-              findValueStock.init(); 
+              findValueStock.init();
           });
     </script>
     @endif
@@ -96,7 +98,7 @@
     <script>
         //close the alert after 3 seconds.
         $(document).ready(function(){
-              sectorstocks.init(); 
+              sectorstocks.init();
           });
     </script>
     @endif
@@ -105,9 +107,27 @@
     <script>
         //close the alert after 3 seconds.
         $(document).ready(function(){
-              optimizeInvestmentMix.init(); 
+              optimizeInvestmentMix.init();
           });
     </script>
+    @endif
+    @if($url=='sector-result' || $url == 'allStocks')
+                <script src="https://cdn.datatables.net/autofill/2.4.0/js/dataTables.autoFill.min.js"></script>
+                <script>
+                    //close the alert after 3 seconds.
+                    $(document).ready(function(){
+                        $('#sector-list').DataTable({
+                            "order": [[3,'asc']],
+                            "columnDefs": [
+                                { "width": "20%", "targets": 4 }
+                            ],
+                            "pageLength": 25,
+                            "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+                                $('td:eq(0)', nRow).html(iDisplayIndexFull +1);
+                            }
+                        });
+                    });
+                </script>
     @endif
 </div>
 </div>
