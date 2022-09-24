@@ -25,7 +25,8 @@ class Companies extends Authenticatable
     protected $fillable = [
         'company_id','id', 'ticker', 'name','lei','cik','FCF','DCF','EPV','TB','GRAHAM','PL','financial_rating',
         'financial_rating', 'FCF_last_updated', 'DCF_last_updated', 'EPV_last_updated', 'TB_last_updated', 'GRAHAM_last_updated',
-        'PL_last_updated', 'FRating_last_updated', 'details_saved'
+        'PL_last_updated', 'FRating_last_updated', 'marketcap_last_updated', 'close_price_last_updated', 'details_saved','ebit_rating','operating_income_rating','opinc_per_liab_rating',
+        'quick_ratio_rating','DtoE_rating','freecashflow_rating'
     ];
 
     public $timestamps = true;

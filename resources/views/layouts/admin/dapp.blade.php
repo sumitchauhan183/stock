@@ -20,15 +20,20 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <!-- CSS Files -->
   <link id="pagestyle" href="{{asset('admin/css/material-dashboard.css?v=3.0.0')}}" rel="stylesheet" />
+  <link  href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet" />
+
   <style>
       #sidenav-collapse-main{
           height: 80% !important;
-          
+
       }
 
       .navbar-nav{
           padding-top: 20px !important;
       }
+       .table > :not(caption) > * > * {
+           padding: 0.75rem 1.5rem;
+       }
   </style>
 </head>
 
@@ -64,9 +69,49 @@
   <script>
         //close the alert after 3 seconds.
         $(document).ready(function(){
-          dashboard.init(); 
+          dashboard.init();
         });
     </script>
+  @endif
+
+  @if($surl=='userList')
+      <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+      <script>
+          //close the alert after 3 seconds.
+          $(document).ready(function(){
+              $('#datatable').DataTable();
+          });
+      </script>
+  @endif
+  @if($surl=='userDetails')
+      <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+      <script>
+          //close the alert after 3 seconds.
+          $(document).ready(function(){
+              $('#tooldatatable').DataTable();
+          });
+          $(document).ready(function(){
+              $('#paymentdatatable').DataTable();
+          });
+      </script>
+  @endif
+  @if($surl=='tools')
+      <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+      <script>
+          //close the alert after 3 seconds.
+          $(document).ready(function(){
+              $('#tooldatatable').DataTable();
+          });
+      </script>
+  @endif
+  @if($surl=='payments')
+      <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+      <script>
+          //close the alert after 3 seconds.
+          $(document).ready(function(){
+              $('#paymentdatatable').DataTable();
+          });
+      </script>
   @endif
 </body>
 

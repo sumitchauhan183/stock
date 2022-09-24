@@ -24,10 +24,12 @@ Route::post('admin/login',[App\Http\Controllers\Admin\Auth\LoginController::clas
 Route::get('admin/dashboard',[App\Http\Controllers\Admin\HomeController::class,'dashboard'])->name('admin.dashboard');
 Route::get('admin/logout',[App\Http\Controllers\Admin\HomeController::class,'logout'])->name('admin.logout');
 
-Route::get('admin/users',[App\Http\Controllers\Admin\HomeController::class,'users'])->name('admin.users');
-Route::get('admin/users/add',[App\Http\Controllers\Admin\HomeController::class,'addUser'])->name('admin.user.add');
-Route::post('admin/users/add',[App\Http\Controllers\Admin\HomeController::class,'addUserReg']);
-
+Route::get('admin/users',[App\Http\Controllers\Admin\UserController::class,'users'])->name('admin.users');
+Route::get('admin/tools',[App\Http\Controllers\Admin\UserController::class,'tools'])->name('admin.tools');
+Route::get('admin/payments',[App\Http\Controllers\Admin\UserController::class,'payments'])->name('admin.payments');
+Route::get('admin/payments',[App\Http\Controllers\Admin\UserController::class,'payments'])->name('admin.payments');
+Route::get('admin/user/details/{id}',[App\Http\Controllers\Admin\UserController::class,'details'])->name('admin.users.details');
+Route::get('admin/transaction/details/{id}',[App\Http\Controllers\Admin\UserController::class,'transactionDetail'])->name('admin.transaction.details');
 Route::get('admin/profile',[App\Http\Controllers\Admin\HomeController::class,'profile'])->name('admin.profile');
 
 

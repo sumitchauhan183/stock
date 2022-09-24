@@ -242,12 +242,56 @@ class CronController extends Controller
                 ->toArray();
             foreach ($companies as $c):
                 $FinRat = $this->calculateFinancialRating($c['id']);
-                if(is_nan($FinRat)):
+
+                if(is_nan($FinRat->afterWeightRating['weight'])):
                     $FinRat = 0;
                 endif;
+
+                if(is_nan($FinRat->ebitRating['rating'])):
+                    $ebrat = 0;
+                else:
+                    $ebrat = $FinRat->ebitRating['rating'];
+                endif;
+
+                if(is_nan($FinRat->OperatingIncomeRating['rating'])):
+                    $oirat = 0;
+                else:
+                    $oirat = $FinRat->OperatingIncomeRating['rating'];
+                endif;
+
+                if(is_nan($FinRat->OPCPERCURDEBTRating['rating'])):
+                    $opcplrat = 0;
+                else:
+                    $opcplrat = $FinRat->OPCPERCURDEBTRating['rating'];
+                endif;
+
+                if(is_nan($FinRat->quickRatioRating['rating'])):
+                    $qrrat = 0;
+                else:
+                    $qrrat = $FinRat->quickRatioRating['rating'];
+                endif;
+
+                if(is_nan($FinRat->DtoERating['rating'])):
+                    $dterat = 0;
+                else:
+                    $dterat = $FinRat->DtoERating['rating'];
+                endif;
+
+                if(is_nan($FinRat->freecashflowRating['rating'])):
+                    $fcfrat = 0;
+                else:
+                    $fcfrat = $FinRat->freecashflowRating['rating'];
+                endif;
+
                 Companies::where('company_id',$c['company_id'])->update(
                     [
                         "financial_rating" => $FinRat,
+                        'ebit_rating'=>$ebrat,
+                        'operating_income_rating'=>$oirat,
+                        'opinc_per_liab_rating'=>$opcplrat,
+                        'quick_ratio_rating'=>$qrrat,
+                        'DtoE_rating'=>$dterat,
+                        'freecashflow_rating'=>$fcfrat,
                         "FRating_last_updated" => $ndate
                     ]
                 );
@@ -509,10 +553,11 @@ class CronController extends Controller
         $c->quickRatioRating = $this->getRatingsquick($id);
         $c->DtoERating = $this->getRatingsDtoE($id);
         $c->freecashflowRating = $this->getRatingsfreecashflow($id);
-        $afterWeightRating = $this->getAfterWeightRating($c);
+        $c->afterWeightRating = $this->getAfterWeightRating($c);
 
-        return $afterWeightRating['weight'];
+        return $c;
     }
+
 
 
 
