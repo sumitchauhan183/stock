@@ -19,7 +19,7 @@ class UserController extends Controller
      */
     public function __construct()
     {
-        
+
     }
 
     /**
@@ -157,7 +157,7 @@ class UserController extends Controller
         endif;
     }
 
-    
+
 
     public function checkUserid(Request $request)
     {
@@ -282,7 +282,7 @@ class UserController extends Controller
                 "tools"=>$tool,
                 "token" => $token
             ]);
-            
+
             if(!$tool['expiry_date']):
                 return json_encode([
                     'error'=>false,
@@ -302,8 +302,8 @@ class UserController extends Controller
             return json_encode([
                 'error'=>true,
                 'message'=>'Please check your password'
-            ]); 
-        endif;  
+            ]);
+        endif;
     }
 
     public function sendWelcomeMail($user_id){
@@ -339,14 +339,14 @@ class UserController extends Controller
             Email::sendOtpMail(
                 $user['first_name'].' '.$user['last_name'],
                 $user['email'],
-                "Analystkit: Password Reset OTP",
+                "Analystkit: Password Reset One time password",
                 $user['first_name'].' '.$user['last_name'],
-                "Please do not share your otp: ".$this->userUpdateOtp($user['user_id'])." with any one. This is a confidential info."
+                "Please do not share your one time password: ".$this->userUpdateOtp($user['user_id'])." with any one. This is a confidential info."
             );
-            
+
             return json_encode([
                 'error'=>false,
-                'message'=>'OTP sent successfully on your registerd email',
+                'message'=>'One Time Password sent successfully on your registerd email',
                 'user_id'=> $user['user_id']
             ]);
         }
@@ -368,7 +368,7 @@ class UserController extends Controller
                 $user['first_name'].' '.$user['last_name'],
                 "Please do not share your otp: ".$this->userUpdateOtp($user['user_id'])." with any one. This is a confidential info."
             );
-            
+
             return json_encode([
                 'error'=>false,
                 'message'=>'OTP sent successfully on your registerd email',
@@ -401,5 +401,5 @@ class UserController extends Controller
         return $token;
     }
 
-    
+
 }

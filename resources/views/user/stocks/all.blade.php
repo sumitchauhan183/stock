@@ -29,7 +29,6 @@
                                 <thead>
                                 <tr>
                                     <th>SN.</th>
-                                    <th>ID</th>
                                     <th>Ticker</th>
                                     <th>Name</th>
                                     <th>Stock Exchange</th>
@@ -41,7 +40,6 @@
                                 @foreach ( $companies as $c)
                                     <tr>
                                         <td></td>
-                                        <td>{{$c->id}}</td>
                                         <td>{{$c->ticker}}</td>
                                         <td>{{$c->legal_name}}</td>
                                         <td>{{$c->stock_exchange}}</td>
