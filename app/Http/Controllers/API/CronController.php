@@ -410,7 +410,12 @@ class CronController extends Controller
         if($avgCAGR>20):
             $g1 = 20;
         endif;
-        $avgFreeCashFlows = (Intrinio::data_tag_avg_yearly($id,'netcashfromoperatingactivities')-Intrinio::data_tag_avg_yearly($id,'capex'))/1000000;
+        $avgFreeCashFlows = Intrinio::data_tag_qtr($id,'adjbasiceps');
+        if(count($avgFreeCashFlows)>0):
+            $avgFreeCashFlows = $avgFreeCashFlows[0]->value;
+        else:
+            $avgFreeCashFlows = 0;
+        endif;
         $growthMultiple = 8.3459 * pow(1.07, $g1-4);
         $totalEquity = Intrinio::data_tag_qtr($id,'totalequity');
         if(count($totalEquity)>0):
@@ -426,8 +431,6 @@ class CronController extends Controller
         else:
             $FutCF = 0;
         endif;
-
-
         return $FutCF;
     }
 
@@ -439,7 +442,7 @@ class CronController extends Controller
         else:
             $NRI = 0;
         endif;
-        $EPS = Intrinio::data_tag_yearly($id,'adjdilutedeps');
+        $EPS = Intrinio::data_tag_yearly($id,'adjbasiceps');
         if(count($EPS)>0):
             $EPS = $EPS[0]->value;
         else:

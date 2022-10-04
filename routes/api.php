@@ -43,6 +43,14 @@ Route::get('cron/companies/FinRat/save/{key}',[App\Http\Controllers\API\CronCont
 Route::get('cron/companies/detail/save/{key}',[App\Http\Controllers\API\CronController::class,'saveCompanyDetail']);
 
 
+Route::get('test/dcf/{ticker}',[App\Http\Controllers\API\TestController::class,'checkDCF']);
+Route::get('test/fcf/{ticker}',[App\Http\Controllers\API\TestController::class,'checkFCF']);
+Route::get('test/graham/{ticker}',[App\Http\Controllers\API\TestController::class,'checkGRAHAM']);
+Route::get('test/tb/{ticker}',[App\Http\Controllers\API\TestController::class,'checkTB']);
+Route::get('test/pl/{ticker}',[App\Http\Controllers\API\TestController::class,'checkPL']);
+Route::get('test/financial-rating/{ticker}',[App\Http\Controllers\API\TestController::class,'checkFR']);
+
+
 
 // INTRINIO API
 Route::any('find-value-stock/sector/{sector}',[App\Http\Controllers\API\Intrinio\FVSController::class,'companies']);

@@ -248,6 +248,26 @@ class Intrinio
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
+     * https://api-v2.intrinio.com/companies/META/historical_data/adjbasiceps?
+     * frequency=quarterly&start_date=2016-05-31&end_date=2022-05-31&api_key=
+     */
+    public static function data_tag_quarterly($id,$tag)
+    {
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        $uri = $endpoint."companies/$id/historical_data/$tag?frequency=quarterly&api_key=$key";
+         $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            return $request->historical_data;
+        endif;
+    }
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
      */
     public static function data_tag_qtr_year_wise_avg($id,$tag,$start,$end,$latest)
     {

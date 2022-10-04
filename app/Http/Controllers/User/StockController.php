@@ -229,6 +229,8 @@ class StockController extends Controller
          $c->Ysum      = $this->getXsum($c->Y);
          $c->Xpow10    = pow($c->X,10);
          $c->intValCal = $c->fcfpershare*(($c->Xsum)+$c->Xpow10*($c->Ysum));
+
+
          $c->growthMultiple = 8.3459 * pow(1.07, $c->g1-4);
          $c->avgFreeCashFlows = (Intrinio::data_tag_avg_yearly($c->ticker,'netcashfromoperatingactivities')-Intrinio::data_tag_avg_yearly($c->ticker,'capex'))/1000000;
          $c->totalEquity = Intrinio::data_tag_qtr($c->ticker,'totalequity')[0]->value/1000000;
@@ -241,7 +243,7 @@ class StockController extends Controller
          if(!$c->NRI):
              $c->NRI = 0;
          endif;
-         $c->EPS = Intrinio::data_tag_yearly($c->ticker,'adjdilutedeps')[0]->value;
+         $c->EPS = Intrinio::data_tag_yearly($c->ticker,'adjbasiceps')[0]->value;
          $c->PLV = 1*$c->avgCAGR*($c->EPS-$c->NRI);
 
 
