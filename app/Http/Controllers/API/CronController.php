@@ -376,62 +376,66 @@ class CronController extends Controller
 
     private function calculateFCF($id){
 
-        $ebitpershare = $this->ebitpershare($id);
-        if(count($ebitpershare["z"])>0):
-            $CAGR = $this->getCagr($ebitpershare['z'])*100;
+        $c = (object)[];
+        $c->ticker = $id;
+
+        $c->ebit_per_share = $this->ebitpershare($id);
+        if(count($c->ebit_per_share['z'])>0):
+            $c->CAGR = $this->getCagr($c->ebit_per_share['z'])*100;
         else:
-            $CAGR = 0;
+            $c->CAGR = 0;
         endif;
 
-        if(count($ebitpershare["x"])>0 && count($ebitpershare["y"])>0):
-            $LINEST  = $this->getLinest($ebitpershare);
-            if(is_array($LINEST)){
-                $growthRate = (pow(10,$LINEST[0])-1)*100;
-            }else{
-                $growthRate = 0;
-            }
-
+        if(count($c->ebit_per_share["x"])>0 && count($c->ebit_per_share["y"])>0):
+            $c->LINEST  = $this->getLinest($c->ebit_per_share);
+            if(is_array($c->LINEST)):
+                $c->growthRate = (pow(10,$c->LINEST[0])-1)*100;
+            else:
+                $c->growthRate = 0;
+            endif;
         else:
-            $growthRate = 0;
-        endif;
-
-        if($CAGR > 0 || $growthRate > 0):
-            $avgCAGR = floor(($growthRate+$CAGR)/2);
-        else:
-            $avgCAGR = 0;
+            $c->growthRate = 0;
         endif;
 
-        if($avgCAGR<4):
-            $g1 = 4;
+        if($c->CAGR > 0 || $c->growthRate > 0):
+            $c->avgCAGR = floor(($c->growthRate+$c->CAGR)/2);
         else:
-            $g1 = $avgCAGR;
+            $c->avgCAGR = 0;
         endif;
 
-        if($avgCAGR>20):
-            $g1 = 20;
-        endif;
-        $avgFreeCashFlows = Intrinio::data_tag_qtr($id,'adjbasiceps');
-        if(count($avgFreeCashFlows)>0):
-            $avgFreeCashFlows = $avgFreeCashFlows[0]->value;
+        if($c->avgCAGR<4):
+            $c->g1 = 4;
         else:
-            $avgFreeCashFlows = 0;
+            $c->g1 = $c->avgCAGR;
         endif;
-        $growthMultiple = 8.3459 * pow(1.07, $g1-4);
-        $totalEquity = Intrinio::data_tag_qtr($id,'totalequity');
-        if(count($totalEquity)>0):
-            $totalEquity = $totalEquity[0]->value/1000000;
+
+        if($c->avgCAGR>20):
+            $c->g1 = 20;
+        endif;
+        $c->eps_nri_per_share = Intrinio::data_tag_quarterly($id,'adjbasiceps');
+        if(count($c->eps_nri_per_share)>0):
+            $c->eps_nri_per_share = $c->eps_nri_per_share[0]->value;
         else:
-            $totalEquity = 0;
+            $c->eps_nri_per_share = 0;
         endif;
-        $FutCF = ($growthMultiple*$avgFreeCashFlows)+(0.75*$totalEquity);
-        $dilShareOut = Intrinio::data_tag_avg_yearly($id,'weightedavedilutedsharesos');
-        if($dilShareOut>0):
-            $dilShareOut = $dilShareOut /1000000;
-            $FutCF = $FutCF/$dilShareOut;
+
+        $c->growthMultiple = 8.3459 * pow(1.07, $c->g1-4);
+        $c->totalEquity = Intrinio::data_tag_qtr($id,'totalequity');
+        if(count($c->totalEquity)>0):
+            $c->totalEquity = $c->totalEquity[0]->value/1000000;
         else:
-            $FutCF = 0;
+            $c->totalEquity = 0;
         endif;
-        return $FutCF;
+        $c->dilShareOut = Intrinio::data_tag_avg_yearly($id,'weightedavedilutedsharesos');
+        $c->FCF = ($c->growthMultiple*$c->eps_nri_per_share)+(0.75*$c->totalEquity);
+        if($c->dilShareOut>0):
+            $c->dilShareOut = $c->dilShareOut /1000000;
+            $c->FCF = $c->FCF/$c->dilShareOut;
+        else:
+            $c->FCF = 0;
+        endif;
+
+        return $c->FCF;
     }
 
     private function calculatePL($id){
@@ -479,15 +483,27 @@ class CronController extends Controller
 
     private function calculateDCF($id){
 
-        $dilutedSharesCashflow       = Intrinio::data_tag_yearly($id,'weightedavedilutedsharesos');
-
-        if(count($dilutedSharesCashflow)>0):
-            $dilutedSharesCashflow       = $dilutedSharesCashflow[0]->value/1000000;
+        $c = (object)[];
+        $c->ticker = $id;
+        $c->disc_rate_d = (Intrinio::getTreasuryRate()/100)+(6/100);
+        $c->growth_years_y1 = 10;
+        $c->growth_rate_g1 = $this->getGrowthRate($id)/100;
+        $c->term_growth_rate_g2 = 0.036;
+        $c->term_year_growth_y2 = 10;
+        $c->eps_nri_per_share = Intrinio::data_tag_quarterly($id,'adjbasiceps');
+        if(count($c->eps_nri_per_share)>0):
+            $c->eps_nri_per_share = $c->eps_nri_per_share[0]->value;
         else:
-            $dilutedSharesCashflow       = 0;
+            $c->eps_nri_per_share = 0;
         endif;
+        $c->X = (1+$c->growth_rate_g1)/(1+$c->disc_rate_d);
+        $c->Y = (1+$c->term_growth_rate_g2)/(1+($c->disc_rate_d));
+        $c->Xsum      = $this->getXsum($c->X);
+        $c->Ysum      = $this->getXsum($c->Y);
+        $c->Xpow10    = pow($c->X,10);
+        $c->intValCal = $c->eps_nri_per_share*(($c->Xsum)+$c->Xpow10*($c->Ysum));
 
-        return $dilutedSharesCashflow;
+        return $c->intValCal;
     }
 
     private function calculateTB($id){
@@ -562,7 +578,66 @@ class CronController extends Controller
     }
 
 
+// related private DCF functions
+    private function getXsum($d){
+        $sum = $d;
+        for($i=2;$i<=10;$i++){
+            $sum = $sum+pow($d,$i);
+        }
+        return $sum;
+    }
 
+    private function getGrowthRate($id){
+        $ebitpershare = $this->ebitpershare($id);
+        if(count($ebitpershare["z"])>0):
+            $CAGR = $this->getCagr($ebitpershare['z'])*100;
+        else:
+            $CAGR = 0;
+        endif;
+
+        if(count($ebitpershare["x"])>0 && count($ebitpershare["y"])>0):
+            $LINEST  = $this->getLinest($ebitpershare);
+            if(is_array($LINEST)):
+                $growthRate = (pow(10,$LINEST[0])-1)*100;
+            else:
+                $growthRate = 0;
+            endif;
+        else:
+            $growthRate = 0;
+        endif;
+
+        if($CAGR > 0 || $growthRate > 0):
+            $avgCAGR = floor(($growthRate+$CAGR)/2);
+        else:
+            $avgCAGR = 0;
+        endif;
+
+        if($avgCAGR<4):
+            $g1 = 4;
+        else:
+            $g1 = $avgCAGR;
+        endif;
+
+        if($avgCAGR>20):
+            $g1 = 20;
+        endif;
+
+        return $g1;
+    }
+
+    private function getAvg($d){
+        $count = 0;
+        $val = 0;
+        foreach($d as $a):
+            $val = $val+$a->value;
+            $count++;
+        endforeach;
+        if($count>0):
+            return $val/$count;
+        else:
+            return 0;
+        endif;
+    }
 
 
     private function ppetorevenuettm($ppe,$revttm){
@@ -786,20 +861,6 @@ class CronController extends Controller
             $y++;
         endfor;
         return $arr;
-    }
-
-    private function getAvg($d){
-        $count = 0;
-        $val = 0;
-        foreach($d as $a):
-            $val = $val+$a->value;
-            $count++;
-        endforeach;
-        if($count>0):
-            return $val/$count;
-        else:
-            return 0;
-        endif;
     }
 
     private  function getLinest($d){

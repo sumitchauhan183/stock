@@ -26,6 +26,27 @@ class Intrinio
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
+     * https://api-v2.intrinio.com/companies/META/historical_data/adjbasiceps?
+     * frequency=quarterly&start_date=2016-05-31&end_date=2022-05-31&api_key=
+     */
+    public static function data_tag_quarterly($id,$tag)
+    {
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        $uri = $endpoint."companies/$id/historical_data/$tag?frequency=quarterly&api_key=$key";
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            return $request->historical_data;
+        endif;
+    }
+
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
      */
     public static function companies_asset($asset='Lodging')
     {
@@ -227,13 +248,11 @@ class Intrinio
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public static function data_tag_qtr($id,$tag)
+    public static function data_tag_common($id,$tag)
     {
-        $end   = date('Y-m-d');
-        $start = date('Y-m-d', strtotime("$end -6 year"));
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
-        $uri = $endpoint."companies/$id/historical_data/$tag?type=QTR&start_date=$start&end_date=$end&api_key=$key";
+        $uri = $endpoint."companies/$id/historical_data/$tag?frequency=quarterly&api_key=$key";
         // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
         // dd($uri);
         $request = Utils::curlRequest($uri);
@@ -248,15 +267,17 @@ class Intrinio
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
-     * https://api-v2.intrinio.com/companies/META/historical_data/adjbasiceps?
-     * frequency=quarterly&start_date=2016-05-31&end_date=2022-05-31&api_key=
      */
-    public static function data_tag_quarterly($id,$tag)
+    public static function data_tag_qtr($id,$tag)
     {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -6 year"));
         $key = env("INTRINIO_KEY");
         $endpoint = env("INTRINIO_ENDPOINT");
-        $uri = $endpoint."companies/$id/historical_data/$tag?frequency=quarterly&api_key=$key";
-         $request = Utils::curlRequest($uri);
+        $uri = $endpoint."companies/$id/historical_data/$tag?type=QTR&start_date=$start&end_date=$end&api_key=$key";
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        // dd($uri);
+        $request = Utils::curlRequest($uri);
         if(isset($request->error)):
             return [];
         else:
@@ -372,6 +393,29 @@ class Intrinio
             return [];
         else:
             return $request->historical_data;
+        endif;
+    }
+
+    public static function data_tag_quarterly_new($id,$tag)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -6 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        $uri = $endpoint."companies/$id/historical_data/$tag?frequency=quarterly&start_date=$start&end_date=$end&api_key=$key";
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        //dd($uri);
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return [];
+        else:
+            $data = [];
+            foreach($request->historical_data as $d):
+                if(strpos($d->date,'-03-')):
+                    array_push($data,$d);
+                endif;
+            endforeach;
+            return $data;
         endif;
     }
 

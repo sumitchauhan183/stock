@@ -78,8 +78,8 @@ class TestController extends Controller
             $c->growthRate = 0;
         endif;
 
-        if($c->CAGR > 0 || $c->growthRate > 0):
-            $c->avgCAGR = floor(($c->growthRate+$c->CAGR)/2);
+        if($c->CAGR != 0 || $c->growthRate != 0):
+            $c->avgCAGR = round(($c->growthRate+$c->CAGR)/2,2);
         else:
             $c->avgCAGR = 0;
         endif;
@@ -93,6 +93,9 @@ class TestController extends Controller
         if($c->avgCAGR>20):
             $c->g1 = 20;
         endif;
+
+        $c->exponent = $c->avgCAGR - 4;
+
         $c->eps_nri_per_share = Intrinio::data_tag_quarterly($id,'adjbasiceps');
         if(count($c->eps_nri_per_share)>0):
             $c->eps_nri_per_share = $c->eps_nri_per_share[0]->value;
@@ -100,21 +103,24 @@ class TestController extends Controller
             $c->eps_nri_per_share = 0;
         endif;
 
-        $c->growthMultiple = 8.3459 * pow(1.07, $c->g1-4);
-        $c->totalEquity = Intrinio::data_tag_qtr($id,'totalequity');
+        $c->growthMultiple = round(8.3459 * pow(1.07, $c->exponent),2);
+
+        $c->totalEquity = Intrinio::data_tag_quarterly_new($id,'totalequity');
         if(count($c->totalEquity)>0):
             $c->totalEquity = $c->totalEquity[0]->value/1000000;
         else:
             $c->totalEquity = 0;
         endif;
-        $c->dilShareOut = Intrinio::data_tag_avg_yearly($id,'weightedavedilutedsharesos');
-        $c->FCF = ($c->growthMultiple*$c->eps_nri_per_share)+(0.75*$c->totalEquity);
-        if($c->dilShareOut>0):
-            $c->dilShareOut = $c->dilShareOut /1000000;
-            $c->FCF = $c->FCF/$c->dilShareOut;
+        $c->dilShareOut = Intrinio::data_tag_quarterly_new($id,'weightedavedilutedsharesos');
+        if(count($c->dilShareOut)>0):
+            $c->dilShareOut = $c->dilShareOut[0]->value/1000000;
         else:
-            $c->FCF = 0;
+            $c->dilShareOut = 0;
         endif;
+
+
+        $c->freeCF = $this->freeCF($id);
+        $c->FCF = ($c->growthMultiple*$c->freeCF+$c->totalEquity*0.75)/$c->dilShareOut;
         dd($c);
 
     }
@@ -353,11 +359,27 @@ class TestController extends Controller
         return $c->TB;
     }
 
+    // related to FCF
+
+    private function freeCF($id){
+        $cfop = Intrinio::data_tag_quarterly_new($id,'netcashfromoperatingactivities');  //net cash from operating revenue
+        $capex = Intrinio::data_tag_quarterly_new($id,'capex');
+        $diff = [];
+        $total = 0;
+        for($x=0; $x < count($cfop); $x++):
+            $di = ($cfop[$x]->value - $capex[$x]->value)/1000000;
+            $total = $total+$di;
+            array_push($diff,$di);
+        endfor;
+        $freeCF = round($total/$x,2);
+        return $freeCF;
+    }
+
     // common FCF & DCF
     private function ebitpershare($id){
 
-        $ebitArr  = Intrinio::data_tag_yearly($id,'ebit');
-        $shareArr = Intrinio::data_tag_yearly($id,'weightedavedilutedsharesos');
+        $ebitArr  = Intrinio::data_tag_quarterly_new($id,'ebit');
+        $shareArr = Intrinio::data_tag_quarterly_new($id,'weightedavedilutedsharesos');
         $avg = $this->getAvg($shareArr);
         $arr = [
             'x' => [],
