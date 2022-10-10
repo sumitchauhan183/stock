@@ -88,7 +88,7 @@ class CronController extends Controller
     public function saveFCF($key){
 
         if($key==$this->key):
-            $date = date('Y-m-d H:i:s',strtotime('-150 hours'));
+            $date = date('Y-m-d H:i:s',strtotime('-24 hours'));
             $ndate = date('Y-m-d H:i:s');
             $companies = Companies::where('FCF_last_updated','<',"$date")
                 ->orderBy('company_id','ASC')
@@ -117,7 +117,7 @@ class CronController extends Controller
     public function saveDCF($key){
 
         if($key==$this->key):
-            $date = date('Y-m-d H:i:s',strtotime('-150 hours'));
+            $date = date('Y-m-d H:i:s',strtotime('-24 hours'));
             $ndate = date('Y-m-d H:i:s');
             $companies = Companies::where('DCF_last_updated','<',"$date")
                 ->orderBy('company_id','ASC')
@@ -146,7 +146,7 @@ class CronController extends Controller
     public function saveTB($key){
 
         if($key==$this->key):
-            $date = date('Y-m-d H:i:s',strtotime('-150 hours'));
+            $date = date('Y-m-d H:i:s',strtotime('-24 hours'));
             $ndate = date('Y-m-d H:i:s');
             $companies = Companies::where('TB_last_updated','<',"$date")
                 ->orderBy('company_id','ASC')
@@ -175,7 +175,7 @@ class CronController extends Controller
     public function savePL($key){
 
         if($key==$this->key):
-            $date = date('Y-m-d H:i:s',strtotime('-150 hours'));
+            $date = date('Y-m-d H:i:s',strtotime('-24 hours'));
             $ndate = date('Y-m-d H:i:s');
             $companies = Companies::where('PL_last_updated','<',"$date")
                 ->orderBy('company_id','ASC')
@@ -204,7 +204,7 @@ class CronController extends Controller
     public function saveGRAHAM($key){
 
         if($key==$this->key):
-            $date = date('Y-m-d H:i:s',strtotime('-150 hours'));
+            $date = date('Y-m-d H:i:s',strtotime('-24 hours'));
             $ndate = date('Y-m-d H:i:s');
             $companies = Companies::where('GRAHAM_last_updated','<',"$date")
                 ->orderBy('company_id','ASC')
@@ -233,7 +233,7 @@ class CronController extends Controller
     public function saveFinRat($key){
 
         if($key==$this->key):
-            $date = date('Y-m-d H:i:s',strtotime('-150 hours'));
+            $date = date('Y-m-d H:i:s',strtotime('-24 hours'));
             $ndate = date('Y-m-d H:i:s');
             $companies = Companies::where('FRating_last_updated','<',"$date")
                 ->orderBy('company_id','ASC')
@@ -389,7 +389,7 @@ class CronController extends Controller
         if(count($c->ebit_per_share["x"])>0 && count($c->ebit_per_share["y"])>0):
             $c->LINEST  = $this->getLinest($c->ebit_per_share);
             if(is_array($c->LINEST)):
-                $c->growthRate = (pow(10,$c->LINEST[0])-1)*100;
+                $c->growthRate = round((pow(10,$c->LINEST[0])-1)*100,2);
             else:
                 $c->growthRate = 0;
             endif;
@@ -409,17 +409,13 @@ class CronController extends Controller
             $c->avgCAGR = 16.5;
         endif;
 
-        $c->exponent = $c->avgCAGR;
-        $c->eps_nri_per_share = Intrinio::data_tag_quarterly($id,'adjbasiceps');
-        if(count($c->eps_nri_per_share)>0):
-            $c->eps_nri_per_share = $c->eps_nri_per_share[0]->value;
-        else:
-            $c->eps_nri_per_share = 0;
-        endif;
+        $c->exponent_base = 6.8512;
+
 
         $c->e = 2.71828;
         $c->base = 6.9961;
-        $c->growthMultiple = round($c->base * pow( $c->e, $c->exponent*($c->growthRate/100)),2);
+        $c->e_power = pow( $c->e, $c->exponent_base*($c->avgCAGR/100));
+        $c->growthMultiple = round($c->base * $c->e_power,2);
 
         $c->totalEquity = Intrinio::data_tag_yearly($id,'totalequity');
         if(count($c->totalEquity)>0):
@@ -441,7 +437,7 @@ class CronController extends Controller
         else:
             $c->FCF = 0;
         endif;
-
+        dd($c);
         return $c->FCF;
     }
 
@@ -792,16 +788,14 @@ class CronController extends Controller
     private function freeCF($id){
         $cfop = Intrinio::data_tag_yearly($id,'netcashfromoperatingactivities');  //net cash from operating revenue
         $capex = Intrinio::data_tag_yearly($id,'capex');
-
-        $diff = [];
-        $total = 0;
-        for($x=0; $x < count($cfop); $x++):
-            $di = ($cfop[$x]->value - $capex[$x]->value)/1000000;
-            $total = $total+$di;
-            array_push($diff,$di);
-        endfor;
-
-        if($x>0):
+        if(count($cfop)>0 && count($capex)>0):
+            $diff = [];
+            $total = 0;
+            for($x=0; $x < count($cfop); $x++):
+                $di = ($cfop[$x]->value - $capex[$x]->value)/1000000;
+                $total = $total+$di;
+                array_push($diff,$di);
+            endfor;
             $freeCF = round($total/$x,2);
         else:
             $freeCF = 0;
@@ -862,8 +856,14 @@ class CronController extends Controller
 
     private function ebitpershare($id){
 
-        $ebitArr  = Intrinio::data_tag_yearly($id,'ebit');
-        $shareArr = Intrinio::data_tag_yearly($id,'weightedavedilutedsharesos');
+        $ebitArr  = Intrinio::data_tag_quarterly_new($id,'ebit');
+        if(count($ebitArr)<1):
+            $ebitArr  = Intrinio::data_tag_yearly($id,'ebit');
+        endif;
+        $shareArr = Intrinio::data_tag_quarterly_new($id,'weightedavedilutedsharesos');
+        if(count($shareArr)<1):
+            $shareArr = Intrinio::data_tag_yearly($id,'weightedavedilutedsharesos');
+        endif;
         $avg = $this->getAvg($shareArr);
         $arr = [
             'x' => [],
