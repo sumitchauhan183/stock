@@ -84,18 +84,13 @@ class TestController extends Controller
             $c->avgCAGR = 0;
         endif;
 
-        if($c->avgCAGR<4):
-            $c->g1 = 4;
-        else:
-            $c->g1 = $c->avgCAGR;
+        if($c->avgCAGR<4.5):
+            $c->avgCAGR = 4.5;
+        elseif($c->avgCAGR>16.5):
+            $c->avgCAGR = 16.5;
         endif;
 
-        if($c->avgCAGR>20):
-            $c->g1 = 20;
-        endif;
-
-        $c->exponent = $c->avgCAGR - 4;
-
+        $c->exponent = $c->avgCAGR;
         $c->eps_nri_per_share = Intrinio::data_tag_quarterly($id,'adjbasiceps');
         if(count($c->eps_nri_per_share)>0):
             $c->eps_nri_per_share = $c->eps_nri_per_share[0]->value;
@@ -103,15 +98,17 @@ class TestController extends Controller
             $c->eps_nri_per_share = 0;
         endif;
 
-        $c->growthMultiple = round(8.3459 * pow(1.07, $c->exponent),2);
+        $c->e = 2.71828;
+        $c->base = 6.9961;
+        $c->growthMultiple = round($c->base * pow( $c->e, $c->exponent*($c->growthRate/100)),2);
 
-        $c->totalEquity = Intrinio::data_tag_quarterly_new($id,'totalequity');
+        $c->totalEquity = Intrinio::data_tag_yearly($id,'totalequity');
         if(count($c->totalEquity)>0):
             $c->totalEquity = $c->totalEquity[0]->value/1000000;
         else:
             $c->totalEquity = 0;
         endif;
-        $c->dilShareOut = Intrinio::data_tag_quarterly_new($id,'weightedavedilutedsharesos');
+        $c->dilShareOut = Intrinio::data_tag_yearly($id,'weightedavedilutedsharesos');
         if(count($c->dilShareOut)>0):
             $c->dilShareOut = $c->dilShareOut[0]->value/1000000;
         else:
@@ -120,7 +117,11 @@ class TestController extends Controller
 
 
         $c->freeCF = $this->freeCF($id);
-        $c->FCF = ($c->growthMultiple*$c->freeCF+$c->totalEquity*0.75)/$c->dilShareOut;
+        if($c->dilShareOut>0):
+            $c->FCF = ($c->growthMultiple*$c->freeCF+$c->totalEquity*0.75)/$c->dilShareOut;
+        else:
+            $c->FCF = 0;
+        endif;
         dd($c);
 
     }
@@ -180,7 +181,7 @@ class TestController extends Controller
 
         $c->TB = $this->calculateTB($id);
         $c->GRAHAM = sqrt($c->TB * $c->eps_nri_per_share * 22.5);
-        if( is_nan($c->GRAHAM)):
+        if(is_nan($c->GRAHAM)):
             $c->GRAHAM = 0;
         endif;
 
@@ -259,7 +260,6 @@ class TestController extends Controller
         }
         return $sum;
     }
-
     private function getGrowthRate($id){
         $ebitpershare = $this->ebitpershare($id);
         if(count($ebitpershare["z"])>0):
@@ -298,7 +298,6 @@ class TestController extends Controller
 
         return $g1;
     }
-
     private function getAvg($d){
         $count = 0;
         $val = 0;
@@ -320,28 +319,29 @@ class TestController extends Controller
         $c = (object)[];
         $c->ticker = $id;
 
-        $c->dilutedSharesOutstanding   = Intrinio::data_tag_qtr($id,'weightedavedilutedsharesos');
+        $c->dilutedSharesOutstanding   = Intrinio::data_tag_quarterly($id,'weightedavedilutedsharesos');
+        //dd($c->dilutedSharesOutstanding);
         if(count($c->dilutedSharesOutstanding)>0):
             $c->dilutedSharesOutstanding   = $c->dilutedSharesOutstanding[0]->value/1000000;
-            $c->totalEquity                = Intrinio::data_tag_qtr($id,'totalequity');
+            $c->totalEquity                = Intrinio::data_tag_quarterly($id,'totalequity');
             if(count($c->totalEquity)>0):
                 $c->totalEquity                =  $c->totalEquity[0]->value/1000000;
             else:
                 $c->totalEquity                =  0;
             endif;
-            $c->totalPreferedEquity        = Intrinio::data_tag_qtr($id,'totalpreferredequity');
+            $c->totalPreferedEquity        = Intrinio::data_tag_quarterly($id,'totalpreferredequity');
             if(count($c->totalPreferedEquity)>0):
                 $c->totalPreferedEquity                =  $c->totalPreferedEquity[0]->value/1000000;
             else:
                 $c->totalPreferedEquity                =  0;
             endif;
-            $c->intengibleAssets           = Intrinio::data_tag_qtr($id,'intangibleassets');
+            $c->intengibleAssets           = Intrinio::data_tag_quarterly($id,'intangibleassets');
             if(count($c->intengibleAssets)>0):
                 $c->intengibleAssets                =  $c->intengibleAssets[0]->value/1000000;
             else:
                 $c->intengibleAssets                =  0;
             endif;
-            $c->goodWill                   = Intrinio::data_tag_qtr($id,'goodwill');
+            $c->goodWill                   = Intrinio::data_tag_quarterly($id,'goodwill');
             if(count($c->goodWill)>0):
                 $c->goodWill                =  $c->goodWill[0]->value/1000000;
             else:
@@ -362,8 +362,9 @@ class TestController extends Controller
     // related to FCF
 
     private function freeCF($id){
-        $cfop = Intrinio::data_tag_quarterly_new($id,'netcashfromoperatingactivities');  //net cash from operating revenue
-        $capex = Intrinio::data_tag_quarterly_new($id,'capex');
+        $cfop = Intrinio::data_tag_yearly($id,'netcashfromoperatingactivities');  //net cash from operating revenue
+        $capex = Intrinio::data_tag_yearly($id,'capex');
+
         $diff = [];
         $total = 0;
         for($x=0; $x < count($cfop); $x++):
@@ -371,15 +372,21 @@ class TestController extends Controller
             $total = $total+$di;
             array_push($diff,$di);
         endfor;
-        $freeCF = round($total/$x,2);
+
+        if($x>0):
+            $freeCF = round($total/$x,2);
+        else:
+            $freeCF = 0;
+        endif;
+
         return $freeCF;
     }
 
     // common FCF & DCF
     private function ebitpershare($id){
 
-        $ebitArr  = Intrinio::data_tag_quarterly_new($id,'ebit');
-        $shareArr = Intrinio::data_tag_quarterly_new($id,'weightedavedilutedsharesos');
+        $ebitArr  = Intrinio::data_tag_yearly($id,'ebit');
+        $shareArr = Intrinio::data_tag_yearly($id,'weightedavedilutedsharesos');
         $avg = $this->getAvg($shareArr);
         $arr = [
             'x' => [],

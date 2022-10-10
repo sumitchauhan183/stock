@@ -397,21 +397,19 @@ class CronController extends Controller
             $c->growthRate = 0;
         endif;
 
-        if($c->CAGR > 0 || $c->growthRate > 0):
-            $c->avgCAGR = floor(($c->growthRate+$c->CAGR)/2);
+        if($c->CAGR != 0 || $c->growthRate != 0):
+            $c->avgCAGR = round(($c->growthRate+$c->CAGR)/2,2);
         else:
             $c->avgCAGR = 0;
         endif;
 
-        if($c->avgCAGR<4):
-            $c->g1 = 4;
-        else:
-            $c->g1 = $c->avgCAGR;
+        if($c->avgCAGR<4.5):
+            $c->avgCAGR = 4.5;
+        elseif($c->avgCAGR>16.5):
+            $c->avgCAGR = 16.5;
         endif;
 
-        if($c->avgCAGR>20):
-            $c->g1 = 20;
-        endif;
+        $c->exponent = $c->avgCAGR;
         $c->eps_nri_per_share = Intrinio::data_tag_quarterly($id,'adjbasiceps');
         if(count($c->eps_nri_per_share)>0):
             $c->eps_nri_per_share = $c->eps_nri_per_share[0]->value;
@@ -419,18 +417,27 @@ class CronController extends Controller
             $c->eps_nri_per_share = 0;
         endif;
 
-        $c->growthMultiple = 8.3459 * pow(1.07, $c->g1-4);
-        $c->totalEquity = Intrinio::data_tag_qtr($id,'totalequity');
+        $c->e = 2.71828;
+        $c->base = 6.9961;
+        $c->growthMultiple = round($c->base * pow( $c->e, $c->exponent*($c->growthRate/100)),2);
+
+        $c->totalEquity = Intrinio::data_tag_yearly($id,'totalequity');
         if(count($c->totalEquity)>0):
             $c->totalEquity = $c->totalEquity[0]->value/1000000;
         else:
             $c->totalEquity = 0;
         endif;
-        $c->dilShareOut = Intrinio::data_tag_avg_yearly($id,'weightedavedilutedsharesos');
-        $c->FCF = ($c->growthMultiple*$c->eps_nri_per_share)+(0.75*$c->totalEquity);
+        $c->dilShareOut = Intrinio::data_tag_yearly($id,'weightedavedilutedsharesos');
+        if(count($c->dilShareOut)>0):
+            $c->dilShareOut = $c->dilShareOut[0]->value/1000000;
+        else:
+            $c->dilShareOut = 0;
+        endif;
+
+
+        $c->freeCF = $this->freeCF($id);
         if($c->dilShareOut>0):
-            $c->dilShareOut = $c->dilShareOut /1000000;
-            $c->FCF = $c->FCF/$c->dilShareOut;
+            $c->FCF = ($c->growthMultiple*$c->freeCF+$c->totalEquity*0.75)/$c->dilShareOut;
         else:
             $c->FCF = 0;
         endif;
@@ -440,45 +447,47 @@ class CronController extends Controller
 
     private function calculatePL($id){
 
-        $NRI = Intrinio::data_tag_yearly($id,'extraordinaryincome');
-        if(count($NRI)>0):
-            $NRI = $NRI[0]->value;
+        $c = (object)[];
+        $c->ticker = $id;
+
+        $c->NRI = Intrinio::data_tag_yearly($id,'extraordinaryincome');
+        if(count($c->NRI)>0):
+            $c->NRI = $c->NRI[0]->value;
         else:
-            $NRI = 0;
+            $c->NRI = 0;
         endif;
-        $EPS = Intrinio::data_tag_yearly($id,'adjbasiceps');
-        if(count($EPS)>0):
-            $EPS = $EPS[0]->value;
+        $c->eps_nri_per_share = Intrinio::data_tag_quarterly($id,'adjbasiceps');
+        if(count($c->eps_nri_per_share)>0):
+            $c->eps_nri_per_share = $c->eps_nri_per_share[0]->value;
         else:
-            $EPS = 0;
+            $c->eps_nri_per_share = 0;
         endif;
-        $ebitpershare = $this->ebitpershare($id);
-        if(count($ebitpershare["z"])>0):
-            $CAGR = $this->getCagr($ebitpershare['z'])*100;
+        $c->ebitpershare = $this->ebitpershare($id);
+        if(count($c->ebitpershare["z"])>0):
+            $c->CAGR = $this->getCagr($c->ebitpershare['z'])*100;
         else:
-            $CAGR = 0;
+            $c->CAGR = 0;
         endif;
 
-        if(count($ebitpershare["x"])>0 && count($ebitpershare["y"])>0):
-            $LINEST  = $this->getLinest($ebitpershare);
-            if(is_array($LINEST)){
-                $growthRate = (pow(10,$LINEST[0])-1)*100;
-            }else{
-                $growthRate = 0;
-            }
-
+        if(count($c->ebitpershare["x"])>0 && count($c->ebitpershare["y"])>0):
+            $c->LINEST  = $this->getLinest($c->ebitpershare);
+            if(is_array($c->LINEST)):
+                $c->growthRate = (pow(10,$c->LINEST[0])-1)*100;
+            else:
+                $c->growthRate = 0;
+            endif;
         else:
-            $growthRate = 0;
+            $c->growthRate = 0;
         endif;
 
-        if($CAGR > 0 || $growthRate > 0):
-            $avgCAGR = floor(($growthRate+$CAGR)/2);
+        if($c->CAGR > 0 || $c->growthRate > 0):
+            $c->avgCAGR = floor(($c->growthRate+$c->CAGR)/2);
         else:
-            $avgCAGR = 0;
+            $c->avgCAGR = 0;
         endif;
-        $PLV = 1*$avgCAGR*($EPS-$NRI);
+        $c->PL = 1*$c->avgCAGR*($c->eps_nri_per_share-$c->NRI);
 
-        return $PLV;
+        return $c->PL;
     }
 
     private function calculateDCF($id){
@@ -508,60 +517,68 @@ class CronController extends Controller
 
     private function calculateTB($id){
 
-        $dilutedSharesOutstanding   = Intrinio::data_tag_qtr($id,'weightedavedilutedsharesos');
-        if(count($dilutedSharesOutstanding)>0):
-            $dilutedSharesOutstanding   = $dilutedSharesOutstanding[0]->value/1000000;
-            $totalEquity                = Intrinio::data_tag_qtr($id,'totalequity');
-            if(count($totalEquity)>0):
-                $totalEquity                =  $totalEquity[0]->value/1000000;
+        $c = (object)[];
+        $c->ticker = $id;
+
+        $c->dilutedSharesOutstanding   = Intrinio::data_tag_quarterly($id,'weightedavedilutedsharesos');
+        //dd($c->dilutedSharesOutstanding);
+        if(count($c->dilutedSharesOutstanding)>0):
+            $c->dilutedSharesOutstanding   = $c->dilutedSharesOutstanding[0]->value/1000000;
+            $c->totalEquity                = Intrinio::data_tag_quarterly($id,'totalequity');
+            if(count($c->totalEquity)>0):
+                $c->totalEquity                =  $c->totalEquity[0]->value/1000000;
             else:
-                $totalEquity                =  0;
+                $c->totalEquity                =  0;
             endif;
-            $totalPreferedEquity        = Intrinio::data_tag_qtr($id,'totalpreferredequity');
-            if(count($totalPreferedEquity)>0):
-                $totalPreferedEquity                =  $totalPreferedEquity[0]->value/1000000;
+            $c->totalPreferedEquity        = Intrinio::data_tag_quarterly($id,'totalpreferredequity');
+            if(count($c->totalPreferedEquity)>0):
+                $c->totalPreferedEquity                =  $c->totalPreferedEquity[0]->value/1000000;
             else:
-                $totalPreferedEquity                =  0;
+                $c->totalPreferedEquity                =  0;
             endif;
-            $intengibleAssets           = Intrinio::data_tag_qtr($id,'intangibleassets');
-            if(count($intengibleAssets)>0):
-                $intengibleAssets                =  $intengibleAssets[0]->value/1000000;
+            $c->intengibleAssets           = Intrinio::data_tag_quarterly($id,'intangibleassets');
+            if(count($c->intengibleAssets)>0):
+                $c->intengibleAssets                =  $c->intengibleAssets[0]->value/1000000;
             else:
-                $intengibleAssets                =  0;
+                $c->intengibleAssets                =  0;
             endif;
-            $goodWill                   = Intrinio::data_tag_qtr($id,'goodwill');
-            if(count($goodWill)>0):
-                $goodWill                =  $goodWill[0]->value/1000000;
+            $c->goodWill                   = Intrinio::data_tag_quarterly($id,'goodwill');
+            if(count($c->goodWill)>0):
+                $c->goodWill                =  $c->goodWill[0]->value/1000000;
             else:
-                $goodWill                =  0;
+                $c->goodWill                =  0;
             endif;
-            if($dilutedSharesOutstanding > 0):
-                $TB = ($totalEquity - $totalPreferedEquity - ($intengibleAssets + $goodWill)) / $dilutedSharesOutstanding;
+            if($c->dilutedSharesOutstanding > 0):
+                $c->TB = ($c->totalEquity - $c->totalPreferedEquity - ($c->intengibleAssets + $c->goodWill)) / $c->dilutedSharesOutstanding;
             else:
-                $TB = 0;
+                $c->TB = 0;
             endif;
         else:
-            $TB = 0;
+            $c->TB = 0;
         endif;
 
-
-
-        return $TB;
+        return $c->TB;
     }
 
     private function calculateGRAHAM($id){
-        $EPS = Intrinio::data_tag($id,'adjdilutedeps');
-        if(count($EPS)>0):
-            $EPS = $EPS[0]->value;
+
+        $c = (object)[];
+        $c->ticker = $id;
+
+        $c->eps_nri_per_share = Intrinio::data_tag_quarterly($id,'adjbasiceps');
+        if(count($c->eps_nri_per_share)>0):
+            $c->eps_nri_per_share = $c->eps_nri_per_share[0]->value;
         else:
-            $EPS = 0;
+            $c->eps_nri_per_share = 0;
         endif;
-        $TB = $this->calculateTB($id);
-        $GN = sqrt($TB * $EPS * 22.5);
-        if( is_nan($GN)):
-            $GN = 0;
+
+        $c->TB = $this->calculateTB($id);
+        $c->GRAHAM = sqrt($c->TB * $c->eps_nri_per_share * 22.5);
+        if(is_nan($c->GRAHAM)):
+            $c->GRAHAM = 0;
         endif;
-        return $GN;
+
+        return $c->GRAHAM;
     }
 
     private function calculateFinancialRating($id){
@@ -770,6 +787,27 @@ class CronController extends Controller
             $x++;
         endforeach;
         return $data;
+    }
+
+    private function freeCF($id){
+        $cfop = Intrinio::data_tag_yearly($id,'netcashfromoperatingactivities');  //net cash from operating revenue
+        $capex = Intrinio::data_tag_yearly($id,'capex');
+
+        $diff = [];
+        $total = 0;
+        for($x=0; $x < count($cfop); $x++):
+            $di = ($cfop[$x]->value - $capex[$x]->value)/1000000;
+            $total = $total+$di;
+            array_push($diff,$di);
+        endfor;
+
+        if($x>0):
+            $freeCF = round($total/$x,2);
+        else:
+            $freeCF = 0;
+        endif;
+
+        return $freeCF;
     }
 
     private function avgmaintainanceCapex($c){
