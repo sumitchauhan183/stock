@@ -84,10 +84,10 @@ class TestController extends Controller
             $c->avgCAGR = 0;
         endif;
 
-        if($c->avgCAGR<4.5):
+        if($c->avgCAGR<=4.5):
             $c->avgCAGR = 4.5;
-        elseif($c->avgCAGR>16.5):
-            $c->avgCAGR = 16.5;
+        elseif($c->avgCAGR>=12):
+            $c->avgCAGR = 12;
         endif;
 
         $c->exponent_base = 6.8512;
