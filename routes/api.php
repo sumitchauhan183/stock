@@ -41,6 +41,8 @@ Route::get('cron/companies/PL/save/{key}',[App\Http\Controllers\API\CronControll
 Route::get('cron/companies/GRAHAM/save/{key}',[App\Http\Controllers\API\CronController::class,'saveGRAHAM']);
 Route::get('cron/companies/FinRat/save/{key}',[App\Http\Controllers\API\CronController::class,'saveFinRat']);
 Route::get('cron/companies/detail/save/{key}',[App\Http\Controllers\API\CronController::class,'saveCompanyDetail']);
+Route::get('cron/companies/marketcap/save/{key}',[App\Http\Controllers\API\CronController::class,'saveMarketCap']);
+Route::get('cron/companies/closeprice/save/{key}',[App\Http\Controllers\API\CronController::class,'saveClosePrice']);
 
 
 Route::get('test/dcf/{ticker}',[App\Http\Controllers\API\TestController::class,'checkDCF']);

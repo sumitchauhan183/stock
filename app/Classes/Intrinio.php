@@ -301,7 +301,7 @@ class Intrinio
         //dd($uri);
         $request = Utils::curlRequest($uri);
         if(isset($request->error)):
-            return [];
+            return 0;
         else:
             if($latest!=""):
                 $latest = date('m-d',strtotime($latest));
@@ -406,19 +406,16 @@ class Intrinio
         // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
         //dd($uri);
         $request = Utils::curlRequest($uri);
-
         if(isset($request->error)):
             return [];
         else:
             $data = [];
-
             foreach($request->historical_data as $d):
-                if(strpos($d->date,"-03-")):
+                if(strpos($d->date,'-03-')):
                     array_push($data,$d);
                 endif;
             endforeach;
             return $data;
-
         endif;
     }
 

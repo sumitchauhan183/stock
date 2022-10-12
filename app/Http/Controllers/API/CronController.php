@@ -244,7 +244,9 @@ class CronController extends Controller
                 $FinRat = $this->calculateFinancialRating($c['id']);
 
                 if(is_nan($FinRat->afterWeightRating['weight'])):
-                    $FinRat = 0;
+                    $FinRataf = 0;
+                else:
+                    $FinRataf = $FinRat->afterWeightRating['weight'];
                 endif;
 
                 if(is_nan($FinRat->ebitRating['rating'])):
@@ -285,7 +287,7 @@ class CronController extends Controller
 
                 Companies::where('company_id',$c['company_id'])->update(
                     [
-                        "financial_rating" => $FinRat,
+                        "financial_rating" => $FinRataf,
                         'ebit_rating'=>$ebrat,
                         'operating_income_rating'=>$oirat,
                         'opinc_per_liab_rating'=>$opcplrat,
@@ -322,6 +324,65 @@ class CronController extends Controller
 
     }
 
+    public function saveMarketCap($key){
+
+        if($key==$this->key):
+            $date = date('Y-m-d H:i:s',strtotime('-24 hours'));
+            $ndate = date('Y-m-d H:i:s');
+            $companies = Companies::where('marketcap_last_updated','<',"$date")
+                ->orderBy('company_id','ASC')
+                ->take('25')
+                ->get()
+                ->toArray();
+            foreach ($companies as $c):
+                $mc = $this->calculateMarketcap($c['id']);
+                if(is_nan($mc)):
+                    $mc = 0;
+                endif;
+                Companies::where('company_id',$c['company_id'])->update(
+                    [
+                        "marketcap" => $mc,
+                        "marketcap_last_updated" => $ndate
+                    ]
+                );
+            endforeach;
+            return json_encode(["error"=>'success',"code"=>200]);
+        else:
+            dd("Please provide valid API key");
+        endif;
+
+    }
+
+    public function saveClosePrice($key){
+
+        if($key==$this->key):
+            $date = date('Y-m-d H:i:s',strtotime('-24 hours'));
+            $ndate = date('Y-m-d H:i:s');
+            $companies = Companies::where('close_price_last_updated','<',"$date")
+                ->orderBy('company_id','ASC')
+                ->take('25')
+                ->get()
+                ->toArray();
+            foreach ($companies as $c):
+                $cp = $this->calculateClosePrice($c['id']);
+                if(is_nan($cp)):
+                    $cp = 0;
+                endif;
+                Companies::where('company_id',$c['company_id'])->update(
+                    [
+                        "close_price" => $cp,
+                        "close_price_last_updated" => $ndate
+                    ]
+                );
+            endforeach;
+            return json_encode(["error"=>'success',"code"=>200]);
+        else:
+            dd("Please provide valid API key");
+        endif;
+
+    }
+
+    // Calculation Part
     private function addUpdateCompanyDetail($id,$detail){
         $check = CompanyDetail::where('company_id',$id)
             ->get()
@@ -576,6 +637,36 @@ class CronController extends Controller
         return $c->GRAHAM;
     }
 
+    private function calculateMarketcap($id){
+
+        $c = (object)[];
+        $c->ticker = $id;
+
+        $c->marketcap = Intrinio::data_tag_quarterly($id,'marketcap');
+
+        if(count($c->marketcap)>0){
+            $c->marketcap = round($c->marketcap[0]->value/1000000,2);
+        }else{
+            $c->marketcap = 0;
+        }
+        return $c->marketcap;
+    }
+
+    private function calculateClosePrice($id){
+
+        $c = (object)[];
+        $c->ticker = $id;
+
+        $c->closeprice = Intrinio::data_tag_quarterly($id,'close_price');
+
+        if(count($c->closeprice)>0){
+            $c->closeprice = $c->closeprice[0]->value;
+        }else{
+            $c->closeprice = 0;
+        }
+        return $c->closeprice;
+    }
+
     private function calculateFinancialRating($id){
         $c = (object)[];
         $c->ebitRating  = $this->getRatingsEbit($id);
@@ -791,7 +882,11 @@ class CronController extends Controller
             $diff = [];
             $total = 0;
             for($x=0; $x < count($cfop); $x++):
-                $di = ($cfop[$x]->value - $capex[$x]->value)/1000000;
+                if(isset($capex[$x])):
+                    $di = ($cfop[$x]->value - $capex[$x]->value)/1000000;
+                else:
+                    $di = $cfop[$x]->value/1000000;
+                endif;
                 $total = $total+$di;
                 array_push($diff,$di);
             endfor;

@@ -809,4 +809,42 @@ class TestController extends Controller
         return $avg;
     }
 
+
+    public function saveMarketCap($key){
+
+        if($key==$this->key):
+            $companies = Companies::where('details_saved',0)
+                ->orderBy('company_id','ASC')
+                ->take('100')
+                ->get()
+                ->toArray();
+            foreach($companies as $c):
+                $detail = Intrinio::companDetail($c['id']);
+                $this->addUpdateCompanyDetail($c['company_id'],$detail);
+            endforeach;
+            return json_encode(["error"=>'success',"code"=>200]);
+        else:
+            dd("Please provide valid API key");
+        endif;
+
+    }
+    public function saveClosePrice($key){
+
+        if($key==$this->key):
+            $companies = Companies::where('details_saved',0)
+                ->orderBy('company_id','ASC')
+                ->take('100')
+                ->get()
+                ->toArray();
+            foreach($companies as $c):
+                $detail = Intrinio::companDetail($c['id']);
+                $this->addUpdateCompanyDetail($c['company_id'],$detail);
+            endforeach;
+            return json_encode(["error"=>'success',"code"=>200]);
+        else:
+            dd("Please provide valid API key");
+        endif;
+
+    }
+
 }
