@@ -43,6 +43,8 @@ Route::get('cron/companies/FinRat/save/{key}',[App\Http\Controllers\API\CronCont
 Route::get('cron/companies/detail/save/{key}',[App\Http\Controllers\API\CronController::class,'saveCompanyDetail']);
 Route::get('cron/companies/marketcap/save/{key}',[App\Http\Controllers\API\CronController::class,'saveMarketCap']);
 Route::get('cron/companies/closeprice/save/{key}',[App\Http\Controllers\API\CronController::class,'saveClosePrice']);
+Route::get('cron/companies/type/save/{key}',[App\Http\Controllers\API\CronController::class,'saveCompanyType']);
+
 
 
 Route::get('test/dcf/{ticker}',[App\Http\Controllers\API\TestController::class,'checkDCF']);
@@ -51,6 +53,7 @@ Route::get('test/graham/{ticker}',[App\Http\Controllers\API\TestController::clas
 Route::get('test/tb/{ticker}',[App\Http\Controllers\API\TestController::class,'checkTB']);
 Route::get('test/pl/{ticker}',[App\Http\Controllers\API\TestController::class,'checkPL']);
 Route::get('test/financial-rating/{ticker}',[App\Http\Controllers\API\TestController::class,'checkFR']);
+Route::get('test/company/type/{ticker}',[App\Http\Controllers\API\TestController::class,'checkType']);
 
 
 

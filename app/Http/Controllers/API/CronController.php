@@ -382,7 +382,104 @@ class CronController extends Controller
 
     }
 
+    public function saveCompanyType($key){
+
+        if($key==$this->key):
+            $date = date('Y-m-d H:i:s',strtotime('-24 hours'));
+            $ndate = date('Y-m-d H:i:s');
+            $companies = Companies::where('type_last_updated','<',"$date")
+                ->orwhere('type',null)
+                ->orderBy('company_id','ASC')
+                ->take('25')
+                ->get()
+                ->toArray();
+            foreach ($companies as $c):
+                $type = $this->calculateCompanyType($c['id']);
+
+                Companies::where('company_id',$c['company_id'])->update(
+                    [
+                        "type" => $type,
+                        "type_last_updated" => $ndate
+                    ]
+                );
+            endforeach;
+            return json_encode(["error"=>'success',"code"=>200]);
+        else:
+            dd("Please provide valid API key");
+        endif;
+
+    }
     // Calculation Part
+
+    private function calculateCompanyType($id){
+
+        $c = (object)[];
+        $c->ticker = $id;
+
+        $c->company  = (object) Companies::select('ticker','company_id','FCF','DCF','EPV','TB','GRAHAM','PL','financial_rating','close_price')
+            ->where('id',$id)->get()->first()->toArray();
+        $c->financial_rating    = $c->company->financial_rating;
+        $c->current_price       = $c->company->close_price;
+
+        $c->median = $this->getMedian([
+            $c->company->FCF,
+            $c->company->DCF,
+            $c->company->EPV,
+            $c->company->GRAHAM,
+            $c->company->TB,
+            $c->company->PL
+        ]);
+        $c->median_80 = ($c->median*80)/100;
+        $c->median_95 = ($c->median*95)/100;
+        $c->avg5yearcloseprice     = Intrinio::fiveyearavgcloseprice($id);
+        $c->avg5yearcloseprice_80  = ($c->avg5yearcloseprice*80)/100;
+        $c->highest5yearcloseprice = Intrinio::fiveyearhigestcloseprice($id);
+        $c->highest5yearcloseprice_80  = ($c->highest5yearcloseprice*80)/100;
+        $c->type = 'N/A';
+        if($this->checkTypeAAA($c)){
+            $c->type = 'AAA';
+        }
+
+        if($c->type=='N/A'){
+            if($this->checkTypeAA($c)){
+                $c->type = 'AA';
+            }
+        }
+
+        if($c->type=='N/A'){
+            if($this->checkTypeA($c)){
+                $c->type = 'A';
+            }
+        }
+
+        if($c->type=='N/A'){
+            if($this->checkTypeBBB($c)){
+                $c->type = 'BBB';
+            }
+        }
+
+        if($c->type=='N/A'){
+            if($this->checkTypeBB($c)){
+                $c->type = 'BB';
+            }
+        }
+
+        if($c->type=='N/A'){
+            if($this->checkTypeB($c)){
+                $c->type = 'B';
+            }
+        }
+
+        if($c->type=='N/A'){
+            $c->type = 'C';
+        }
+
+
+        return $c->type;
+
+    }
+
+
     private function addUpdateCompanyDetail($id,$detail){
         $check = CompanyDetail::where('company_id',$id)
             ->get()
@@ -1379,5 +1476,193 @@ class CronController extends Controller
             $avg['rating'] = 1;
         endif;
         return $avg;
+    }
+
+    // Filter related function
+    private function checkTypeAAA($c){
+        if($c->financial_rating < 5){
+            return false;
+        }else{
+            if($c->current_price > $c->median_80){
+                return false;
+            }else{
+                if($c->current_price > $c->highest5yearcloseprice_80 && $c->current_price < $c->avg5yearcloseprice_80){
+                    return false;
+                }else{
+                    $count = $this->checkMatricscount($c);
+                    if($count < 4){
+                        return false;
+                    }else{
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+
+    private function checkTypeAA($c){
+        $x = 1;
+        $y = 1;
+        if($c->financial_rating < 5){
+            $x = 0;
+        }else{
+            if($c->current_price > $c->median_80){
+                $x = 0;
+            }else{
+                if($c->current_price > $c->highest5yearcloseprice && $c->current_price < $c->avg5yearcloseprice_80){
+                    $x = 0;
+                }else{
+                    $count = $this->checkMatricscount($c);
+                    if($count < 3){
+                        $x = 0;
+                    }
+                }
+            }
+        }
+
+        if($c->financial_rating < 4){
+            $y = 0;
+        }else{
+            if($c->current_price > $c->median_80){
+                $y = 0;
+            }else{
+                if($c->current_price > $c->highest5yearcloseprice && $c->current_price < $c->avg5yearcloseprice_80){
+                    $y = 0;
+                }else{
+                    $count = $this->checkMatricscount($c);
+                    if($count < 4){
+                        $y = 0;
+                    }
+                }
+            }
+        }
+
+        if($x==1 || $y==1){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    private function checkTypeA($c){
+
+        if($c->financial_rating < 4){
+            return false;
+        }else{
+            if($c->current_price > $c->median_95){
+                return false;
+            }else{
+                if($c->current_price < $c->avg5yearcloseprice_80){
+                    return false;
+                }else{
+                    $count = $this->checkMatricscount($c);
+                    if($count < 3){
+                        return false;
+                    }else{
+                        return true;
+                    }
+                }
+            }
+        }
+
+    }
+
+    private function checkTypeBBB($c){
+
+        if($c->financial_rating < 3){
+            return false;
+        }else{
+            if($c->current_price > $c->median_80){
+                return false;
+            }else{
+                $count = $this->checkMatricscount($c);
+                if($count < 4){
+                    return false;
+                }else{
+                    return true;
+                }
+            }
+        }
+
+    }
+
+    private function checkTypeBB($c){
+
+        if($c->financial_rating < 3){
+            return false;
+        }else{
+            if($c->current_price > $c->median_95){
+                return false;
+            }else{
+                $count = $this->checkMatricscount($c);
+                if($count < 3){
+                    return false;
+                }else{
+                    return true;
+                }
+            }
+        }
+
+    }
+
+    private function checkTypeB($c){
+
+        if($c->financial_rating < 2){
+            return false;
+        }else{
+            if($c->current_price > $c->median_95){
+                return false;
+            }else{
+                $count = $this->checkMatricscount($c);
+                if($count < 4){
+                    return false;
+                }else{
+                    return true;
+                }
+            }
+        }
+
+    }
+
+    private function checkMatricscount($c){
+        $count = 0;
+        if($c->current_price < $c->company->FCF){
+            $count = $count+1;
+        }
+
+        if($c->current_price < $c->company->DCF){
+            $count = $count+1;
+        }
+
+        if($c->current_price < $c->company->EPV){
+            $count = $count+1;
+        }
+
+        if($c->current_price < $c->company->PL){
+            $count = $count+1;
+        }
+
+        if($c->current_price < $c->company->GRAHAM){
+            $count = $count+1;
+        }
+
+        if($c->current_price < $c->company->TB){
+            $count = $count+1;
+        }
+
+        return $count;
+    }
+
+    private function getMedian($numbers){
+        sort($numbers);
+        $count = sizeof($numbers);   // cache the count
+        $index = floor($count/2);  // cache the index
+        if (!$count) {
+            return 0;
+        } elseif ($count & 1) {    // count is odd
+            return $numbers[$index];
+        } else {                   // count is even
+            return ($numbers[$index-1] + $numbers[$index]) / 2;
+        }
     }
 }
