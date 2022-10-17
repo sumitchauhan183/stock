@@ -1,7 +1,7 @@
  // Menu active
  $(document).ready(function () {
         var url = window.location;
-        $('ul.metismenu a[href="' + url + '"]').parent().addClass('active');       
+        $('ul.metismenu a[href="' + url + '"]').parent().addClass('active');
         $('ul.metismenu a').filter(function () {
             return this.href == url;
         }).parent().addClass('active');
@@ -23,7 +23,7 @@ $('.navbar-toggler .ti-align-right').click(function() {
     $('.navbar-toggler').addClass('Close');
     });
 
-$('.navbar-toggler .ti-close').click(function() {    
+$('.navbar-toggler .ti-close').click(function() {
     $('.navbar-toggler').removeClass('Close');
     });
 
@@ -38,7 +38,7 @@ $(document).ready(function(){
     $("#EditProfile").hide();
     $("#ViewProfile").show();
   });
-    
+
 });
 
 
@@ -61,7 +61,7 @@ offsetTop = offset.top;
 $('html, body').animate({scrollTop: offsetTop}, 500, 'linear');
 };
 
- 
+
 // Search and notifications
 jQuery('#SearchBox').click(function() {
         $("#SearchInpt").toggle('300');
@@ -107,7 +107,7 @@ window.onload = function () {
 
 var chart = new CanvasJS.Chart("macys", {
 	theme: "", // "light2", "dark1", "dark2"
-	animationEnabled: false, // change to true		
+	animationEnabled: false, // change to true
 	data: [
 	{
 		// Change type to "bar", "area", "spline", "pie",etc.
@@ -124,28 +124,11 @@ var chart = new CanvasJS.Chart("macys", {
 });
 chart.render();
 
-var chart = new CanvasJS.Chart("exxon", {
-	theme: "", // "light2", "dark1", "dark2"
-	animationEnabled: false, // change to true		
-	data: [
-	{
-		// Change type to "bar", "area", "spline", "pie",etc.
-		type: "column",
-		dataPoints: [
-			{ label: "EV", y: 19  },
-			{ label: "TV", y: 18  },
-			{ label: "GRM", y: 20  },
-			{ label: "DFC", y: 18  },
-			{ label: "FCF", y: 19  }
-		]
-	}
-	]
-});
-chart.render();
+
 
 var chart = new CanvasJS.Chart("ford", {
 	theme: "", // "light2", "dark1", "dark2"
-	animationEnabled: false, // change to true		
+	animationEnabled: false, // change to true
 	data: [
 	{
 		// Change type to "bar", "area", "spline", "pie",etc.

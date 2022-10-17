@@ -118,11 +118,11 @@ class StockController extends Controller
 
         $detail = CompanyDetail::where('company_detail.id',$ticker)
                    ->join('companies as c','c.id','company_detail.id')
-                   ->get()->toArray();
-        dd($detail);
-        return view('user.stocks.sector',[
+                   ->get()->first();
+        //dd($detail);
+        return view('user.stocks.company_detail',[
             'user'=>$user,
-            'url'=>'sectorstocks',
+            'url'=>'company-detail',
             'tools'=> $this->tools,
             'detail'=>$detail
         ]);

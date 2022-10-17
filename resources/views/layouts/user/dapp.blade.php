@@ -118,9 +118,10 @@
                 //close the alert after 3 seconds.
                 $(document).ready(function(){
                     let table = $('#sector-list').DataTable({
-                        "order": [[3,'asc']],
+                        "order": [[1,'asc']],
                         "columnDefs": [
-                            { "width": "20%", "targets": 4 }
+                            { "width": "20%", "targets": 4 },
+                            { "targets": 1, "visible":false}
                         ],
                         searchBuilder: {
                             columns: [2]
@@ -142,6 +143,32 @@
                 });
             </script>
         @endif
+        @if($url=='company-detail')
+            <script>
+                //close the alert after 3 seconds.
+                $(document).ready(function(){
+                    var chart = new CanvasJS.Chart("exxon", {
+                        theme: "", // "light2", "dark1", "dark2"
+                        animationEnabled: false, // change to true
+                        data: [
+                            {
+                                // Change type to "bar", "area", "spline", "pie",etc.
+                                type: "column",
+                                dataPoints: [
+                                    { label: "EV", y: {{$detail->EPV}}  },
+                                    { label: "TV", y: {{$detail->TB}}  },
+                                    { label: "GRM", y: {{$detail->GRAHAM}}  },
+                                    { label: "DFC", y: {{$detail->DCF}}  },
+                                    { label: "FCF", y: {{$detail->FCF}}  }
+                                ]
+                            }
+                        ]
+                    });
+                    chart.render();
+                });
+            </script>
+        @endif
+
     </div>
 </div>
 </body>
