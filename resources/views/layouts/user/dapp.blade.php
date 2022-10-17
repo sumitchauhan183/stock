@@ -158,7 +158,7 @@
                                     { label: "EV", y: {{$detail->EPV}}  },
                                     { label: "TV", y: {{$detail->TB}}  },
                                     { label: "GRM", y: {{$detail->GRAHAM}}  },
-                                    { label: "DFC", y: {{$detail->DCF}}  },
+                                    { label: "DCF", y: {{$detail->DCF}}  },
                                     { label: "FCF", y: {{$detail->FCF}}  }
                                 ]
                             }
