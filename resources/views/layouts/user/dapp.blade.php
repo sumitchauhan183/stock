@@ -152,6 +152,7 @@
                         theme: "", // "light2", "dark1", "dark2"
                         animationEnabled: false, // change to true
                         axisY:{
+                            margin: 20,
                             lineThickness:0,
                             tickLength: 0,
                             labelFontColor: "white",

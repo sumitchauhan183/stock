@@ -1,5 +1,16 @@
 @extends('layouts.user.dapp')
 @section('content')
+    <style>
+        #space{
+            width: 64px;
+            height: 12px;
+            background: white;
+            z-index: 9;
+            position: absolute;
+            bottom: 2px;
+            left: 16px;
+        }
+    </style>
     <div class="app-main" id="main">
         <div class="container-fluid">
             <div class="card card-statistics pt-0 pb-0 h-100 mb-0">
@@ -112,10 +123,9 @@
                                                 <span class="YellowCo"></span>
                                             @endif
                                         </li>
-                                        <li><strong>INTRINSIC VALUE</strong> ${{$detail->DCF}}</li>
                                     </ul>
                                 </div>
-                                <div class="col-lg-3 CapDetailSecound">
+                                <div class="col-lg-4 CapDetailSecound">
                                     <ul>
                                         @php
                                             $avg = ($detail->EPV+$detail->TB+$detail->GRAHAM+$detail->DCF+$detail->FCF+$detail->PL)/6;
@@ -126,12 +136,15 @@
                                         <li><span class="GreenCo"></span> <strong>$ {{$detail->DCF}}</strong> </li>
                                         <li><span class="RedCo"></span> <strong>$ {{$detail->FCF}}</strong> </li>
                                         <li><span class="OrangeCo"></span> <strong>$ {{$detail->PL}}</strong> </li>
-
-                                        <li><span class="BgCono">AVG</span> <strong>$ {{round($avg,2)}}</strong> </li>
+                                        <li style="font-weight: normal;">INTRINSIC VALUE &nbsp;<strong>AVG $ {{round($avg,2)}}</strong> </li>
                                     </ul>
                                 </div>
-                                <div class="col-lg-5">
-                                    <div id="exxon" style="height: 300px; width: 100%;border: 1px solid;float:right;"></div>
+                                <div class="col-lg-4">
+                                    <div id="exxon" style="height: 300px; width: 100%;border: 1px solid;float:right;">
+                                        <p></p>
+                                    </div>
+                                    <div id="space" >
+                                    </div>
                                 </div>
                             </div>
                         </div>
