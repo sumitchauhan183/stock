@@ -491,6 +491,34 @@ class Intrinio
         endif;
     }
 
+    public static function threeyearavgClosePrice($id)
+    {
+        $end   = date('Y-m-d');
+        $start = date('Y-m-d', strtotime("$end -4 year"));
+        $key = env("INTRINIO_KEY");
+        $endpoint = env("INTRINIO_ENDPOINT");
+        $uri = $endpoint."companies/$id/historical_data/close_price?frequency=quarterly&start_date=$start&end_date=$end&api_key=$key";
+        // $uri = $endpoint."companies/$id/historical_data/$tag?frequency=yearly&start_date=$start&end_date=$end&api_key=$key";
+        // dd($uri);
+        $request = Utils::curlRequest($uri);
+        if(isset($request->error)):
+            return 0;
+        else:
+            if(count($request->historical_data)>0){
+                $count = count($request->historical_data);
+                $total = 0;
+                foreach ($request->historical_data as $d){
+                    $total = $total+$d->value;
+                }
+                return round($total/$count,2);
+                //return $request->historical_data;
+            }else{
+                return 0;
+            }
+
+        endif;
+    }
+
     public static function data_tag_avg_yearly($id,$tag)
     {
         $end   = date('Y-m-d');

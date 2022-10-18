@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap');
-body{font-family: 'Raleway', sans-serif;background: #eceff4;color: #4e4c4c;position: relative;}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Raleway:wght@300;400;500;600;700&family=Calibri:wght@500;600;700&display=swap');
+body{font-family: 'Calibri', sans-serif;background: #eceff4;color: #4e4c4c;position: relative;}
 h1,h2,h3,h4,h5,h6{font-family: 'Poppins', sans-serif;}
 a, p, label, legend{color:#4e4c4c}
 a, button{transition: all ease-in-out 0.8s 0s !important;}
@@ -140,7 +140,7 @@ p{padding-bottom: 20px;}
 .SignUpForm .BtnBox{
     background: #016598;
     color: #fff;
-    border: 2px solid #016598;   
+    border: 2px solid #016598;
     height: 60px;
     line-height: 60px;
     border-radius: 40px;
@@ -212,14 +212,14 @@ select {padding: 0 20px 0 5px;font-size: 17px;color: #353535;font-weight: 600;li
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-  }
+}
 .CustomBox input {
     position: absolute;
     opacity: 0;
     cursor: pointer;
     height: 0;
     width: 0;
-  }
+}
 .CustomBox .checkmark {
     position: absolute;
     top: 0;
@@ -229,19 +229,19 @@ select {padding: 0 20px 0 5px;font-size: 17px;color: #353535;font-weight: 600;li
     background-color: #fff;
     border: 1px solid #016598;
     border-radius: 10px;
-  }
+}
 .CustomBox input:checked ~ .checkmark {
     background-color: #fff;
-  }
+}
 .CustomBox .checkmark:after {
     content: "";
     position: absolute;
     display: none;
-  }
+}
 .CustomBox input:checked ~ .checkmark:after {
     display: block;
-  }
-  .CustomBox .checkmark:after {
+}
+.CustomBox .checkmark:after {
     left: 14px;
     top: 7px;
     width: 15px;
@@ -252,7 +252,7 @@ select {padding: 0 20px 0 5px;font-size: 17px;color: #353535;font-weight: 600;li
     -webkit-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
     transform: rotate(45deg);
-  }
+}
 .RightSymble .fe-check{
     width:60px;
     height:60px;
@@ -265,18 +265,18 @@ select {padding: 0 20px 0 5px;font-size: 17px;color: #353535;font-weight: 600;li
     font-size: 45px !important;
     font-weight: bold;
     margin: 20px auto 70px;
-  }
+}
 .SignUpForm h5{
     color: #858585;
     font-size: 30px;
     text-align: center;
     margin: 60px 0;
-  }
+}
 .ConfirmBtnBox .BtnBox {
     padding: 12px;
     border-radius: 50%;
     font-size: 22px;
-    }
+}
 .sidebar-toggle .fe-menu{
     color: #fff;
 }
@@ -292,15 +292,15 @@ select {padding: 0 20px 0 5px;font-size: 17px;color: #353535;font-weight: 600;li
     flex-flow: wrap;
     font-weight: 500;
 }
-.app-navbar .sidebar-nav ul.metismenu li a:focus, 
+.app-navbar .sidebar-nav ul.metismenu li a:focus,
 .app-navbar .sidebar-nav ul.metismenu li a:hover,
 .app-navbar .sidebar-nav ul.metismenu li.active a {
     background: #eceff4;
 }
 .app-navbar .sidebar-nav ul.metismenu li a span,
 .app-navbar .sidebar-nav ul.metismenu li a small{
-   display: block;
-   width: 100%;
+    display: block;
+    width: 100%;
 }
 .app-navbar .sidebar-nav ul.metismenu li a small{color:#242021;font-size: 15px;opacity: .65;}
 .page-title h1{
@@ -369,13 +369,13 @@ select {padding: 0 20px 0 5px;font-size: 17px;color: #353535;font-weight: 600;li
     border-radius: 30px;
     line-height: 50px;
     border: 1px solid #016598;
-  }
-  .CustomRadioButton input {
+}
+.CustomRadioButton input {
     position: absolute;
     opacity: 0;
     cursor: pointer;
-  }
-  .CustomRadioButton .checkmark {
+}
+.CustomRadioButton .checkmark {
     position: absolute;
     top: 11px;
     left: 20px;
@@ -385,21 +385,21 @@ select {padding: 0 20px 0 5px;font-size: 17px;color: #353535;font-weight: 600;li
     border-radius: 50%;
     border: 5px solid #016598;
 }
-  .CustomRadioButton:hover input ~ .checkmark {
+.CustomRadioButton:hover input ~ .checkmark {
     background-color: #fff;
-  }
-  .CustomRadioButton input:checked ~ .checkmark {
+}
+.CustomRadioButton input:checked ~ .checkmark {
     background-color: #016598;
-  }
-  .CustomRadioButton .checkmark:after {
+}
+.CustomRadioButton .checkmark:after {
     content: "";
     position: absolute;
     display: none;
-  }
-  .CustomRadioButton input:checked ~ .checkmark:after {
+}
+.CustomRadioButton input:checked ~ .checkmark:after {
     display: block;
-  }
-  .CustomRadioButton .checkmark::after {
+}
+.CustomRadioButton .checkmark::after {
     top: 0px;
     left: 0px;
     width: 15px;
@@ -453,14 +453,14 @@ select {padding: 0 20px 0 5px;font-size: 17px;color: #353535;font-weight: 600;li
     -ms-user-select: none;
     user-select: none;
     color: #242021;
-  }
+}
 .CustomBox2 input {
     position: absolute;
     opacity: 0;
     cursor: pointer;
     height: 0;
     width: 0;
-  }
+}
 .CustomBox2 .checkmark {
     position: absolute;
     top: 0;
@@ -470,18 +470,18 @@ select {padding: 0 20px 0 5px;font-size: 17px;color: #353535;font-weight: 600;li
     background-color: #f2f2f2;
     border: 2px solid #016598;
     border-radius: 10px;
-  }
+}
 .CustomBox2 input:checked ~ .checkmark {
     background-color: #f2f2f2;
-  }
+}
 .CustomBox2 .checkmark:after {
     content: "";
     position: absolute;
     display: none;
-  }
+}
 .CustomBox2 input:checked ~ .checkmark:after {
     display: block;
-  }
+}
 .CustomBox2 .checkmark:after {
     left: 9px;
     top: 1px;
@@ -493,28 +493,28 @@ select {padding: 0 20px 0 5px;font-size: 17px;color: #353535;font-weight: 600;li
     -webkit-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
     transform: rotate(45deg);
-  }
-  .BySetorWrapper{width: 100%;}
-  .BySetorWrapper h4{
-      color: #016598;
-      font-size: 28px;
-      margin-top: 50px;
-  }
- .AssetClassForm label{text-transform: uppercase;}
- .AssetClassForm .CustomRadioButton .checkmark{
+}
+.BySetorWrapper{width: 100%;}
+.BySetorWrapper h4{
+    color: #016598;
+    font-size: 28px;
+    margin-top: 50px;
+}
+.AssetClassForm label{text-transform: uppercase;}
+.AssetClassForm .CustomRadioButton .checkmark{
     border: 2px solid #016598;
     top: 2px;
     left: 30px;
     background: #f2f2f2;
- }
- .AssetClassForm .CustomRadioButton{
-     height: auto;
-     border: none;
-     border-radius: 0;
-     line-height: 30px;
- }
- .Radiowrapp{margin-bottom: 30px;margin-left: 17px;}
- .AssetClassForm .CustomRadioButton .checkmark::after {
+}
+.AssetClassForm .CustomRadioButton{
+    height: auto;
+    border: none;
+    border-radius: 0;
+    line-height: 30px;
+}
+.Radiowrapp{margin-bottom: 30px;margin-left: 17px;}
+.AssetClassForm .CustomRadioButton .checkmark::after {
     top: 1px;
     left: 1px;
     width: 19px;
@@ -542,16 +542,16 @@ select {padding: 0 20px 0 5px;font-size: 17px;color: #353535;font-weight: 600;li
     top: 1px;
     width: 10px;
     height: 20px;
-  }
- .RiskReturn{
+}
+.RiskReturn{
     background-color: #efefef;
     padding: 15px;
     float: left;
     width: 100%;
     margin-top: 20px;
     margin-bottom: 20px;
- } 
- .RiskReturn .CustomRadioButton {
+}
+.RiskReturn .CustomRadioButton {
     width: 23%;
     border-radius: 0;
     height: 20px;
@@ -561,14 +561,14 @@ select {padding: 0 20px 0 5px;font-size: 17px;color: #353535;font-weight: 600;li
     position: relative;
     padding-left: 0;
 }
- .RiskReturn .CustomRadioButton .checkmark {
+.RiskReturn .CustomRadioButton .checkmark {
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 100%;
     border-radius: 0;
-    border: 4px solid #898989;   
+    border: 4px solid #898989;
 }
 .RiskReturn .CustomRadioButton .checkmark::after {
     height: 25px;
@@ -630,12 +630,12 @@ select {padding: 0 20px 0 5px;font-size: 17px;color: #353535;font-weight: 600;li
     position: absolute;
     left: 13px;
     top: 45px;
-    content: '$';    
+    content: '$';
     font-size: 20px;
     color: #242021;
 
 }
-.AmountBox label{    
+.AmountBox label{
     font-size: 20px;
     color: #242021;
     font-weight: 600;
@@ -658,7 +658,7 @@ select {padding: 0 20px 0 5px;font-size: 17px;color: #353535;font-weight: 600;li
 }
 .MarketList li span:nth-child(2),
 .MarketList li b:nth-child(2){
-   float: right;
+    float: right;
 }
 a.BlueBg {
     padding-top: 10px;
@@ -706,13 +706,13 @@ a.BlueBg {
 }
 .CorrelationList tr td:first-child{
     color: #626262;
-}    
+}
 .CorrelationList tr td{
     padding: 5px;
     text-align: right;
     font-weight: 500;
     font-size: 16px;
-}  
+}
 .CorrelationList .ThColor{
     background: #f4b084;
 }
@@ -727,63 +727,65 @@ a.BlueBg {
     width: 100%;
     margin-top: 20px;
     margin-bottom: 20px;
- } 
- .CapDetailFirst li span{
-     display: inline-block;
-     width: 15px;
-     height: 15px;
-     border: 2px solid #016598;     
- } 
- .CapDetailSecound li span{
-     display: inline-block;
-     width: 80px;
-     height: 30px;   
-     margin-right: 10px;     
- }
+}
+.CapDetailFirst li span{
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border: 2px solid #016598;
+}
+.CapDetailSecound li span{
+    display: inline-block;
+    width: 80px;
+    height: 30px;
+    margin-right: 10px;
+}
 
- .PurpleCo{
+.PurpleCo{
     background: #a349a4;
- }
- .YellowCo{
+}
+.YellowCo{
     background: #ffd201;
- }
- .BlueCo{
+}
+.BlueCo{
     background: #4f81c0;
- }
- .GreenCo{
+}
+.GreenCo{
     background: #b5e61d;
- }
- .RedCo{
+}
+.RedCo{
     background: #f01919;
- }
- .BgCono{
+}
+.OrangeCo{
+    background: #FBCEB1;
+}
+.BgCono{
     background: none;
- }
- .SMCapDetail ul{
-     width: 100%;
-     list-style-type: none;
-     margin: 0;
-     padding: 0;
- }  
- .SMCapDetail ul li{
+}
+.SMCapDetail ul{
+    width: 100%;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+.SMCapDetail ul li{
     font-size: 18px;
     color: #242021;
     font-weight: 600;
-}   
- .CapDetailFirst ul li{
-     margin-bottom: 20px;
- }  
- .CapDetailFirst ul li strong {
+}
+.CapDetailFirst ul li{
+    margin-bottom: 20px;
+}
+.CapDetailFirst ul li strong {
     font-weight: 600;
     width: 160px;
     display: inline-block;
-} 
+}
 .SMCapDetail h4{
-   margin: 0 0 30px 0;
+    margin: 0 0 30px 0;
 }
 .CapDetailSecound li {
     display: flex;
     margin-bottom: 5px;
 }
 
- 

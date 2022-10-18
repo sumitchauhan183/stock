@@ -66,29 +66,36 @@ class TestController extends Controller
         else:
             $c->CAGR = 0;
         endif;
+        if(count($c->ebit_per_share["w"])>0){
+            if($c->ebit_per_share["w"][0]->value>=0){
+                if(count($c->ebit_per_share["x"])>0 && count($c->ebit_per_share["y"])>0):
+                    $c->LINEST  = $this->getLinest($c->ebit_per_share);
+                    if(is_array($c->LINEST)):
+                        $c->growthRate = round((pow(10,$c->LINEST[0])-1)*100,2);
+                    else:
+                        $c->growthRate = 0;
+                    endif;
+                else:
+                    $c->growthRate = 0;
+                endif;
 
-        if(count($c->ebit_per_share["x"])>0 && count($c->ebit_per_share["y"])>0):
-            $c->LINEST  = $this->getLinest($c->ebit_per_share);
-            if(is_array($c->LINEST)):
-                $c->growthRate = round((pow(10,$c->LINEST[0])-1)*100,2);
-            else:
-                $c->growthRate = 0;
-            endif;
-        else:
-            $c->growthRate = 0;
-        endif;
+                if($c->CAGR != 0 || $c->growthRate != 0):
+                    $c->avgCAGR = round(($c->growthRate+$c->CAGR)/2,2);
+                else:
+                    $c->avgCAGR = 0;
+                endif;
 
-        if($c->CAGR != 0 || $c->growthRate != 0):
-            $c->avgCAGR = round(($c->growthRate+$c->CAGR)/2,2);
-        else:
-            $c->avgCAGR = 0;
-        endif;
-
-        if($c->avgCAGR<=4.5):
+                if($c->avgCAGR<=4.5):
+                    $c->avgCAGR = 4.5;
+                elseif($c->avgCAGR>=12):
+                    $c->avgCAGR = 12;
+                endif;
+            }else{
+                $c->avgCAGR = 4.5;
+            }
+        }else{
             $c->avgCAGR = 4.5;
-        elseif($c->avgCAGR>=12):
-            $c->avgCAGR = 12;
-        endif;
+        }
 
         $c->exponent_base = 6.8512;
 
@@ -254,7 +261,7 @@ class TestController extends Controller
         $c->ticker = $id;
 
         $c->company  = (object) Companies::select('ticker','company_id','FCF','DCF','EPV','TB','GRAHAM','PL','financial_rating','close_price')
-                                  ->where('ticker',$id)->get()->first()->toArray();
+            ->where('ticker',$id)->get()->first()->toArray();
         $c->financial_rating    = $c->company->financial_rating;
         $c->current_price       = $c->company->close_price;
 
@@ -308,7 +315,7 @@ class TestController extends Controller
         }
 
         if($c->type=='N/A'){
-                $c->type = 'C';
+            $c->type = 'C';
         }
 
 
@@ -412,12 +419,12 @@ class TestController extends Controller
             if($c->current_price > $c->median_80){
                 return false;
             }else{
-                    $count = $this->checkMatricscount($c);
-                    if($count < 4){
-                        return false;
-                    }else{
-                        return true;
-                    }
+                $count = $this->checkMatricscount($c);
+                if($count < 4){
+                    return false;
+                }else{
+                    return true;
+                }
             }
         }
 
@@ -635,6 +642,7 @@ class TestController extends Controller
     private function ebitpershare($id){
 
         $ebitArr  = Intrinio::data_tag_quarterly_new($id,'ebit');
+
         if(count($ebitArr)<1):
             $ebitArr  = Intrinio::data_tag_yearly($id,'ebit');
         endif;
@@ -644,6 +652,7 @@ class TestController extends Controller
         endif;
         $avg = $this->getAvg($shareArr);
         $arr = [
+            'w' => $ebitArr,
             'x' => [],
             'y' => [],
             'z' => [],

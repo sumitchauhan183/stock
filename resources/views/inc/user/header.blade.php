@@ -14,19 +14,13 @@
                     </button>
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <div class="navigation d-flex">
-                            <ul class="navbar-nav nav-left">
-                                <li class="nav-item">
-                                    <a href="javascript:void(0)" class="nav-link sidebar-toggle">
-                                        <i class="fe fe-menu font-30"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                            <ul class="navbar-nav nav-right ml-auto">                               
+
+                            <ul class="navbar-nav nav-right ml-auto">
                                 <li>
-                                    <a href="{{route('user.logout')}}"> 
+                                    <a href="{{route('user.logout')}}">
                                         <i class="zmdi zmdi-power pr-2"></i>
                                     </a>
-                                </li>                                
+                                </li>
                             </ul>
                         </div>
                     </div>

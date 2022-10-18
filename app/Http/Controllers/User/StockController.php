@@ -117,13 +117,14 @@ class StockController extends Controller
         $user = User::where('user_id', $this->userId)->get()->first()->toArray();
 
         $detail = CompanyDetail::where('company_detail.id',$ticker)
-                   ->join('companies as c','c.id','company_detail.id')
-                   ->get()->first();
-        //dd($detail);
+            ->join('companies as c','c.id','company_detail.id')
+            ->get()->first();
+        $threeyear = Intrinio::threeyearavgClosePrice($ticker);
         return view('user.stocks.company_detail',[
             'user'=>$user,
             'url'=>'company-detail',
             'tools'=> $this->tools,
+            'threecp' => $threeyear,
             'detail'=>$detail
         ]);
 

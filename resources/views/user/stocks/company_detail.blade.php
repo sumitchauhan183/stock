@@ -2,10 +2,9 @@
 @section('content')
     <div class="app-main" id="main">
         <div class="container-fluid">
-            <div class="card card-statistics h-100 mb-0">
+            <div class="card card-statistics pt-0 pb-0 h-100 mb-0">
                 <div class="card-body">
                     <div class="BySetorWrapper">
-                        <h3 class="GrayBg mt-0">Company Detail</h3>
                         <div class="SMCapDetail">
                             <h4>{{$detail->name}} ({{$detail->ticker}})</h4>
                             <div class="row">
@@ -119,13 +118,15 @@
                                 <div class="col-lg-4 CapDetailSecound">
                                     <ul>
                                         @php
-                                            $avg = ($detail->EPV+$detail->TB+$detail->GRAHAM+$detail->DCF+$detail->FCF)/5;
+                                            $avg = ($detail->EPV+$detail->TB+$detail->GRAHAM+$detail->DCF+$detail->FCF+$detail->PL)/6;
                                         @endphp
                                         <li><span class="PurpleCo"></span> <strong>$ {{$detail->EPV}}</strong> </li>
                                         <li><span class="YellowCo"></span> <strong>$ {{$detail->TB}}</strong> </li>
                                         <li><span class="BlueCo"></span> <strong>$ {{$detail->GRAHAM}}</strong> </li>
                                         <li><span class="GreenCo"></span> <strong>$ {{$detail->DCF}}</strong> </li>
                                         <li><span class="RedCo"></span> <strong>$ {{$detail->FCF}}</strong> </li>
+                                        <li><span class="OrangeCo"></span> <strong>$ {{$detail->PL}}</strong> </li>
+
                                         <li><span class="BgCono">AVG</span> <strong>$ {{round($avg,2)}}</strong> </li>
                                     </ul>
                                 </div>

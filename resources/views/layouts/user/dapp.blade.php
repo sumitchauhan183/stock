@@ -122,6 +122,7 @@
                         "columnDefs": [
                             { "width": "20%", "targets": 4 },
                             { "targets": 1, "visible":false}
+
                         ],
                         searchBuilder: {
                             columns: [2]
@@ -150,16 +151,38 @@
                     var chart = new CanvasJS.Chart("exxon", {
                         theme: "", // "light2", "dark1", "dark2"
                         animationEnabled: false, // change to true
+                        axisY:{
+                            stripLines: [
+                                {
+                                    value: {{$threecp}},
+                                    lineDashType: "dash",
+                                    label: "3y Avg"+"( ${{$threecp}} )",
+                                    labelPlacement: "inside",
+                                    labelAlign: "near",
+                                    thickness:1,
+                                    labelFontSize:10
+                                },{
+                                    value: {{$detail->close_price}},
+                                    lineDashType: "dash",
+                                    label: "$"+"{{$detail->close_price}}",
+                                    labelPlacement: "outside",
+                                    labelAlign: "near",
+                                    thickness:1,
+                                    labelFontSize:10
+                                }
+                            ]
+                        },
                         data: [
                             {
                                 // Change type to "bar", "area", "spline", "pie",etc.
                                 type: "column",
                                 dataPoints: [
-                                    { label: "EV", y: {{$detail->EPV}}  },
-                                    { label: "TV", y: {{$detail->TB}}  },
-                                    { label: "GRM", y: {{$detail->GRAHAM}}  },
-                                    { label: "DCF", y: {{$detail->DCF}}  },
-                                    { label: "FCF", y: {{$detail->FCF}}  }
+                                    { label: "EV", y: {{$detail->EPV}}, color:'#a349a4'},
+                                    { label: "TV", y: {{$detail->TB}}, color:'#ffd201'},
+                                    { label: "GRM", y: {{$detail->GRAHAM}}, color:'#4f81c0'},
+                                    { label: "DCF", y: {{$detail->DCF}}, color:'#b5e61d'},
+                                    { label: "FCF", y: {{$detail->FCF}}, color:'#f01919'},
+                                    { label: "PLV", y: {{$detail->PL}}, color:'#FBCEB1'}
                                 ]
                             }
                         ]
