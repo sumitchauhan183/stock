@@ -152,25 +152,51 @@
                         theme: "", // "light2", "dark1", "dark2"
                         animationEnabled: false, // change to true
                         axisY:{
+                            lineThickness:0,
+                            tickLength: 0,
+                            labelFontColor: "white",
                             stripLines: [
                                 {
                                     value: {{$threecp}},
                                     lineDashType: "dash",
-                                    label: "3y Avg"+"( ${{$threecp}} )",
-                                    labelPlacement: "inside",
+                                    label: "3y",
+                                    labelPlacement: "outside",
                                     labelAlign: "near",
                                     thickness:1,
-                                    labelFontSize:10
+                                    labelFontSize:10,
+                                    color:"grey",
+                                    labelFontColor:"grey",
+                                    labelMargin:10,
+                                    showOnTop: true
                                 },{
+                                    value: {{$fivecp}},
+                                    lineDashType: "dash",
+                                    label: "5y",
+                                    labelPlacement: "outside",
+                                    labelAlign: "near",
+                                    thickness:1,
+                                    labelFontSize:10,
+                                    color:"grey",
+                                    labelFontColor:"grey",
+                                    showOnTop: true
+                                },
+                                {
                                     value: {{$detail->close_price}},
                                     lineDashType: "dash",
                                     label: "$"+"{{$detail->close_price}}",
                                     labelPlacement: "outside",
                                     labelAlign: "near",
                                     thickness:1,
-                                    labelFontSize:10
+                                    color:"black",
+                                    labelFontColor:"black",
+                                    labelFontSize:10,
+                                    showOnTop: true
                                 }
                             ]
+                        },
+                        axisX:{
+                            lineThickness:0,
+                            tickLength: 0,
                         },
                         data: [
                             {
@@ -188,6 +214,8 @@
                         ]
                     });
                     chart.render();
+
+                    $('.canvasjs-chart-credit').hide();
                 });
             </script>
         @endif

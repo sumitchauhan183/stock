@@ -115,7 +115,7 @@
                                         <li><strong>INTRINSIC VALUE</strong> ${{$detail->DCF}}</li>
                                     </ul>
                                 </div>
-                                <div class="col-lg-4 CapDetailSecound">
+                                <div class="col-lg-3 CapDetailSecound">
                                     <ul>
                                         @php
                                             $avg = ($detail->EPV+$detail->TB+$detail->GRAHAM+$detail->DCF+$detail->FCF+$detail->PL)/6;
@@ -130,8 +130,8 @@
                                         <li><span class="BgCono">AVG</span> <strong>$ {{round($avg,2)}}</strong> </li>
                                     </ul>
                                 </div>
-                                <div class="col-lg-4">
-                                    <div id="exxon" style="height: 220px; width: 100%;"></div>
+                                <div class="col-lg-5">
+                                    <div id="exxon" style="height: 300px; width: 100%;border: 1px solid;float:right;"></div>
                                 </div>
                             </div>
                         </div>
