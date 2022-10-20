@@ -40,7 +40,7 @@ class UserController extends Controller
             if($check>0):
                 return json_encode([
                     'error'=>true,
-                    'message'=>'Email id is already exist'
+                    'message'=>'Email ID already exists.'
                 ]);
             else:
                 return json_encode([
@@ -50,7 +50,7 @@ class UserController extends Controller
         else:
             return json_encode([
                 'error'=>true,
-                'message'=>'Email id is required'
+                'message'=>'Email ID is required'
             ]);
         endif;
     }
@@ -60,12 +60,12 @@ class UserController extends Controller
         $input = $request->all();
         if(isset($input['otp'])):
             $check = User::where('otp',$input['otp'])
-                           ->where('user_id',$input['user_id'])
-                           ->count();
+                ->where('user_id',$input['user_id'])
+                ->count();
             if($check>0):
                 return json_encode([
                     'error'=>false,
-                    'message'=>'OTP verified'
+                    'message'=>'One Time Password verified'
                 ]);
             else:
                 return json_encode([
@@ -75,7 +75,7 @@ class UserController extends Controller
         else:
             return json_encode([
                 'error'=>true,
-                'message'=>'OTP id is required'
+                'message'=>'One Time Password is required'
             ]);
         endif;
     }
@@ -87,7 +87,7 @@ class UserController extends Controller
             if(isset($input['password'])):
                 if($input['confirm'] == $input['password']):
                     $check = User::where('user_id',$input['user_id'])
-                                   ->update(['password'=>Hash::make($input['password'])]);
+                        ->update(['password'=>Hash::make($input['password'])]);
                     if($check):
                         return json_encode([
                             'error'=>false
@@ -125,7 +125,7 @@ class UserController extends Controller
             if(isset($input['password'])):
                 if($input['confirm'] == $input['password']):
                     $check = User::where('user_id',$input['user_id'])
-                                   ->update(['password'=>Hash::make($input['password'])]);
+                        ->update(['password'=>Hash::make($input['password'])]);
                     if($check):
                         return json_encode([
                             'error'=>false,
@@ -200,18 +200,18 @@ class UserController extends Controller
             ]);
         endif;
         $user = [
-             'first_name' =>$input['first_name'],
-             'last_name'  =>$input['last_name'],
-             'country'=>$input['country'],
-             'city'=>$input['city'],
-             'state'=>$input['state'],
-             'zipcode'=>$input['zipcode'],
-             'email'=>$input['email'],
-             'username'=>$input['userid'],
-             'password'=>Hash::make($input['password']),
-             'status'=>'unpaid',
-             'email_verified'=>'NO',
-             'login_token'=> ''
+            'first_name' =>$input['first_name'],
+            'last_name'  =>$input['last_name'],
+            'country'=>$input['country'],
+            'city'=>$input['city'],
+            'state'=>$input['state'],
+            'zipcode'=>$input['zipcode'],
+            'email'=>$input['email'],
+            'username'=>$input['userid'],
+            'password'=>Hash::make($input['password']),
+            'status'=>'unpaid',
+            'email_verified'=>'NO',
+            'login_token'=> ''
         ];
         User::Create($user);
         $create =  User::where('email',$input['email'])->get()->first()->toArray();
@@ -219,8 +219,8 @@ class UserController extends Controller
         $this->sendWelcomeMail($user_id);
         $this->sendVerifyMail($user_id);
         Tools::create([
-                  'tool'    => $input['tool'],
-                  'user_id' => $user_id
+            'tool'    => $input['tool'],
+            'user_id' => $user_id
         ]);
 
         return json_encode([
@@ -241,12 +241,12 @@ class UserController extends Controller
             ]);
         endif;
         $user = [
-             'first_name' =>$input['first_name'],
-             'last_name'  =>$input['last_name'],
-             'country'=>$input['country'],
-             'city'=>$input['city'],
-             'state'=>$input['state'],
-             'zipcode'=>$input['zipcode']
+            'first_name' =>$input['first_name'],
+            'last_name'  =>$input['last_name'],
+            'country'=>$input['country'],
+            'city'=>$input['city'],
+            'state'=>$input['state'],
+            'zipcode'=>$input['zipcode']
         ];
         User::where('user_id',$userid)->update($user);
         return json_encode([
@@ -266,12 +266,12 @@ class UserController extends Controller
             ]);
         endif;
         $check = User::where('email',$input['email'])
-                ->get()->first()->toArray();
+            ->get()->first()->toArray();
         if(Hash::check($input['password'], $check['password'])):
             $user_id = $check['user_id'];
             $tool = Tools::where('user_id',$user_id)
-                          ->get()->first()
-                          ->toArray();
+                ->get()->first()
+                ->toArray();
             $token = $this->generateToken($user_id);
             User::where('user_id',$user_id)->update(['login_token'=>$token]);
             $user = User::where('user_id',$user_id)
@@ -371,7 +371,7 @@ class UserController extends Controller
 
             return json_encode([
                 'error'=>false,
-                'message'=>'OTP sent successfully on your registerd email',
+                'message'=>'One Time Password sent successfully on your registerd email',
                 'user_id'=> $user['user_id']
             ]);
         }
@@ -397,7 +397,7 @@ class UserController extends Controller
     {
         $token = md5($user_id.time());
         User::where('user_id',$user_id)
-                ->update(['login_token'=>$token]);
+            ->update(['login_token'=>$token]);
         return $token;
     }
 

@@ -122,7 +122,7 @@
                         "columnDefs": [
                             { "width": "20%", "targets": 4 },
                             { "targets": 1, "visible":false}
-                            
+
                         ],
                         searchBuilder: {
                             columns: [3]
@@ -208,8 +208,8 @@
                                 // Change type to "bar", "area", "spline", "pie",etc.
                                 type: "column",
                                 dataPoints: [
-                                    { label: "EV", y: {{$detail->EPV}}, color:'#a349a4'},
-                                    { label: "TV", y: {{$detail->TB}}, color:'#ffd201'},
+                                    { label: "EPV", y: {{$detail->EPV}}, color:'#a349a4'},
+                                    { label: "TBV", y: {{$detail->TB}}, color:'#ffd201'},
                                     { label: "GRM", y: {{$detail->GRAHAM}}, color:'#4f81c0'},
                                     { label: "DCF", y: {{$detail->DCF}}, color:'#b5e61d'},
                                     { label: "FCF", y: {{$detail->FCF}}, color:'#f01919'},
@@ -219,7 +219,7 @@
                         ]
                     });
                     chart.render();
-                    
+
                     $('.canvasjs-chart-credit').hide();
                 });
             </script>
