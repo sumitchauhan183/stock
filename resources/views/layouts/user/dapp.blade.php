@@ -122,10 +122,10 @@
                         "columnDefs": [
                             { "width": "20%", "targets": 4 },
                             { "targets": 1, "visible":false}
-
+                            
                         ],
                         searchBuilder: {
-                            columns: [2]
+                            columns: [3]
                         },
                         "pageLength": 25,
                         "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
@@ -136,8 +136,8 @@
                     $( '#sector-list_filter input' ).attr('placeholder', 'Ticker');
 
                     $( '#sector-list_filter input' ).on( 'input', function () {
-                        if ( table.columns(1).search() !== $(this).val() ) {
-                            table.columns(1).search( $(this).val() ).draw();
+                        if ( table.columns(3).search() !== $(this).val() ) {
+                            table.columns(3).search( $(this).val() ).draw();
                         }
                     } );
 
@@ -151,54 +151,58 @@
                     var chart = new CanvasJS.Chart("exxon", {
                         theme: "", // "light2", "dark1", "dark2"
                         animationEnabled: false, // change to true
-                        axisY:{
-                            margin: 20,
-                            lineThickness:0,
-                            tickLength: 0,
-                            labelFontColor: "white",
-                            stripLines: [
-                                {
-                                    value: {{$threecp}},
-                                    lineDashType: "dash",
-                                    label: "3y",
-                                    labelPlacement: "outside",
-                                    labelAlign: "near",
-                                    thickness:1,
-                                    labelFontSize:10,
-                                    color:"grey",
-                                    labelFontColor:"grey",
-                                    labelMargin:10,
-                                    showOnTop: true
-                                },{
-                                    value: {{$fivecp}},
-                                    lineDashType: "dash",
-                                    label: "5y",
-                                    labelPlacement: "outside",
-                                    labelAlign: "near",
-                                    thickness:1,
-                                    labelFontSize:10,
-                                    color:"grey",
-                                    labelFontColor:"grey",
-                                    showOnTop: true
-                                },
-                                {
-                                    value: {{$detail->close_price}},
-                                    lineDashType: "dash",
-                                    label: "$"+"{{$detail->close_price}}",
-                                    labelPlacement: "outside",
-                                    labelAlign: "near",
-                                    thickness:1,
-                                    color:"black",
-                                    labelFontColor:"black",
-                                    labelFontSize:10,
-                                    showOnTop: true
-                                }
-                            ]
-                        },
-                        axisX:{
-                            lineThickness:0,
-                            tickLength: 0,
-                        },
+                       axisY:{
+                           margin: 20,
+                           lineThickness:0,
+                           tickLength: 0,
+                           labelFontColor: "white",
+                        			stripLines: [
+                        			{
+                        				value: {{$threecp}},
+                        				lineDashType: "dash",
+                        				label: "3y",
+                        				labelPlacement: "outside",
+				                        labelAlign: "near",
+				                        thickness:1,
+				                        labelFontSize:10,
+				                        labelBackgroundColor:"transparent",
+				                        color:"grey",
+				                        labelFontColor:"grey",
+				                        labelMargin:10,
+				                        showOnTop: true
+                        			},{
+                        				value: {{$fivecp}},
+                        				lineDashType: "dash",
+                        				label: "5y......",
+                        				labelPlacement: "outside",
+                        				labelBackgroundColor:"transparent",
+				                        labelAlign: "far",
+				                        thickness:1,
+				                        labelFontSize:10,
+				                        color:"grey",
+				                        labelFontColor:"grey",
+				                        showOnTop: true
+                        			},
+                        			{
+                        				value: {{$detail->close_price}},
+                        				lineDashType: "dash",
+                        				label: "$"+"{{$detail->close_price}}...........",
+                        				labelPlacement: "outside",
+                        				labelBackgroundColor:"transparent",
+                        				labelBorderColor:"blue",
+				                        labelAlign: "near",
+				                        thickness:1,
+				                        color:"black",
+				                        labelFontColor:"black",
+				                        labelFontSize:10,
+				                        showOnTop: true
+                        			}
+                        			]
+                        		},
+                        		axisX:{
+                        		    lineThickness:0,
+                           tickLength: 0,
+                        		},
                         data: [
                             {
                                 // Change type to "bar", "area", "spline", "pie",etc.
@@ -209,13 +213,13 @@
                                     { label: "GRM", y: {{$detail->GRAHAM}}, color:'#4f81c0'},
                                     { label: "DCF", y: {{$detail->DCF}}, color:'#b5e61d'},
                                     { label: "FCF", y: {{$detail->FCF}}, color:'#f01919'},
-                                    { label: "PLV", y: {{$detail->PL}}, color:'#FBCEB1'}
+                                    { label: "PLV", y: {{$detail->PL}}, color:'#765454'}
                                 ]
                             }
                         ]
                     });
                     chart.render();
-
+                    
                     $('.canvasjs-chart-credit').hide();
                 });
             </script>

@@ -45,7 +45,7 @@
 		
 		<li>
 			<a href="{{route('user.settings')}}" aria-expanded="false">
-				<span class="nav-title">Setting</span>
+				<span class="nav-title">Settings</span>
 			</a> 
 		</li>		
 	</ul>

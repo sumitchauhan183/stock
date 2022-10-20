@@ -747,6 +747,9 @@ a.BlueBg {
 .YellowCo{
     background: #ffd201;
 }
+.GreyCo{
+    background: #9c9b95;
+}
 .BlueCo{
     background: #4f81c0;
 }
@@ -757,7 +760,7 @@ a.BlueBg {
     background: #f01919;
 }
 .OrangeCo{
-    background: #FBCEB1;
+    background: #765454;
 }
 .BgCono{
     background: none;
