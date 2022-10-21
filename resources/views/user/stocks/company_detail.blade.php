@@ -1,3 +1,4 @@
+
 @extends('layouts.user.dapp')
 @section('content')
     <style>
@@ -17,6 +18,7 @@
             font-size: 16px;
             font-weight: 900;
         }
+
     </style>
     <div class="app-main" id="main">
         <div class="container-fluid">
@@ -87,37 +89,37 @@
 
                                         </li>
                                         <li><strong>PRICE HISTORY</strong>
-                                            @if(($detail->close_price*121)/100 > $threecp)
+                                            @if($per > 120)
                                                 <span class="YellowCo"></span>
                                                 <span class=""></span>
                                                 <span class=""></span>
                                                 <span class=""></span>
                                                 <span class=""></span>
-                                            @elseif(($detail->close_price*109)/100 > $threecp && ($detail->close_price*121)/100 < $threecp)
+                                            @elseif($per > 109 && $per < 121)
                                                 <span class="YellowCo"></span>
                                                 <span class="YellowCo"></span>
                                                 <span class=""></span>
                                                 <span class=""></span>
                                                 <span class=""></span>
-                                            @elseif(($detail->close_price*100)/100 > $threecp && ($detail->close_price*110)/100 < $threecp)
+                                            @elseif($per > 100 && $per < 110)
                                                 <span class="YellowCo"></span>
                                                 <span class="YellowCo"></span>
                                                 <span class="YellowCo"></span>
                                                 <span class=""></span>
                                                 <span class=""></span>
-                                            @elseif(($detail->close_price*90)/100 > $threecp && ($detail->close_price*100)/100 < $threecp)
+                                            @elseif($per > 90 && $per < 101)
                                                 <span class="YellowCo"></span>
                                                 <span class="YellowCo"></span>
                                                 <span class="YellowCo"></span>
                                                 <span class="YellowCo"></span>
                                                 <span class=""></span>
-                                            @elseif(($detail->close_price*79)/100 > $threecp && ($detail->close_price*91)/100 < $threecp)
+                                            @elseif($per > 80 && $per < 91)
                                                 <span class="YellowCo"></span>
                                                 <span class="YellowCo"></span>
                                                 <span class="YellowCo"></span>
                                                 <span class="YellowCo"></span>
                                                 <span class="YellowCo"></span>
-                                            @elseif(($detail->close_price*80)/100 < $threecp)
+                                            @elseif($per < 81)
                                                 <span class="YellowCo"></span>
                                                 <span class="YellowCo"></span>
                                                 <span class="YellowCo"></span>

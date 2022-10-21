@@ -119,14 +119,19 @@ class StockController extends Controller
         $detail = CompanyDetail::where('company_detail.id',$ticker)
             ->join('companies as c','c.id','company_detail.id')
             ->get()->first();
+        $fiveyear = Intrinio::fiveyearavgClosePrice($ticker);
         $threeyear = Intrinio::threeyearavgClosePrice($ticker);
-        return view('user.stocks.company_detail',[
+        $per = ($detail->close_price/$threeyear)*100;
+        $data = [
             'user'=>$user,
             'url'=>'company-detail',
             'tools'=> $this->tools,
+            'fivecp' => $fiveyear,
             'threecp' => $threeyear,
-            'detail'=>$detail
-        ]);
+            'detail'=>$detail,
+            'per' => $per
+        ];
+        return view('user.stocks.company_detail',$data);
 
     }
      public function companyDetailOLD($ticker){
